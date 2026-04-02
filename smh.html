@@ -378,43 +378,6 @@
       font-weight: 600;
     }
 
-    .news-section {
-      max-width: 900px;
-      margin: 0 auto 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 18px;
-    }
-
-    .news-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .news-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-    }
-
-    .news-source {
-      font-size: 10px;
-      color: var(--muted);
-      opacity: 0.7;
-    }
-
-    .news-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
     .news-item {
       display: flex;
       align-items: baseline;
@@ -628,7 +591,7 @@
       real-time pre/post-market data directly.<br><br>
       Get your free token (no credit card) at
       <a href="https://finnhub.io" target="_blank" rel="noopener">finnhub.io</a>
-      â Dashboard â API key.
+      → Dashboard → API key.
     </p>
     <input class="modal-input" id="token-input" type="text"
            placeholder="Paste Finnhub API token here" autocomplete="off" spellcheck="false"/>
@@ -650,10 +613,10 @@
   <div class="header-right">
     <div id="market-status" class="market-status status-closed">
       <span class="dot"></span>
-      <span id="status-text">â</span>
+      <span id="status-text">–</span>
     </div>
     <span id="last-updated"></span>
-    <button class="settings-btn" onclick="openSettings()" title="Configure API key for live data">â</button>
+    <button class="settings-btn" onclick="openSettings()" title="Configure API key for live data">⚙</button>
     <button id="refresh-btn" onclick="loadData()">
       <div class="spinner" id="spinner"></div>
       <span id="refresh-label">Refresh</span>
@@ -663,40 +626,26 @@
 
 <div class="error-banner" id="error-banner"></div>
 
-<div class="news-section" id="news-section">
-  <div class="news-header">
-    <span class="news-title">&#9711; Latest Semiconductor News</span>
-    <span class="news-source">Yahoo Finance</span>
-  </div>
-  <ul class="news-list" id="news-list">
-    <li class="news-skeleton"><div class="skeleton" style="width:90%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:80%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:85%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:75%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:88%;height:13px"></div></li>
-  </ul>
-</div>
-
 <div class="summary-bar" id="summary-bar" style="display:none">
   <div class="summary-item">
     <span class="summary-label">Gainers</span>
-    <span class="summary-value" id="sum-gainers" style="color:var(--green)">â</span>
+    <span class="summary-value" id="sum-gainers" style="color:var(--green)">–</span>
   </div>
   <div class="summary-item">
     <span class="summary-label">Losers</span>
-    <span class="summary-value" id="sum-losers" style="color:var(--red)">â</span>
+    <span class="summary-value" id="sum-losers" style="color:var(--red)">–</span>
   </div>
   <div class="summary-item">
     <span class="summary-label">Avg AH Change</span>
-    <span class="summary-value" id="sum-avg">â</span>
+    <span class="summary-value" id="sum-avg">–</span>
   </div>
   <div class="summary-item">
     <span class="summary-label">Best AH</span>
-    <span class="summary-value" id="sum-best" style="color:var(--green)">â</span>
+    <span class="summary-value" id="sum-best" style="color:var(--green)">–</span>
   </div>
   <div class="summary-item">
     <span class="summary-label">Worst AH</span>
-    <span class="summary-value" id="sum-worst" style="color:var(--red)">â</span>
+    <span class="summary-value" id="sum-worst" style="color:var(--red)">–</span>
   </div>
 </div>
 
@@ -733,12 +682,12 @@
   const MAX_WEIGHT = Math.max(...HOLDINGS.map(h => h.weight));
 
   function fmt(n, decimals = 2) {
-    if (n == null || isNaN(n)) return 'â';
+    if (n == null || isNaN(n)) return '–';
     return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   }
 
   function fmtPrice(n) {
-    if (n == null || isNaN(n)) return 'â';
+    if (n == null || isNaN(n)) return '–';
     return '$' + fmt(n, 2);
   }
 
@@ -785,7 +734,7 @@
         grid.innerHTML += `<div class="section-header" id="section-holdings">Top 10 Holdings</div>`;
       }
       if (i === ETFS.length + HOLDINGS.length) {
-        grid.innerHTML += `<div class="section-header" id="section-kr">Korean Semiconductors (KRX Â· KRW)</div>`;
+        grid.innerHTML += `<div class="section-header" id="section-kr">Korean Semiconductors (KRX · KRW)</div>`;
       }
       const rankBadge = h.etf
         ? `<span class="rank etf-badge">ETF</span>`
@@ -842,7 +791,7 @@
     const regChangePct = q.regularMarketChangePercent;
     const regDir = regChange > 0 ? 'up' : regChange < 0 ? 'down' : 'neutral';
     const regSign = regChange > 0 ? '+' : '';
-    const regArrow = regChange > 0 ? 'â²' : regChange < 0 ? 'â¼' : 'â';
+    const regArrow = regChange > 0 ? '▲' : regChange < 0 ? '▼' : '–';
 
     const rankBadge = h.etf
       ? `<span class="rank etf-badge">ETF</span>`
@@ -856,7 +805,7 @@
       </div>`;
 
     const fmtP = h.kr
-      ? n => (n == null || isNaN(n) ? 'â' : 'â©' + Math.round(n).toLocaleString('en-US'))
+      ? n => (n == null || isNaN(n) ? '–' : '₩' + Math.round(n).toLocaleString('en-US'))
       : fmtPrice;
 
     // 52-week range
@@ -875,7 +824,7 @@
         <div class="range52-header">
           <span class="range52-title">52-Week Range</span>
           ${fromHighPct != null ? `<span class="range52-badge${atHigh ? ' at-high' : ''}">
-            ${atHigh ? 'â² At 52-wk high' : 'â¼ ' + fmt(Math.abs(fromHighPct), 1) + '% from peak'}
+            ${atHigh ? '▲ At 52-wk high' : '▼ ' + fmt(Math.abs(fromHighPct), 1) + '% from peak'}
           </span>` : ''}
         </div>
         <div class="range52-track">
@@ -900,11 +849,11 @@
           <div class="ext-left">
             <div class="ah-label">${label}</div>
             <span class="ext-no-data">${noDataMsg}</span>
-            ${!FINNHUB_TOKEN && !h.kr ? `<div class="api-hint"><a href="#" onclick="openSettings();return false;">â Add API key</a> for live data</div>` : ''}
+            ${!FINNHUB_TOKEN && !h.kr ? `<div class="api-hint"><a href="#" onclick="openSettings();return false;">⚙ Add API key</a> for live data</div>` : ''}
           </div>
         </div>`;
       const d = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
-      const a = change > 0 ? 'â²' : change < 0 ? 'â¼' : 'â';
+      const a = change > 0 ? '▲' : change < 0 ? '▼' : '–';
       const s = change > 0 ? '+' : '';
       return `
         <div class="ext-row">
@@ -966,10 +915,11 @@
     document.getElementById('summary-bar').style.display = 'flex';
   }
 
-  // corsproxy.io is first â it's a true passthrough with no server-side caching.
+  // corsproxy.io is first — it's a true passthrough with no server-side caching.
   // allorigins.win caches for 2 min and is now last resort only.
   const PROXIES = [
     u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+    u => `https://thingproxy.freeboard.io/fetch/${u}`,
     u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
     u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   ];
@@ -1039,8 +989,8 @@
     return results;
   }
 
-  // API tokens â stored in localStorage so no code editing is needed.
-  // Click â in the header to set your Finnhub token (free at finnhub.io).
+  // API tokens — stored in localStorage so no code editing is needed.
+  // Click ⚙ in the header to set your Finnhub token (free at finnhub.io).
   let FINNHUB_TOKEN   = localStorage.getItem('finnhub_token')   || '';
   let STOCKDATA_TOKEN = localStorage.getItem('stockdata_token') || '';
 
@@ -1119,7 +1069,7 @@
       return map;
     } catch(e) { clearTimeout(timer); return {}; }
   }
-  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ─────────────────────────────────────────────────────────────────────────────
 
   // Parse NASDAQ API price strings like "$388.04", "+4.64", "-3.62%"
   const nqParse = s => {
@@ -1129,7 +1079,7 @@
     return isNaN(n) ? null : (neg ? -n : n);
   };
 
-  // Primary extended-hours source: NASDAQ API â structured primaryData/secondaryData, no API key needed
+  // Primary extended-hours source: NASDAQ API — structured primaryData/secondaryData, no API key needed
   // Works for all US-listed stocks (including NYSE, NASDAQ). Korean stocks excluded (KRX, not applicable).
   async function fetchExtendedHoursViaNasdaq() {
     const map = {};
@@ -1204,7 +1154,7 @@
     return map;
   }
 
-  // Fallback: per-symbol v8 chart API â 1d/1m with pre+post market OHLCV extraction
+  // Fallback: per-symbol v8 chart API — 1d/1m with pre+post market OHLCV extraction
   async function fetchViaChartAPI() {
     const fetches = ALL_ITEMS.map(async h => {
       // Cache-bust so proxies (allorigins etc.) cannot serve a stale cached response
@@ -1281,101 +1231,6 @@
     if (h < 24) return h + 'h ago';
     return Math.floor(h / 24) + 'd ago';
   }
-
-  // All tracked tickers for news targeting
-  const NEWS_TICKERS = 'NVDA,AVGO,TSM,ASML,AMD,QCOM,TXN,AMAT,MU,INTC,SMH';
-
-  // Keywords that indicate semiconductor/chip relevance
-  const SEMI_RE = /nvidia|nvidias|amd|intel|tsmc|broadcom|qualcomm|micron|asml|marvell|applied material|semiconductor|chip|wafer|foundry|fab\b|nvda|avgo\b|tsm\b|mu\b|intc\b|qcom|txn\b|amat\b|smh\b|hynix|samsung|arm\b|palantir|soc\b|gpu\b|cpu\b|ai chip/i;
-  function isSemiNews(title) { return SEMI_RE.test(title); }
-
-  async function fetchNews() {
-    // Strategy 1: Yahoo Finance search API per ticker â deduplicated, ticker-specific headlines
-    try {
-      const seen = new Set();
-      const results = [];
-      // Fetch news for a few high-interest tickers in parallel
-      const searches = ['NVDA', 'AMD', 'SMH', 'AVGO', 'TSM', 'INTC', 'MU'].map(t =>
-        proxyFetch(`https://query2.finance.yahoo.com/v1/finance/search?q=${t}&newsCount=4&quotesCount=0&enableFuzzyQuery=false`)
-          .catch(() => null)
-      );
-      const pages = await Promise.all(searches);
-      for (const data of pages) {
-        for (const n of (data?.news ?? [])) {
-          if (!n.title || seen.has(n.uuid ?? n.title)) continue;
-          seen.add(n.uuid ?? n.title);
-          results.push({ title: n.title.trim(), link: n.link ?? '#',
-            date: n.providerPublishTime ? new Date(n.providerPublishTime * 1000).toString() : '' });
-        }
-      }
-      // Sort newest-first, filter to semiconductor-relevant headlines
-      results.sort((a, b) => new Date(b.date) - new Date(a.date));
-      const filtered = results.filter(n => isSemiNews(n.title));
-      if (filtered.length >= 3) return filtered.slice(0, 5);
-      if (results.length >= 3) return results.slice(0, 5);
-    } catch(e) {}
-
-    // Strategy 2: rss2json.com with all SMH tickers â returns JSON, CORS-enabled
-    try {
-      const rssEncoded = encodeURIComponent(
-        `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${NEWS_TICKERS}&region=US&lang=en-US`
-      );
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000);
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssEncoded}&count=5`, { signal: ctrl.signal });
-      clearTimeout(timer);
-      const data = await res.json();
-      if (data.status === 'ok' && data.items?.length) {
-        const items = data.items.map(n => ({ title: (n.title ?? '').trim(), link: n.link ?? '#', date: n.pubDate ?? '' })).filter(i => i.title);
-        const filtered = items.filter(n => isSemiNews(n.title));
-        return (filtered.length >= 3 ? filtered : items).slice(0, 5);
-      }
-    } catch(e) {}
-
-    // Strategy 3: RSS XML via proxy with strict HTML detection
-    const rssUrl = `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${NEWS_TICKERS}&region=US&lang=en-US`;
-    for (const proxify of PROXIES) {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000);
-      try {
-        const res = await fetch(proxify(rssUrl), { signal: ctrl.signal });
-        clearTimeout(timer);
-        const raw = await res.text();
-        const t = raw.trim();
-        const lo = t.toLowerCase();
-        if (lo.startsWith('<!doctype') || lo.startsWith('<html')) continue;
-        if (!t.startsWith('<')) continue;
-        const doc = new DOMParser().parseFromString(t, 'text/xml');
-        const items = Array.from(doc.querySelectorAll('item')).slice(0, 5);
-        if (!items.length) continue;
-        const parsed = items.map(el => ({
-          title: el.querySelector('title')?.textContent?.trim() ?? '',
-          link:  el.querySelector('link')?.textContent?.trim() ?? '#',
-          date:  el.querySelector('pubDate')?.textContent ?? '',
-        })).filter(i => i.title);
-        const filtered = parsed.filter(n => isSemiNews(n.title));
-        return (filtered.length >= 3 ? filtered : parsed).slice(0, 5);
-      } catch(e) { clearTimeout(timer); }
-    }
-
-    return [];
-  }
-
-  function renderNews(items) {
-    const list = document.getElementById('news-list');
-    if (!list) return;
-    if (!items.length) {
-      list.innerHTML = `<li style="font-size:12px;color:var(--muted)">News unavailable â check back later.</li>`;
-      return;
-    }
-    list.innerHTML = items.map(item => `
-      <li class="news-item">
-        <span class="news-bullet">â</span>
-        <a class="news-link" href="${item.link}" target="_blank" rel="noopener">${item.title}</a>
-        ${item.date ? `<span class="news-age">${timeAgo(item.date)}</span>` : ''}
-      </li>`).join('');
-  }
-
   async function loadData() {
     const btn       = document.getElementById('refresh-btn');
     const spinner   = document.getElementById('spinner');
@@ -1384,14 +1239,11 @@
 
     btn.disabled = true;
     spinner.style.display = 'block';
-    label.textContent = 'Loadingâ¦';
+    label.textContent = 'Loading…';
     errBanner.style.display = 'none';
 
     buildSkeletons();
     updateMarketStatus(getMarketStatus());
-
-    // Fetch news in parallel â renders independently of price data
-    fetchNews().then(renderNews).catch(() => renderNews([]));
 
     const tickers = ALL_ITEMS.map(h => h.ticker).join(',');
 
@@ -1402,16 +1254,16 @@
       const stockdataPromise   = fetchExtendedHoursViaStockData().catch(() => ({}));
       const nasdaqPromise      = fetchExtendedHoursViaNasdaq().catch(e => { console.warn('NASDAQ:', e.message); return {}; });
       const yahooEhPromise     = fetchExtendedHoursViaYahoo().catch(e => { console.warn('YahooEH:', e.message); return {}; });
-      const chartPromise       = fetchViaChartAPI().catch(e => { console.warn('Chart API:', e.message); return null; });
+      // Start both in parallel - chart API (v8) is primary; no crumb/session cookies needed.
+      // Crumb-based v7 fails via proxy because Yahoo requires session cookies that don't transfer.
+      const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart API:', e.message); return null; });
+      const crumbPromise = fetchViaCrumb(tickers).catch(e => { console.warn('Crumb:', e.message); return null; });
 
-      // Regular close data: crumb (batch v7) â chart API (per-symbol v8)
-      let results;
-      try {
-        results = await fetchViaCrumb(tickers);
-      } catch (e1) {
-        console.warn('Crumb failed:', e1.message);
-        results = await chartPromise;
-        if (!results) throw new Error(`Crumb: ${e1.message} | Chart API also failed`);
+      // Try chart first, fall back to crumb-based v7
+      let results = await chartPromise;
+      if (!results) {
+        results = await crumbPromise;
+        if (!results) throw new Error('All price fetch strategies failed - CORS proxies may be blocked. Try again shortly.');
       }
 
       // Extended-hours priority: Finnhub > StockData > WebSocket > NASDAQ > Yahoo quoteSummary > chart OHLCV
@@ -1470,7 +1322,7 @@
         'Updated ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     } catch (err) {
-      errBanner.textContent = `Failed to load data â ${err.message}`;
+      errBanner.textContent = `Failed to load data — ${err.message}`;
       errBanner.style.display = 'block';
       console.error(err);
     } finally {
@@ -1480,8 +1332,8 @@
     }
   }
 
-  // ââ Yahoo Finance WebSocket streamer ââââââââââââââââââââââââââââââââââââââââ
-  // Connects to the same real-time feed used by finance.yahoo.com â no proxy,
+  // ── Yahoo Finance WebSocket streamer ────────────────────────────────────────
+  // Connects to the same real-time feed used by finance.yahoo.com — no proxy,
   // no CORS issues, no caching. Messages are protobuf-encoded binary frames.
   const liveQuotes = {};   // keyed by ticker; holds latest extended-hours data
   let   streamerWs  = null;
@@ -1544,7 +1396,7 @@
         } else if (wt === 2) { // length-delimited (string)
           const len = readVarint();
           if (fn === 1) q.id = readStr(len); else pos += len;
-        } else if (wt === 1) { // 64-bit â skip
+        } else if (wt === 1) { // 64-bit — skip
           pos += 8;
         } else break;
       } catch(e) { break; }
@@ -1584,14 +1436,14 @@
       streamerWs.onclose = () => { streamerWs = null; setTimeout(startStreamer, 15000); };
     } catch(e) { streamerWs = null; }
   }
-  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ────────────────────────────────────────────────────────────────────────────
 
   loadData();
   startStreamer();
   setInterval(loadData, 60000);
 
 
-  // ── Auto-session filter: show only the relevant extended-hours row ──
+  // ?? Auto-session filter: show only the relevant extended-hours row ??
   function applySessionFilter() {
     const s = getMarketStatus();
     // 'pre'=4-9:30am ET, 'after'=4-8pm ET, 'open'=market hours, 'closed'=overnight

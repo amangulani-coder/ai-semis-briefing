@@ -658,9 +658,11 @@
     document.getElementById('summary-bar').style.display = 'flex';
   }
 
-  // corsproxy.io is first — it's a true passthrough with no server-side caching.
+  // Direct (no proxy) is first — Yahoo v8 chart API sends CORS headers natively.
+  // corsproxy.io next as a true passthrough with no server-side caching.
   // allorigins.win caches for 2 min and is now last resort only.
   const PROXIES = [
+    u => u,
     u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
     u => `https://thingproxy.freeboard.io/fetch/${u}`,
     u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,

@@ -1004,12 +1004,20 @@
       const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart API:', e.message); return null; });
       const crumbPromise = fetchViaCrumb(tickers).catch(e => { console.warn('Crumb:', e.message); return null; });
 
-      // Try chart first, fall back to crumb-based v7
+      // Try chart first, fall back to crumb-based v7, then WebSocket regular data
       let results = await chartPromise;
+      if (!results) results = await crumbPromise;
       if (!results) {
-        results = await crumbPromise;
-        if (!results) throw new Error('All price fetch strategies failed - CORS proxies may be blocked. Try again shortly.');
+        // Wait up to 8s for WebSocket to deliver regular close prices (no CORS needed)
+        const usItems = [...ETFS, ...HOLDINGS];
+        const threshold = usItems.length * 0.5;
+        for (let i = 0; i < 16 && Object.keys(liveRegular).length < threshold; i++) {
+          await new Promise(r => setTimeout(r, 500));
+        }
+        const wsData = usItems.map(h => liveRegular[h.ticker]).filter(Boolean);
+        if (wsData.length >= threshold) results = wsData;
       }
+      if (!results) throw new Error('All price fetch strategies failed — CORS proxies blocked and WebSocket unavailable. Try again shortly.');
 
       // Extended-hours priority: Finnhub > StockData > WebSocket > NASDAQ > Yahoo quoteSummary > chart OHLCV
       const [finnhubEH, stockdataEH, nasdaqEH, yahooEH, chartResults] = await Promise.all([finnhubPromise, stockdataPromise, nasdaqPromise, yahooEhPromise, chartPromise]);
@@ -1080,7 +1088,8 @@
   // ── Yahoo Finance WebSocket streamer ────────────────────────────────────────
   // Connects to the same real-time feed used by finance.yahoo.com — no proxy,
   // no CORS issues, no caching. Messages are protobuf-encoded binary frames.
-  const liveQuotes = {};   // keyed by ticker; holds latest extended-hours data
+  const liveQuotes  = {};  // keyed by ticker; holds latest extended-hours data
+  const liveRegular = {};  // keyed by ticker; regular close data from WebSocket (field 50/52/57)
   let   streamerWs  = null;
 
   // Minimal protobuf decoder for Yahoo Finance PricingData schema
@@ -1160,6 +1169,18 @@
       streamerWs.onmessage = e => {
         const q = decodeYahooProto(e.data);
         if (!q) return;
+        // Always capture regular market close data (fields 50/52/57) for use as HTTP fallback
+        if (q.regularMarketPrice) {
+          liveRegular[q.id] = {
+            symbol: q.id,
+            regularMarketPrice:         q.regularMarketPrice,
+            regularMarketChange:        q.regularMarketChange        ?? null,
+            regularMarketChangePercent: q.regularMarketChangePercent ?? null,
+            postMarketPrice: null, postMarketChange: null, postMarketChangePercent: null,
+            preMarketPrice:  null, preMarketChange:  null, preMarketChangePercent:  null,
+            fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null,
+          };
+        }
         const mh = q.marketHours ?? 1;
         if (mh === 2 || mh === 3) {   // post-market
           liveQuotes[q.id] = {
@@ -1183,8 +1204,8 @@
   }
   // ────────────────────────────────────────────────────────────────────────────
 
+  startStreamer();  // start before loadData so WebSocket data arrives during HTTP fallback wait
   loadData();
-  startStreamer();
   setInterval(loadData, 60000);
 
 

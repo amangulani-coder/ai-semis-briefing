@@ -285,6 +285,53 @@
     .api-hint { font-size: 11px; color: var(--text-3); margin-top: 3px; }
     .api-hint a { color: var(--accent); text-decoration: none; }
 
+    /* ── LIVE BADGE ── */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+      background: var(--green-dim); color: var(--green);
+      border: 1px solid rgba(26,122,68,0.2);
+      border-radius: 4px; padding: 1px 6px;
+      text-transform: uppercase; vertical-align: middle; margin-left: 4px;
+    }
+    .live-badge::before {
+      content: '';
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    /* ── WS STATUS ── */
+    .ws-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; color: var(--text-2);
+      padding: 4px 10px; border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      white-space: nowrap;
+    }
+    .ws-status .ws-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-3);
+      transition: background 0.3s;
+    }
+    .ws-status.connected .ws-dot { background: var(--green); animation: pulse-dot 2s ease-in-out infinite; }
+    .ws-status.connecting .ws-dot { background: #f59e0b; animation: pulse-dot 1s ease-in-out infinite; }
+
+    /* ── EXT HOURS WAITING ── */
+    .ext-waiting {
+      font-size: 12px; color: var(--text-3); font-style: italic;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ext-waiting-spinner {
+      width: 10px; height: 10px;
+      border: 1.5px solid rgba(0,0,0,0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
     /* ── SETTINGS BUTTON ── */
     .settings-btn {
       background: var(--bg-alt);
@@ -518,6 +565,10 @@
       <span class="dot"></span>
       <span id="status-text">–</span>
     </div>
+    <div id="ws-status" class="ws-status connecting" title="Yahoo Finance live stream">
+      <span class="ws-dot"></span>
+      <span id="ws-label">Connecting…</span>
+    </div>
     <span id="last-updated"></span>
     <button class="settings-btn" onclick="openSettings()" title="Configure API key for live data">⚙</button>
     <button class="header-btn" id="refresh-btn" onclick="loadData()">
@@ -739,27 +790,42 @@
     card.className = `card ${cardDir}${h.etf ? ' etf-card' : ''}${h.kr ? ' etf-card' : ''}`;
     card.dataset.ticker = h.ticker;
 
-    function extRow(label, price, change, changePct, noDataMsg) {
-      if (price == null) return `
-        <div class="ext-row">
-          <div class="ext-left">
-            <div class="ah-label">${label}</div>
-            <span class="ext-no-data">${noDataMsg}</span>
-            ${!AV_KEY && !FINNHUB_TOKEN && !h.kr ? `<div class="api-hint"><a href="#" onclick="openSettings();return false;">⚙ Add API key</a> for live data</div>` : ''}
-          </div>
-        </div>`;
-      const d = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
-      const a = change > 0 ? '▲' : change < 0 ? '▼' : '–';
-      const s = change > 0 ? '+' : '';
-      return `
-        <div class="ext-row">
-          <div class="ext-left">
-            <div class="ah-label">${label}</div>
-            <div class="ah-price">${fmtP(price)}</div>
-            <div class="ah-sub">${s}${fmtP(change)} from close</div>
-          </div>
-          <span class="change-badge ${d}">${a} ${s}${fmt(changePct, 2)}%</span>
-        </div>`;
+    // Build a single extended-hours row for the current session
+    const session = getMarketStatus();
+    let extHtml = '';
+    if (session !== 'open' && !h.kr) {
+      const isPre    = session === 'pre';
+      const label    = isPre ? 'Pre-Market' : 'After Hours';
+      const ehPrice  = isPre ? prePrice  : ahPrice;
+      const ehChange = isPre ? preChange : ahChange;
+      const ehPct    = isPre ? preChangePct : ahChangePct;
+      const isLive   = wsConnected;
+
+      if (ehPrice != null) {
+        const d = ehChange > 0 ? 'up' : ehChange < 0 ? 'down' : 'neutral';
+        const a = ehChange > 0 ? '▲' : ehChange < 0 ? '▼' : '–';
+        const s = ehChange > 0 ? '+' : '';
+        extHtml = `
+          <div class="ext-row" data-session="${isPre ? 'pre' : 'post'}">
+            <div class="ext-left">
+              <div class="ah-label">${label}${isLive ? '<span class="live-badge">Live</span>' : ''}</div>
+              <div class="ah-price">${fmtP(ehPrice)}</div>
+              <div class="ah-sub">${s}${fmtP(ehChange)} from close</div>
+            </div>
+            <span class="change-badge ${d}">${a} ${s}${fmt(ehPct, 2)}%</span>
+          </div>`;
+      } else {
+        extHtml = `
+          <div class="ext-row" data-session="${isPre ? 'pre' : 'post'}">
+            <div class="ext-left">
+              <div class="ah-label">${label}</div>
+              <div class="ext-waiting">
+                <span class="ext-waiting-spinner"></span>
+                Waiting for live stream…
+              </div>
+            </div>
+          </div>`;
+      }
     }
 
     card.innerHTML = `
@@ -778,36 +844,37 @@
         </div>
         <div class="reg-sub">${regSign}${fmtP(regChange)} today</div>
       </div>
-      <hr class="divider"/>
-      <div class="ext-hours">
-        ${extRow('After Hours', ahPrice,  ahChange,  ahChangePct,  'No after-hours data')}
-        ${extRow('Pre-Market',  prePrice, preChange, preChangePct, 'Pre-market trading has not started')}
-      </div>
+      ${extHtml ? `<hr class="divider"/><div class="ext-hours">${extHtml}</div>` : ''}
       ${weightSection}
       ${rangeSection}`;
   }
 
   function updateSummary(quotes) {
-    const validQuotes = quotes.filter(q => q && q.postMarketChangePercent != null);
+    const isPre = getMarketStatus() === 'pre';
+    const pctKey = isPre ? 'preMarketChangePercent' : 'postMarketChangePercent';
+    const chgKey = isPre ? 'preMarketChange'        : 'postMarketChange';
+    const label  = isPre ? 'Pre-Market Avg'         : 'After-Hours Avg';
+
+    const validQuotes = quotes.filter(q => q && q[pctKey] != null);
     if (validQuotes.length === 0) return;
 
-    const gainers = validQuotes.filter(q => q.postMarketChange > 0).length;
-    const losers  = validQuotes.filter(q => q.postMarketChange < 0).length;
-    const avg = validQuotes.reduce((s, q) => s + q.postMarketChangePercent, 0) / validQuotes.length;
-
-    const best  = validQuotes.reduce((a, b) => b.postMarketChangePercent > a.postMarketChangePercent ? b : a);
-    const worst = validQuotes.reduce((a, b) => b.postMarketChangePercent < a.postMarketChangePercent ? b : a);
+    const gainers = validQuotes.filter(q => q[chgKey] > 0).length;
+    const losers  = validQuotes.filter(q => q[chgKey] < 0).length;
+    const avg     = validQuotes.reduce((s, q) => s + q[pctKey], 0) / validQuotes.length;
+    const best    = validQuotes.reduce((a, b) => b[pctKey] > a[pctKey] ? b : a);
+    const worst   = validQuotes.reduce((a, b) => b[pctKey] < a[pctKey] ? b : a);
 
     document.getElementById('sum-gainers').textContent = gainers;
     document.getElementById('sum-losers').textContent  = losers;
+    document.querySelector('.summary-item:nth-child(3) .summary-label').textContent = label;
 
     const avgEl = document.getElementById('sum-avg');
     avgEl.textContent = (avg >= 0 ? '+' : '') + fmt(avg, 2) + '%';
     avgEl.style.color = avg >= 0 ? 'var(--green)' : 'var(--red)';
 
-    document.getElementById('sum-best').textContent  = `${best.symbol}  +${fmt(best.postMarketChangePercent, 2)}%`;
-    document.getElementById('sum-worst').textContent = `${worst.symbol}  ${fmt(worst.postMarketChangePercent, 2)}%`;
-
+    const sign = best[pctKey] >= 0 ? '+' : '';
+    document.getElementById('sum-best').textContent  = `${best.symbol} ${sign}${fmt(best[pctKey], 2)}%`;
+    document.getElementById('sum-worst').textContent = `${worst.symbol} ${fmt(worst[pctKey], 2)}%`;
     document.getElementById('summary-bar').style.display = 'flex';
   }
 
@@ -931,32 +998,7 @@
     return map;
   }
 
-  async function fetchExtendedHoursViaStockData() {
-    if (!STOCKDATA_TOKEN) return {};
-    const usItems = [...ETFS, ...HOLDINGS];
-    const symbols = usItems.map(h => h.ticker).join(',');
-    const url = `https://api.stockdata.org/v1/data/quote?symbols=${symbols}&api_token=${STOCKDATA_TOKEN}`;
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 10000);
-    try {
-      const res  = await fetch(url, { signal: ctrl.signal });
-      clearTimeout(timer);
-      const json = await res.json();
-      const map  = {};
-      for (const d of (json?.data ?? [])) {
-        if (!d?.ticker) continue;
-        map[d.ticker] = {
-          postMarketPrice:         d.post_market_price         ?? null,
-          postMarketChange:        d.post_market_change        ?? null,
-          postMarketChangePercent: d.post_market_change_percent ?? null,
-          preMarketPrice:          d.pre_market_price          ?? null,
-          preMarketChange:         d.pre_market_change         ?? null,
-          preMarketChangePercent:  d.pre_market_change_percent  ?? null,
-        };
-      }
-      return map;
-    } catch(e) { clearTimeout(timer); return {}; }
-  }
+  // StockData.org removed — gated behind paid plan, not reliable for free use
 
   async function fetchViaAlphaVantage() {
     if (!AV_KEY) return null;
@@ -1036,85 +1078,8 @@
     return map;
   }
 
-  const nqParse = s => {
-    if (!s || s === 'N/A' || s === '--' || s === 'undefined') return null;
-    const neg = s.includes('-');
-    const n = parseFloat(s.replace(/[^0-9.]/g, ''));
-    return isNaN(n) ? null : (neg ? -n : n);
-  };
-
-  async function fetchExtendedHoursViaNasdaq() {
-    const map = {};
-    const usItems = [...ETFS, ...HOLDINGS];
-    await Promise.all(usItems.map(async h => {
-      try {
-        const assetClass = h.etf ? 'etf' : 'stocks';
-        const url = `https://api.nasdaq.com/api/quote/${h.ticker}/info?assetclass=${assetClass}&_=${Date.now()}`;
-        const data = await proxyFetch(url);
-        const d = data?.data;
-        if (!d?.primaryData?.lastSalePrice) return;
-
-        const sec = d.secondaryData;
-        let postPrice = null, postChange = null, postPct = null;
-        let prePrice  = null, preChange  = null, prePct  = null;
-
-        if (sec?.lastSalePrice && sec.lastSalePrice !== 'N/A') {
-          const extPrice  = nqParse(sec.lastSalePrice);
-          const extChange = nqParse(sec.netChange);
-          const extPct    = nqParse(sec.percentageChange);
-          const label     = (sec.label ?? d.marketStatus ?? '').toLowerCase();
-          const mktStatus = getMarketStatus();
-          if (label.includes('after') || label.includes('overtime') ||
-              (mktStatus === 'closed' && !label.includes('pre'))) {
-            postPrice = extPrice; postChange = extChange; postPct = extPct;
-          } else if (label.includes('pre')) {
-            prePrice = extPrice; preChange = extChange; prePct = extPct;
-          }
-        }
-        map[h.ticker] = {
-          postMarketPrice: postPrice, postMarketChange: postChange, postMarketChangePercent: postPct,
-          preMarketPrice:  prePrice,  preMarketChange:  preChange,  preMarketChangePercent:  prePct,
-        };
-      } catch(e) {}
-    }));
-    return map;
-  }
-
-  // Yahoo Finance quoteSummary — pre-market validity: show whenever we have today's timestamp
-  // (removed getMarketStatus() === 'pre' gate so pre-market prices display as soon as available)
-  async function fetchExtendedHoursViaYahoo() {
-    const map = {};
-    await Promise.all(ALL_ITEMS.map(async h => {
-      try {
-        const data = await proxyFetch(
-          `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(h.ticker)}?modules=price&_=${Date.now()}`
-        );
-        const price = data?.quoteSummary?.result?.[0]?.price;
-        if (!price) return;
-        const reg      = price.regularMarketPrice?.raw ?? null;
-        const postRaw  = price.postMarketPrice?.raw    ?? null;
-        const preRaw   = price.preMarketPrice?.raw     ?? null;
-        const now      = Math.floor(Date.now() / 1000);
-        const postTime = price.postMarketTime ?? 0;
-        const preTime  = price.preMarketTime  ?? 0;
-        const validPost = postTime > now - 86400;
-        // Pre-market: valid whenever today's timestamp exists (not gated on current session)
-        const todayMidnight = now - (now % 86400);
-        const validPre  = preTime > todayMidnight && preTime < now;
-        const postChg = validPost && postRaw != null && reg ? postRaw - reg : null;
-        const preChg  = validPre  && preRaw  != null && reg ? preRaw  - reg : null;
-        map[h.ticker] = {
-          postMarketPrice:         validPost ? postRaw : null,
-          postMarketChange:        postChg,
-          postMarketChangePercent: postChg != null && reg ? (postChg / reg) * 100 : null,
-          preMarketPrice:          validPre  ? preRaw  : null,
-          preMarketChange:         preChg,
-          preMarketChangePercent:  preChg  != null && reg ? (preChg  / reg) * 100 : null,
-        };
-      } catch(e) {}
-    }));
-    return map;
-  }
+  // NASDAQ + Yahoo quoteSummary extended-hours removed — both fail from browser CORS.
+  // Extended hours now come exclusively from Yahoo Finance WebSocket (see startStreamer).
 
   async function fetchViaChartAPI() {
     const fetches = ALL_ITEMS.map(async h => {
@@ -1176,6 +1141,9 @@
     return valid;
   }
 
+  // Map of last-rendered quotes — kept live by both loadData and the WS patcher
+  const loadedQuoteMap = {};
+
   async function loadData() {
     const btn       = document.getElementById('refresh-btn');
     const spinner   = document.getElementById('spinner');
@@ -1193,54 +1161,61 @@
     const tickers = ALL_ITEMS.map(h => h.ticker).join(',');
 
     try {
-      const peakDatesPromise   = fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
-      const avEhPromise        = fetchExtendedHoursViaAlphaVantage().catch(e => { console.warn('AV EH:', e.message); return {}; });
-      const finnhubPromise     = fetchExtendedHoursViaFinnhub().catch(() => ({}));
-      const stockdataPromise   = fetchExtendedHoursViaStockData().catch(() => ({}));
-      const nasdaqPromise      = fetchExtendedHoursViaNasdaq().catch(e => { console.warn('NASDAQ:', e.message); return {}; });
-      const yahooEhPromise     = fetchExtendedHoursViaYahoo().catch(e => { console.warn('YahooEH:', e.message); return {}; });
+      // ── Step 1: Load regular close prices ─────────────────────────────────
+      // Priority: Alpha Vantage (if key set) → Yahoo chart API → Yahoo crumb → WebSocket
       const avPromise    = fetchViaAlphaVantage().catch(e => { console.warn('AV:', e.message); return null; });
-      const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart API:', e.message); return null; });
+      const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart:', e.message); return null; });
       const crumbPromise = fetchViaCrumb(tickers).catch(e => { console.warn('Crumb:', e.message); return null; });
+      const peakPromise  = fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
 
       let results = await avPromise;
       if (!results) results = await chartPromise;
       if (!results) results = await crumbPromise;
       if (!results) {
-        const usItems = [...ETFS, ...HOLDINGS];
-        const threshold = usItems.length * 0.5;
+        // Wait up to 8s for WebSocket to deliver prices via previousClose field
+        const threshold = [...ETFS, ...HOLDINGS].length * 0.5;
         for (let i = 0; i < 16 && Object.keys(liveRegular).length < threshold; i++) {
           await new Promise(r => setTimeout(r, 500));
         }
-        const wsData = usItems.map(h => liveRegular[h.ticker]).filter(Boolean);
+        const wsData = ALL_ITEMS.map(h => liveRegular[h.ticker]).filter(Boolean);
         if (wsData.length >= threshold) results = wsData;
       }
-      if (!results) throw new Error('Could not load prices — CORS proxies blocked and live stream not yet ready. Try refreshing in a moment, or add an Alpha Vantage key via ⚙.');
+      if (!results) throw new Error('Could not load prices. Try refreshing, or add an Alpha Vantage key via ⚙.');
 
-      const [avEH, finnhubEH, stockdataEH, nasdaqEH, yahooEH, chartResults] = await Promise.all([avEhPromise, finnhubPromise, stockdataPromise, nasdaqPromise, yahooEhPromise, chartPromise]);
-      const chartMap = {};
-      if (chartResults && results !== chartResults) {
-        chartResults.forEach(q => { chartMap[q.symbol] = q; });
-      }
+      // ── Step 2: Merge any extended-hours data already in the WebSocket buffer
+      // The WS runs in parallel and may have already delivered EH prices.
       results.forEach(q => {
-        const live    = liveQuotes[q.symbol];
-        const sources = [avEH[q.symbol], finnhubEH[q.symbol], stockdataEH[q.symbol], live, chartMap[q.symbol], nasdaqEH[q.symbol], yahooEH[q.symbol]];
-        const postSrc = sources.find(s => s?.postMarketPrice != null);
-        const preSrc  = sources.find(s => s?.preMarketPrice  != null);
-        if (postSrc) {
-          q.postMarketPrice         = postSrc.postMarketPrice;
-          q.postMarketChange        = postSrc.postMarketChange;
+        const ws = liveQuotes[q.symbol];
+        if (ws?.postMarketPrice != null && q.postMarketPrice == null) {
+          q.postMarketPrice         = ws.postMarketPrice;
+          q.postMarketChange        = ws.postMarketChange;
+          q.postMarketChangePercent = ws.postMarketChangePercent;
+        }
+        if (ws?.preMarketPrice != null && q.preMarketPrice == null) {
+          q.preMarketPrice          = ws.preMarketPrice;
+          q.preMarketChange         = ws.preMarketChange;
+          q.preMarketChangePercent  = ws.preMarketChangePercent;
+        }
+        // Also try AV/Finnhub EH if user has keys (already in flight in WS start)
+        const avEH = avKeyEH[q.symbol];
+        const fhEH = finnhubEH[q.symbol];
+        const postSrc = [avEH, fhEH].find(s => s?.postMarketPrice != null);
+        const preSrc  = [avEH, fhEH].find(s => s?.preMarketPrice  != null);
+        if (postSrc && q.postMarketPrice == null) {
+          q.postMarketPrice = postSrc.postMarketPrice;
+          q.postMarketChange = postSrc.postMarketChange;
           q.postMarketChangePercent = postSrc.postMarketChangePercent;
         }
-        if (preSrc) {
-          q.preMarketPrice          = preSrc.preMarketPrice;
-          q.preMarketChange         = preSrc.preMarketChange;
-          q.preMarketChangePercent  = preSrc.preMarketChangePercent;
+        if (preSrc && q.preMarketPrice == null) {
+          q.preMarketPrice = preSrc.preMarketPrice;
+          q.preMarketChange = preSrc.preMarketChange;
+          q.preMarketChangePercent = preSrc.preMarketChangePercent;
         }
       });
 
+      // ── Step 3: Merge 52-week peak dates ──────────────────────────────────
       let peakDates = {};
-      try { peakDates = await peakDatesPromise; } catch(e) {}
+      try { peakDates = await peakPromise; } catch(e) {}
       results.forEach(q => {
         const pd = peakDates[q.symbol];
         if (pd) {
@@ -1248,18 +1223,23 @@
           if (q.fiftyTwoWeekHigh     == null) q.fiftyTwoWeekHigh     = pd.high;
           if (q.fiftyTwoWeekLow      == null) q.fiftyTwoWeekLow      = pd.low;
         }
-        if (q.fiftyTwoWeekHighChangePercent == null && q.fiftyTwoWeekHigh != null && q.regularMarketPrice != null) {
+        if (q.fiftyTwoWeekHighChangePercent == null && q.fiftyTwoWeekHigh && q.regularMarketPrice) {
           q.fiftyTwoWeekHighChangePercent = ((q.regularMarketPrice - q.fiftyTwoWeekHigh) / q.fiftyTwoWeekHigh) * 100;
         }
       });
 
-      const map = {};
-      results.forEach(q => { map[q.symbol] = q; });
+      // ── Step 4: Render ─────────────────────────────────────────────────────
+      const qMap = {};
+      results.forEach(q => { qMap[q.symbol] = q; });
 
       const allQuotes = [];
       ALL_ITEMS.forEach((h, i) => {
-        const q = map[h.ticker];
-        if (q) { renderCard(h, i, q); allQuotes.push(q); }
+        const q = qMap[h.ticker];
+        if (q) {
+          loadedQuoteMap[h.ticker] = q;
+          renderCard(h, i, q);
+          allQuotes.push(q);
+        }
       });
 
       updateSummary(allQuotes);
@@ -1277,10 +1257,34 @@
     }
   }
 
+  // Caches for optional user-key EH sources (populated async, merged on next render)
+  let avKeyEH  = {};
+  let finnhubEH = {};
+  async function loadOptionalEH() {
+    const [a, f] = await Promise.all([
+      fetchExtendedHoursViaAlphaVantage().catch(() => ({})),
+      fetchExtendedHoursViaFinnhub().catch(() => ({})),
+    ]);
+    avKeyEH   = a;
+    finnhubEH = f;
+  }
+
   // ── Yahoo Finance WebSocket streamer ────────────────────────────────────────
+  // Primary source for extended-hours prices (pre-market & after-hours).
+  // Bypasses CORS entirely — works from any domain without a proxy.
   const liveQuotes  = {};
   const liveRegular = {};
   let   streamerWs  = null;
+  let   wsConnected = false;
+
+  function setWsStatus(state) {
+    wsConnected = state === 'connected';
+    const el  = document.getElementById('ws-status');
+    const lbl = document.getElementById('ws-label');
+    if (!el) return;
+    el.className = 'ws-status ' + state;
+    lbl.textContent = state === 'connected' ? 'Live' : state === 'connecting' ? 'Connecting…' : 'Reconnecting…';
+  }
 
   function decodeYahooProto(data) {
     let bytes;
@@ -1348,20 +1352,27 @@
 
   function startStreamer() {
     if (streamerWs) return;
+    setWsStatus('connecting');
     try {
       streamerWs = new WebSocket('wss://streamer.finance.yahoo.com');
       streamerWs.binaryType = 'arraybuffer';
+
       streamerWs.onopen = () => {
+        setWsStatus('connected');
         streamerWs.send(JSON.stringify({ subscribe: ALL_ITEMS.map(h => h.ticker) }));
       };
+
       streamerWs.onmessage = e => {
         const q = decodeYahooProto(e.data);
         if (!q) return;
+
+        const mh = q.marketHours ?? 1;
+
+        // ── Capture regular close price (field 14 = previousClose, always sent) ──
         const regPrice = q.regularMarketPrice || q.previousClose;
         if (regPrice) {
-          const mh = q.marketHours ?? 1;
           const ahChg  = (mh === 2 || mh === 3) && q.price ? q.price - regPrice : null;
-          const preChg = mh === 0 && q.price ? q.price - regPrice : null;
+          const preChg = mh === 0               && q.price ? q.price - regPrice : null;
           liveRegular[q.id] = {
             symbol: q.id,
             regularMarketPrice:         regPrice,
@@ -1376,57 +1387,62 @@
             fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null,
           };
         }
-        const mh = q.marketHours ?? 1;
-        if (mh === 2 || mh === 3) {
+
+        // ── Capture extended-hours price ────────────────────────────────────
+        const isPost = mh === 2 || mh === 3;
+        const isPre  = mh === 0;
+        if (isPost) {
           liveQuotes[q.id] = {
-            _s: 'post',
             postMarketPrice:         q.price,
             postMarketChange:        q.change        ?? null,
             postMarketChangePercent: q.changePercent ?? null,
           };
-        } else if (mh === 0) {
+        } else if (isPre) {
           liveQuotes[q.id] = {
-            _s: 'pre',
             preMarketPrice:          q.price,
             preMarketChange:         q.change        ?? null,
             preMarketChangePercent:  q.changePercent ?? null,
           };
         }
+
+        // ── Real-time card patch ─────────────────────────────────────────────
+        // If this ticker's card is already rendered, update its EH section live.
+        const session = getMarketStatus();
+        const relevant = (isPost && (session === 'after' || session === 'closed')) ||
+                         (isPre  &&  session === 'pre');
+        if (relevant && loadedQuoteMap[q.id]) {
+          const existing = loadedQuoteMap[q.id];
+          if (isPost) {
+            existing.postMarketPrice         = q.price;
+            existing.postMarketChange        = q.change        ?? null;
+            existing.postMarketChangePercent = q.changePercent ?? null;
+          } else {
+            existing.preMarketPrice          = q.price;
+            existing.preMarketChange         = q.change        ?? null;
+            existing.preMarketChangePercent  = q.changePercent ?? null;
+          }
+          const item  = ALL_ITEMS.find(h => h.ticker === q.id);
+          const idx   = ALL_ITEMS.indexOf(item);
+          if (item) renderCard(item, idx, existing);
+        }
       };
-      streamerWs.onerror = () => { streamerWs = null; };
-      streamerWs.onclose = () => { streamerWs = null; setTimeout(startStreamer, 15000); };
-    } catch(e) { streamerWs = null; }
+
+      streamerWs.onerror = () => { streamerWs = null; setWsStatus('reconnecting'); };
+      streamerWs.onclose = () => {
+        streamerWs = null;
+        setWsStatus('reconnecting');
+        setTimeout(startStreamer, 10000);
+      };
+    } catch(e) { streamerWs = null; setWsStatus('reconnecting'); }
   }
 
+  // Start WS first — it runs in parallel so EH data is ready by the time cards render
   startStreamer();
+  // Kick off optional user-key EH sources (AV / Finnhub) asynchronously
+  loadOptionalEH();
   loadData();
+  // Refresh regular close prices every 60s; EH updates arrive continuously via WS
   setInterval(loadData, 60000);
-
-  // ── Auto-session filter ──────────────────────────────────────────────────────
-  function applySessionFilter() {
-    const s = getMarketStatus();
-    const showPre   = (s === 'pre');
-    const showAfter = (s === 'after' || s === 'closed');
-    document.querySelectorAll('.ext-row').forEach(row => {
-      const lbl = row.querySelector('.ah-label');
-      if (!lbl) return;
-      const txt = lbl.textContent.trim();
-      if (s === 'open') {
-        row.style.display = 'none';
-      } else if (txt === 'Pre-Market') {
-        row.style.display = showPre ? '' : 'none';
-      } else if (txt === 'After Hours') {
-        row.style.display = showAfter ? '' : 'none';
-      }
-    });
-  }
-
-  const _origLoad = loadData;
-  window.loadData = async function() {
-    await _origLoad.apply(this, arguments);
-    setTimeout(applySessionFilter, 150);
-  };
-  setTimeout(applySessionFilter, 800);
 
   // ── Interactive chart ────────────────────────────────────────────────────────
   const TV_SYMBOLS = {

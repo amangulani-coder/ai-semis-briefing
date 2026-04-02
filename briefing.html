@@ -83,6 +83,28 @@
     font-weight: 400;
   }
 
+  .nav-smh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+  }
+  .nav-smh-btn:hover {
+    background: var(--accent-dim);
+    border-color: rgba(0,113,227,0.2);
+    color: var(--accent);
+  }
+
   /* ── HERO ── */
   .hero {
     min-height: 100vh;
@@ -398,6 +420,9 @@
   <div class="nav-inner">
     <span class="nav-brand">AI &amp; Chips Daily</span>
     <span class="nav-date">Wednesday, April 1, 2026</span>
+    <button class="nav-smh-btn" onclick="(window.parent !== window ? window.parent.switchTab('smh') : window.location.href='smh.html')">
+      <span>📈</span> SMH After-Hours
+    </button>
   </div>
 </nav>
 

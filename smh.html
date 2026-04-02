@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://s3.tradingview.com/tv.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -335,6 +336,113 @@
     }
     .modal-cancel:hover { border-color: rgba(0,113,227,0.3); }
 
+    /* ── CARD CLICK ── */
+    .card { cursor: pointer; }
+
+    /* ── CHART SHEET ── */
+    .chart-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 600;
+    }
+    .chart-overlay.open { display: block; }
+
+    .chart-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .chart-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 72vh;
+      background: var(--bg);
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 -8px 48px rgba(0,0,0,0.14);
+      animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chart-title { display: flex; align-items: baseline; gap: 10px; }
+
+    .chart-ticker-label {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .chart-company-label {
+      font-size: 13px;
+      color: var(--text-2);
+      font-weight: 400;
+    }
+
+    .chart-price-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 2px;
+    }
+    .chart-price { font-size: 15px; font-weight: 600; color: var(--text); }
+    .chart-change { font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+    .chart-change.up   { background: var(--green-dim); color: var(--green); }
+    .chart-change.down { background: var(--red-dim);   color: var(--red);   }
+    .chart-change.flat { background: var(--bg-alt);    color: var(--text-2); }
+
+    .chart-close-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      color: var(--text-2);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .chart-close-btn:hover { background: var(--border); color: var(--text); }
+
+    .chart-body {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .chart-body iframe,
+    .chart-body > div {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .chart-drag-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 10px auto 0;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .chart-sheet { height: 80vh; }
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 640px) {
       header { padding: 0 16px; }
@@ -369,6 +477,28 @@
       <button class="modal-save" onclick="saveToken()">Save &amp; Refresh</button>
       <button class="modal-cancel" onclick="closeSettings()">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- Chart bottom sheet -->
+<div class="chart-overlay" id="chart-overlay">
+  <div class="chart-backdrop" id="chart-backdrop"></div>
+  <div class="chart-sheet">
+    <div class="chart-drag-handle"></div>
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">
+          <span class="chart-ticker-label" id="chart-ticker-label"></span>
+          <span class="chart-company-label" id="chart-company-label"></span>
+        </div>
+        <div class="chart-price-row">
+          <span class="chart-price" id="chart-price"></span>
+          <span class="chart-change" id="chart-change"></span>
+        </div>
+      </div>
+      <button class="chart-close-btn" onclick="closeChart()" aria-label="Close chart">✕</button>
+    </div>
+    <div class="chart-body" id="chart-body"></div>
   </div>
 </div>
 
@@ -517,7 +647,7 @@
             <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
           </div>`;
       grid.innerHTML += `
-        <div class="card neutral${h.etf ? ' etf-card' : ''}" id="card-${h.ticker}">
+        <div class="card neutral${h.etf ? ' etf-card' : ''}" id="card-${h.ticker}" data-ticker="${h.ticker}">
           <div class="card-header">
             <span class="ticker">${h.ticker}</span>
             ${rankBadge}
@@ -607,6 +737,7 @@
 
     const cardDir = ahPrice != null ? ahDir : prePrice != null ? preDir : regDir;
     card.className = `card ${cardDir}${h.etf ? ' etf-card' : ''}${h.kr ? ' etf-card' : ''}`;
+    card.dataset.ticker = h.ticker;
 
     function extRow(label, price, change, changePct, noDataMsg) {
       if (price == null) return `
@@ -1296,6 +1427,120 @@
     setTimeout(applySessionFilter, 150);
   };
   setTimeout(applySessionFilter, 800);
+
+  // ── Interactive chart ────────────────────────────────────────────────────────
+  const TV_SYMBOLS = {
+    'SMH':       'AMEX:SMH',
+    'QQQ':       'NASDAQ:QQQ',
+    'NVDA':      'NASDAQ:NVDA',
+    'AVGO':      'NASDAQ:AVGO',
+    'TSM':       'NYSE:TSM',
+    'ASML':      'NASDAQ:ASML',
+    'AMD':       'NASDAQ:AMD',
+    'QCOM':      'NASDAQ:QCOM',
+    'TXN':       'NASDAQ:TXN',
+    'AMAT':      'NASDAQ:AMAT',
+    'MU':        'NASDAQ:MU',
+    'INTC':      'NASDAQ:INTC',
+    '005930.KS': 'KRX:005930',
+    '000660.KS': 'KRX:000660',
+  };
+
+  let tvWidgetInstance = null;
+
+  function openChart(item) {
+    const tvSym = TV_SYMBOLS[item.ticker] || item.ticker;
+
+    // Populate header
+    document.getElementById('chart-ticker-label').textContent = item.ticker;
+    document.getElementById('chart-company-label').textContent = item.name;
+
+    // Find current quote data for the price display
+    const cardEl = document.getElementById('card-' + item.ticker);
+    const priceEl   = cardEl?.querySelector('.regular-price');
+    const badgeEl   = cardEl?.querySelector('.change-badge');
+    const chartPrice  = document.getElementById('chart-price');
+    const chartChange = document.getElementById('chart-change');
+
+    if (priceEl)  chartPrice.textContent  = priceEl.textContent;
+    else          chartPrice.textContent  = '';
+    if (badgeEl) {
+      chartChange.textContent = badgeEl.textContent.trim();
+      chartChange.className   = 'chart-change ' + (badgeEl.classList.contains('up') ? 'up' : badgeEl.classList.contains('down') ? 'down' : 'flat');
+    } else {
+      chartChange.textContent = '';
+      chartChange.className   = 'chart-change flat';
+    }
+
+    document.getElementById('chart-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    // Build TradingView widget
+    const body = document.getElementById('chart-body');
+    body.innerHTML = '';
+    const containerId = 'tv_widget_' + Date.now();
+    const widgetDiv = document.createElement('div');
+    widgetDiv.id = containerId;
+    widgetDiv.style.cssText = 'width:100%;height:100%';
+    body.appendChild(widgetDiv);
+
+    if (window.TradingView) {
+      tvWidgetInstance = new TradingView.widget({
+        container_id:        containerId,
+        symbol:              tvSym,
+        interval:            'D',
+        timezone:            'America/New_York',
+        theme:               'light',
+        style:               '1',
+        locale:              'en',
+        toolbar_bg:          '#ffffff',
+        backgroundColor:     'rgba(255,255,255,1)',
+        gridColor:           'rgba(0,0,0,0.04)',
+        width:               '100%',
+        height:              '100%',
+        allow_symbol_change: false,
+        hide_side_toolbar:   false,
+        enable_publishing:   false,
+        save_image:          false,
+        withdateranges:      true,
+        hide_volume:         false,
+        studies:             [],
+      });
+    } else {
+      // Fallback: simple Yahoo Finance chart iframe
+      body.innerHTML = `<iframe
+        src="https://finance.yahoo.com/chart/${encodeURIComponent(item.ticker)}#eyJpbnRlcnZhbCI6ImRheSIsInBlcmlvZGljaXR5IjoxLCJ0aW1lVW5pdCI6bnVsbH0="
+        style="width:100%;height:100%;border:none;"
+      ></iframe>`;
+    }
+  }
+
+  function closeChart() {
+    document.getElementById('chart-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      document.getElementById('chart-body').innerHTML = '';
+      tvWidgetInstance = null;
+    }, 350);
+  }
+
+  // Event delegation — click anywhere on a card to open its chart
+  document.getElementById('grid').addEventListener('click', e => {
+    // Ignore clicks on links or buttons inside the card (e.g. ⚙ Add API key)
+    if (e.target.closest('a, button')) return;
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const ticker = card.dataset.ticker;
+    const item = ALL_ITEMS.find(h => h.ticker === ticker);
+    if (item) openChart(item);
+  });
+
+  // Close on backdrop click or Escape key
+  document.getElementById('chart-backdrop').addEventListener('click', closeChart);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeChart();
+  });
+  // ────────────────────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>

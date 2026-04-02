@@ -80,6 +80,25 @@
 
     .header-right { display: flex; align-items: center; gap: 10px; }
 
+    #briefing-btn {
+      background: rgba(56,189,248,0.08);
+      border: 1px solid rgba(56,189,248,0.25);
+      color: #38bdf8;
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    #briefing-btn:hover { background: rgba(56,189,248,0.15); box-shadow: 0 0 20px rgba(56,189,248,0.2); }
+
     #last-updated { font-size: 11px; color: var(--muted); }
 
     #refresh-btn {
@@ -357,6 +376,9 @@
     </div>
   </div>
   <div class="header-right">
+    <button id="briefing-btn" onclick="window.parent !== window ? window.parent.switchTab('briefing') : window.location.href='briefing.html'">
+      📰 AI Briefing
+    </button>
     <div id="market-status" class="market-status status-closed">
       <span class="dot"></span>
       <span id="status-text">–</span>

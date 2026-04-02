@@ -329,15 +329,18 @@
   <div class="modal-box">
     <h3>Live After-Hours Data</h3>
     <p>
-      Proxy-based sources cache Yahoo Finance responses and can show stale prices.
-      A free <strong>Finnhub</strong> API key bypasses all proxies and delivers
-      real-time pre/post-market data directly.<br><br>
-      Get your free token (no credit card) at
+      <strong>Alpha Vantage</strong> (recommended) — CORS-native, delivers real-time
+      pre/post-market data without any proxy. Get a free key at
+      <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener">alphavantage.co</a>
+      (no credit card).<br><br>
+      <strong>Finnhub</strong> — also CORS-native, free at
       <a href="https://finnhub.io" target="_blank" rel="noopener">finnhub.io</a>
       → Dashboard → API key.
     </p>
+    <input class="modal-input" id="av-key-input" type="text"
+           placeholder="Alpha Vantage API key" autocomplete="off" spellcheck="false"/>
     <input class="modal-input" id="token-input" type="text"
-           placeholder="Paste Finnhub API token here" autocomplete="off" spellcheck="false"/>
+           placeholder="Finnhub API token (optional)" autocomplete="off" spellcheck="false" style="margin-top:8px"/>
     <div class="modal-actions">
       <button class="modal-save" onclick="saveToken()">Save &amp; Refresh</button>
       <button class="modal-cancel" onclick="closeSettings()">Cancel</button>
@@ -592,7 +595,7 @@
           <div class="ext-left">
             <div class="ah-label">${label}</div>
             <span class="ext-no-data">${noDataMsg}</span>
-            ${!FINNHUB_TOKEN && !h.kr ? `<div class="api-hint"><a href="#" onclick="openSettings();return false;">⚙ Add API key</a> for live data</div>` : ''}
+            ${!AV_KEY && !FINNHUB_TOKEN && !h.kr ? `<div class="api-hint"><a href="#" onclick="openSettings();return false;">⚙ Add API key</a> for live data</div>` : ''}
           </div>
         </div>`;
       const d = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
@@ -738,8 +741,10 @@
   // Click ⚙ in the header to set your Finnhub token (free at finnhub.io).
   let FINNHUB_TOKEN   = localStorage.getItem('finnhub_token')   || '';
   let STOCKDATA_TOKEN = localStorage.getItem('stockdata_token') || '';
+  let AV_KEY          = localStorage.getItem('av_key')          || '';
 
   function openSettings() {
+    document.getElementById('av-key-input').value = AV_KEY;
     document.getElementById('token-input').value = FINNHUB_TOKEN;
     document.getElementById('settings-modal').classList.add('open');
   }
@@ -747,9 +752,10 @@
     document.getElementById('settings-modal').classList.remove('open');
   }
   function saveToken() {
-    const t = document.getElementById('token-input').value.trim();
-    FINNHUB_TOKEN = t;
-    localStorage.setItem('finnhub_token', t);
+    AV_KEY        = document.getElementById('av-key-input').value.trim();
+    FINNHUB_TOKEN = document.getElementById('token-input').value.trim();
+    localStorage.setItem('av_key',        AV_KEY);
+    localStorage.setItem('finnhub_token', FINNHUB_TOKEN);
     closeSettings();
     loadData();
   }
@@ -813,6 +819,89 @@
       }
       return map;
     } catch(e) { clearTimeout(timer); return {}; }
+  }
+
+  // Alpha Vantage — CORS-native, no proxy needed.
+  // GLOBAL_QUOTE gives regular close + today's change for each US ticker.
+  async function fetchViaAlphaVantage() {
+    if (!AV_KEY) return null;
+    const usItems = [...ETFS, ...HOLDINGS];
+    const fetches = usItems.map(async h => {
+      try {
+        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(h.ticker)}&apikey=${AV_KEY}`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 10000);
+        const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data?.Note || data?.Information) { console.warn('AV rate limit hit for', h.ticker); return null; }
+        const q = data?.['Global Quote'];
+        if (!q?.['05. price']) return null;
+        const price    = parseFloat(q['05. price']);
+        const change   = parseFloat(q['09. change']);
+        const changePct = parseFloat((q['10. change percent'] || '0').replace('%', ''));
+        if (!price) return null;
+        return {
+          symbol: h.ticker,
+          regularMarketPrice: price,
+          regularMarketChange: change || 0,
+          regularMarketChangePercent: changePct || 0,
+          postMarketPrice: null, postMarketChange: null, postMarketChangePercent: null,
+          preMarketPrice:  null, preMarketChange:  null, preMarketChangePercent:  null,
+          fiftyTwoWeekHigh: parseFloat(q['03. high']) || null,
+          fiftyTwoWeekLow:  parseFloat(q['04. low'])  || null,
+        };
+      } catch(e) { return null; }
+    });
+    const results = (await Promise.all(fetches)).filter(Boolean);
+    if (results.length < usItems.length * 0.5) throw new Error(`Alpha Vantage: only ${results.length}/${usItems.length} quotes returned`);
+    return results;
+  }
+
+  // Alpha Vantage extended hours — TIME_SERIES_INTRADAY with extended_hours=true.
+  // Extracts the latest after-hours or pre-market candle close for each ticker.
+  async function fetchExtendedHoursViaAlphaVantage() {
+    if (!AV_KEY) return {};
+    const usItems = [...ETFS, ...HOLDINGS];
+    const map = {};
+    await Promise.all(usItems.map(async h => {
+      try {
+        const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${encodeURIComponent(h.ticker)}&interval=5min&extended_hours=true&outputsize=compact&apikey=${AV_KEY}`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 10000);
+        const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data?.Note || data?.Information) return;
+        const ts = data?.['Time Series (5min)'];
+        if (!ts) return;
+        // Entries are returned in ET — find last regular-session close, then last extended candle
+        const entries = Object.entries(ts).sort((a, b) => b[0].localeCompare(a[0]));
+        let regClose = null, ahPrice = null, prePrice = null;
+        for (const [time, ohlcv] of entries) {
+          const [, hhmm] = time.split(' ');
+          const [hh, mm] = hhmm.split(':').map(Number);
+          const mins = hh * 60 + mm;
+          const close = parseFloat(ohlcv['4. close']);
+          if (mins >= 16 * 60 && ahPrice == null)                        ahPrice  = close; // after-hours
+          else if (mins >= 9 * 60 + 30 && mins < 16 * 60 && regClose == null) regClose = close; // regular session
+          else if (mins < 9 * 60 + 30 && prePrice == null)               prePrice = close; // pre-market
+          if (regClose != null && ahPrice != null && prePrice != null) break;
+        }
+        if (!regClose) return;
+        const ahChg  = ahPrice  != null ? ahPrice  - regClose : null;
+        const preChg = prePrice != null ? prePrice - regClose : null;
+        map[h.ticker] = {
+          postMarketPrice:         ahPrice,
+          postMarketChange:        ahChg,
+          postMarketChangePercent: ahChg  != null ? (ahChg  / regClose) * 100 : null,
+          preMarketPrice:          prePrice,
+          preMarketChange:         preChg,
+          preMarketChangePercent:  preChg != null ? (preChg / regClose) * 100 : null,
+        };
+      } catch(e) {}
+    }));
+    return map;
   }
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -995,17 +1084,19 @@
     try {
       // Fire all fetches in parallel
       const peakDatesPromise   = fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
+      const avEhPromise        = fetchExtendedHoursViaAlphaVantage().catch(e => { console.warn('AV EH:', e.message); return {}; });
       const finnhubPromise     = fetchExtendedHoursViaFinnhub().catch(() => ({}));
       const stockdataPromise   = fetchExtendedHoursViaStockData().catch(() => ({}));
       const nasdaqPromise      = fetchExtendedHoursViaNasdaq().catch(e => { console.warn('NASDAQ:', e.message); return {}; });
       const yahooEhPromise     = fetchExtendedHoursViaYahoo().catch(e => { console.warn('YahooEH:', e.message); return {}; });
-      // Start both in parallel - chart API (v8) is primary; no crumb/session cookies needed.
-      // Crumb-based v7 fails via proxy because Yahoo requires session cookies that don't transfer.
+      // Regular-price priority: Alpha Vantage (CORS-native, key required) → Yahoo chart → Yahoo crumb → WebSocket
+      const avPromise    = fetchViaAlphaVantage().catch(e => { console.warn('AV:', e.message); return null; });
       const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart API:', e.message); return null; });
       const crumbPromise = fetchViaCrumb(tickers).catch(e => { console.warn('Crumb:', e.message); return null; });
 
-      // Try chart first, fall back to crumb-based v7, then WebSocket regular data
-      let results = await chartPromise;
+      // Try AV first (CORS-native), then chart, crumb, then WebSocket fallback
+      let results = await avPromise;
+      if (!results) results = await chartPromise;
       if (!results) results = await crumbPromise;
       if (!results) {
         // Wait up to 8s for WebSocket to deliver regular close prices (no CORS needed)
@@ -1017,20 +1108,19 @@
         const wsData = usItems.map(h => liveRegular[h.ticker]).filter(Boolean);
         if (wsData.length >= threshold) results = wsData;
       }
-      if (!results) throw new Error('All price fetch strategies failed — CORS proxies blocked and WebSocket unavailable. Try again shortly.');
+      if (!results) throw new Error('All price fetch strategies failed — add an Alpha Vantage key via ⚙ for reliable data.');
 
-      // Extended-hours priority: Finnhub > StockData > WebSocket > NASDAQ > Yahoo quoteSummary > chart OHLCV
-      const [finnhubEH, stockdataEH, nasdaqEH, yahooEH, chartResults] = await Promise.all([finnhubPromise, stockdataPromise, nasdaqPromise, yahooEhPromise, chartPromise]);
+      // Extended-hours priority: AV > Finnhub > StockData > WebSocket > NASDAQ > Yahoo quoteSummary > chart OHLCV
+      const [avEH, finnhubEH, stockdataEH, nasdaqEH, yahooEH, chartResults] = await Promise.all([avEhPromise, finnhubPromise, stockdataPromise, nasdaqPromise, yahooEhPromise, chartPromise]);
       const chartMap = {};
       if (chartResults && results !== chartResults) {
         chartResults.forEach(q => { chartMap[q.symbol] = q; });
       }
       results.forEach(q => {
         const live    = liveQuotes[q.symbol];
-        // Priority: Finnhub (CORS-native) > StockData (CORS-native) > WebSocket (live)
-        //          > Chart API (Yahoo-native, includePrePost=true, cache-busted)
-        //          > NASDAQ (proxied, updates slowly) > Yahoo EH (proxied)
-        const sources = [finnhubEH[q.symbol], stockdataEH[q.symbol], live, chartMap[q.symbol], nasdaqEH[q.symbol], yahooEH[q.symbol]];
+        // Priority: AV (CORS-native) > Finnhub > StockData > WebSocket (live)
+        //          > Chart API > NASDAQ > Yahoo EH
+        const sources = [avEH[q.symbol], finnhubEH[q.symbol], stockdataEH[q.symbol], live, chartMap[q.symbol], nasdaqEH[q.symbol], yahooEH[q.symbol]];
         const postSrc = sources.find(s => s?.postMarketPrice != null);
         const preSrc  = sources.find(s => s?.preMarketPrice  != null);
         if (postSrc) {

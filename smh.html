@@ -1108,7 +1108,7 @@
         const wsData = usItems.map(h => liveRegular[h.ticker]).filter(Boolean);
         if (wsData.length >= threshold) results = wsData;
       }
-      if (!results) throw new Error('All price fetch strategies failed — add an Alpha Vantage key via ⚙ for reliable data.');
+      if (!results) throw new Error('Could not load prices — CORS proxies blocked and live stream not yet ready. Try refreshing in a moment, or add an Alpha Vantage key via ⚙.');
 
       // Extended-hours priority: AV > Finnhub > StockData > WebSocket > NASDAQ > Yahoo quoteSummary > chart OHLCV
       const [avEH, finnhubEH, stockdataEH, nasdaqEH, yahooEH, chartResults] = await Promise.all([avEhPromise, finnhubPromise, stockdataPromise, nasdaqPromise, yahooEhPromise, chartPromise]);
@@ -1259,15 +1259,24 @@
       streamerWs.onmessage = e => {
         const q = decodeYahooProto(e.data);
         if (!q) return;
-        // Always capture regular market close data (fields 50/52/57) for use as HTTP fallback
-        if (q.regularMarketPrice) {
+        // Capture regular close: prefer field 50 (regularMarketPrice), fall back to field 14
+        // (previousClose) which is always sent and equals the regular session close price.
+        const regPrice = q.regularMarketPrice || q.previousClose;
+        if (regPrice) {
+          const mh = q.marketHours ?? 1;
+          const ahChg = (mh === 2 || mh === 3) && q.price ? q.price - regPrice : null;
+          const preChg = mh === 0 && q.price ? q.price - regPrice : null;
           liveRegular[q.id] = {
             symbol: q.id,
-            regularMarketPrice:         q.regularMarketPrice,
+            regularMarketPrice:         regPrice,
             regularMarketChange:        q.regularMarketChange        ?? null,
             regularMarketChangePercent: q.regularMarketChangePercent ?? null,
-            postMarketPrice: null, postMarketChange: null, postMarketChangePercent: null,
-            preMarketPrice:  null, preMarketChange:  null, preMarketChangePercent:  null,
+            postMarketPrice:         (mh === 2 || mh === 3) ? q.price : null,
+            postMarketChange:        ahChg,
+            postMarketChangePercent: ahChg  != null ? (ahChg  / regPrice) * 100 : null,
+            preMarketPrice:          mh === 0 ? q.price : null,
+            preMarketChange:         preChg,
+            preMarketChangePercent:  preChg != null ? (preChg / regPrice) * 100 : null,
             fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null,
           };
         }

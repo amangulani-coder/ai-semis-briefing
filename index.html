@@ -98,17 +98,17 @@
 </head>
 <body>
 
-<div class="tab-bar">
+<div class="tab-bar" role="tablist" aria-label="App tabs">
   <span class="tab-logo">🤖</span>
 
-  <button class="tab-btn active" id="tab-briefing" onclick="switchTab('briefing')">
+  <button class="tab-btn active" id="tab-briefing" role="tab" aria-selected="true" aria-controls="frame-briefing" onclick="switchTab('briefing')">
     <span class="tab-icon">📰</span>
     AI Briefing
   </button>
 
   <div class="tab-divider"></div>
 
-  <button class="tab-btn" id="tab-smh" onclick="switchTab('smh')">
+  <button class="tab-btn" id="tab-smh" role="tab" aria-selected="false" aria-controls="frame-smh" onclick="switchTab('smh')">
     <span class="tab-icon">📈</span>
     SMH After-Hours
   </button>
@@ -126,8 +126,10 @@
     if (tab === current) return;
     current = tab;
 
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+    const activeBtn = document.getElementById('tab-' + tab);
+    activeBtn.classList.add('active');
+    activeBtn.setAttribute('aria-selected', 'true');
 
     document.querySelectorAll('iframe').forEach(f => {
       f.classList.remove('visible');

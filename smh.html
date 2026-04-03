@@ -488,10 +488,6 @@
 
     @media (max-width: 640px) {
       .chart-sheet { height: 80vh; }
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
       header { padding: 0 16px; }
       .page-body { padding: 24px 16px; }
       .cards-grid { grid-template-columns: 1fr; }
@@ -504,9 +500,9 @@
 <body>
 
 <!-- Settings modal -->
-<div class="modal-overlay" id="settings-modal">
+<div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
   <div class="modal-box">
-    <h3>Live After-Hours Data</h3>
+    <h3 id="settings-title">Live After-Hours Data</h3>
     <p>
       <strong>Alpha Vantage</strong> (recommended) — CORS-native, delivers real-time
       pre/post-market data without any proxy. Get a free key at
@@ -528,7 +524,7 @@
 </div>
 
 <!-- Chart bottom sheet -->
-<div class="chart-overlay" id="chart-overlay">
+<div class="chart-overlay" id="chart-overlay" role="dialog" aria-modal="true" aria-labelledby="chart-ticker-label">
   <div class="chart-backdrop" id="chart-backdrop"></div>
   <div class="chart-sheet">
     <div class="chart-drag-handle"></div>
@@ -676,6 +672,21 @@
     txt.textContent = label;
   }
 
+  function buildRankBadge(h, i) {
+    if (h.etf) return `<span class="rank etf-badge">ETF</span>`;
+    if (h.kr)  return `<span class="rank" style="background:rgba(0,113,227,0.08);color:#0071e3;border-color:rgba(0,113,227,0.2)">KRX</span>`;
+    return `<span class="rank">#${i - ETFS.length + 1}</span>`;
+  }
+
+  function buildWeightSection(h) {
+    if (h.etf || h.kr || h.weight == null) return '';
+    return `
+      <div class="weight-bar">
+        <div class="weight-text">ETF Weight: ${h.weight}%</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
+      </div>`;
+  }
+
   function buildSkeletons() {
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
@@ -687,21 +698,11 @@
       if (i === ETFS.length + HOLDINGS.length) {
         grid.innerHTML += `<div class="section-header" id="section-kr">Korean Semiconductors (KRX · KRW)</div>`;
       }
-      const rankBadge = h.etf
-        ? `<span class="rank etf-badge">ETF</span>`
-        : h.kr
-          ? `<span class="rank" style="background:rgba(0,113,227,0.08);color:#0071e3;border-color:rgba(0,113,227,0.2)">KRX</span>`
-          : `<span class="rank">#${i - ETFS.length + 1}</span>`;
-      const weightSection = (h.etf || h.kr || h.weight == null) ? '' : `
-          <div class="weight-bar">
-            <div class="weight-text">ETF Weight: ${h.weight}%</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
-          </div>`;
       grid.innerHTML += `
-        <div class="card neutral${h.etf ? ' etf-card' : ''}" id="card-${h.ticker}" data-ticker="${h.ticker}">
+        <div class="card neutral${h.etf ? ' etf-card' : ''}" id="card-${h.ticker}" data-ticker="${h.ticker}" tabindex="0" role="button" aria-label="Open chart for ${h.ticker}">
           <div class="card-header">
             <span class="ticker">${h.ticker}</span>
-            ${rankBadge}
+            ${buildRankBadge(h, i)}
           </div>
           <div class="company-name">${h.name}</div>
           <div class="price-section">
@@ -716,7 +717,7 @@
             </div>
             <div class="skeleton" style="width:70px;height:26px"></div>
           </div>
-          ${weightSection}
+          ${buildWeightSection(h)}
         </div>`;
     });
   }
@@ -742,16 +743,8 @@
     const regSign      = regChange > 0 ? '+' : '';
     const regArrow     = regChange > 0 ? '▲' : regChange < 0 ? '▼' : '–';
 
-    const rankBadge = h.etf
-      ? `<span class="rank etf-badge">ETF</span>`
-      : h.kr
-        ? `<span class="rank" style="background:rgba(0,113,227,0.08);color:#0071e3;border-color:rgba(0,113,227,0.2)">KRX</span>`
-        : `<span class="rank">#${i - ETFS.length + 1}</span>`;
-    const weightSection = (h.etf || h.kr || h.weight == null) ? '' : `
-      <div class="weight-bar">
-        <div class="weight-text">ETF Weight: ${h.weight}%</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
-      </div>`;
+    const rankBadge = buildRankBadge(h, i);
+    const weightSection = buildWeightSection(h);
 
     const fmtP = h.kr
       ? n => (n == null || isNaN(n) ? '–' : '₩' + Math.round(n).toLocaleString('en-US'))
@@ -789,6 +782,9 @@
     const cardDir = ahPrice != null ? ahDir : prePrice != null ? preDir : regDir;
     card.className = `card ${cardDir}${h.etf ? ' etf-card' : ''}${h.kr ? ' etf-card' : ''}`;
     card.dataset.ticker = h.ticker;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Open chart for ${h.ticker}`);
 
     // Build a single extended-hours row for the current session
     const session = getMarketStatus();
@@ -948,9 +944,8 @@
     return results;
   }
 
-  let FINNHUB_TOKEN   = localStorage.getItem('finnhub_token')   || '';
-  let STOCKDATA_TOKEN = localStorage.getItem('stockdata_token') || '';
-  let AV_KEY          = localStorage.getItem('av_key')          || '';
+  let FINNHUB_TOKEN = localStorage.getItem('finnhub_token') || '';
+  let AV_KEY        = localStorage.getItem('av_key')        || '';
 
   function openSettings() {
     document.getElementById('av-key-input').value = AV_KEY;
@@ -1141,8 +1136,8 @@
     return valid;
   }
 
-  // Map of last-rendered quotes — kept live by both loadData and the WS patcher
   const loadedQuoteMap = {};
+  let cachedPeakDates = null;
 
   async function loadData() {
     const btn       = document.getElementById('refresh-btn');
@@ -1166,7 +1161,9 @@
       const avPromise    = fetchViaAlphaVantage().catch(e => { console.warn('AV:', e.message); return null; });
       const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart:', e.message); return null; });
       const crumbPromise = fetchViaCrumb(tickers).catch(e => { console.warn('Crumb:', e.message); return null; });
-      const peakPromise  = fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
+      const peakPromise  = cachedPeakDates
+        ? Promise.resolve(cachedPeakDates)
+        : fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
 
       let results = await avPromise;
       if (!results) results = await chartPromise;
@@ -1215,7 +1212,7 @@
 
       // ── Step 3: Merge 52-week peak dates ──────────────────────────────────
       let peakDates = {};
-      try { peakDates = await peakPromise; } catch(e) {}
+      try { peakDates = await peakPromise; cachedPeakDates = peakDates; } catch(e) {}
       results.forEach(q => {
         const pd = peakDates[q.symbol];
         if (pd) {
@@ -1368,7 +1365,6 @@
 
         const mh = q.marketHours ?? 1;
 
-        // ── Capture regular close price (field 14 = previousClose, always sent) ──
         const regPrice = q.regularMarketPrice || q.previousClose;
         if (regPrice) {
           const ahChg  = (mh === 2 || mh === 3) && q.price ? q.price - regPrice : null;
@@ -1388,7 +1384,6 @@
           };
         }
 
-        // ── Capture extended-hours price ────────────────────────────────────
         const isPost = mh === 2 || mh === 3;
         const isPre  = mh === 0;
         if (isPost) {
@@ -1405,8 +1400,6 @@
           };
         }
 
-        // ── Real-time card patch ─────────────────────────────────────────────
-        // If this ticker's card is already rendered, update its EH section live.
         const session = getMarketStatus();
         const relevant = (isPost && (session === 'after' || session === 'closed')) ||
                          (isPre  &&  session === 'pre');
@@ -1438,15 +1431,28 @@
 
   // Start WS first — it runs in parallel so EH data is ready by the time cards render
   startStreamer();
-  // Kick off optional user-key EH sources (AV / Finnhub) asynchronously
   loadOptionalEH();
   loadData();
-  // Refresh regular close prices every 60s; EH updates arrive continuously via WS
-  setInterval(loadData, 60000);
+  let dataInterval = setInterval(loadData, 60000);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(dataInterval);
+      if (streamerWs) { streamerWs.close(); streamerWs = null; }
+    } else {
+      startStreamer();
+      loadData();
+      dataInterval = setInterval(loadData, 60000);
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (streamerWs) streamerWs.close();
+  });
 
   // ── Interactive chart ────────────────────────────────────────────────────────
   const TV_SYMBOLS = {
-    'SMH':       'AMEX:SMH',
+    'SMH':       'NASDAQ:SMH',
     'QQQ':       'NASDAQ:QQQ',
     'NVDA':      'NASDAQ:NVDA',
     'AVGO':      'NASDAQ:AVGO',
@@ -1491,8 +1497,11 @@
     document.getElementById('chart-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 
-    // Build TradingView widget
     const body = document.getElementById('chart-body');
+    if (tvWidgetInstance) {
+      try { tvWidgetInstance.remove(); } catch(e) {}
+      tvWidgetInstance = null;
+    }
     body.innerHTML = '';
     const containerId = 'tv_widget_' + Date.now();
     const widgetDiv = document.createElement('div');
@@ -1540,15 +1549,17 @@
     }, 350);
   }
 
-  // Event delegation — click anywhere on a card to open its chart
-  document.getElementById('grid').addEventListener('click', e => {
-    // Ignore clicks on links or buttons inside the card (e.g. ⚙ Add API key)
+  function handleCardActivate(e) {
     if (e.target.closest('a, button')) return;
     const card = e.target.closest('.card');
     if (!card) return;
-    const ticker = card.dataset.ticker;
-    const item = ALL_ITEMS.find(h => h.ticker === ticker);
+    const item = ALL_ITEMS.find(h => h.ticker === card.dataset.ticker);
     if (item) openChart(item);
+  }
+
+  document.getElementById('grid').addEventListener('click', handleCardActivate);
+  document.getElementById('grid').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardActivate(e); }
   });
 
   // Close on backdrop click or Escape key

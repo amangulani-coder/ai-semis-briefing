@@ -4,634 +4,518 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMH After-Hours Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://s3.tradingview.com/tv.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0f14;
-      --surface: #161b26;
-      --surface2: #1e2535;
-      --border: #2a3147;
-      --text: #e2e8f0;
-      --muted: #8892a4;
-      --green: #22c55e;
-      --green-dim: #16a34a22;
-      --red: #ef4444;
-      --red-dim: #dc262622;
-      --yellow: #f59e0b;
-      --accent: #6366f1;
+      --bg: #fff;
+      --bg-alt: #f5f5f7;
+      --surface: #fff;
+      --border: rgba(0,0,0,0.08);
+      --text: #1d1d1f;
+      --text-2: #6e6e73;
+      --text-3: #aeaeb2;
+      --accent: #0071e3;
+      --accent-dim: rgba(0,113,227,0.08);
+      --green: #1a7a44;
+      --green-dim: rgba(26,122,68,0.09);
+      --red: #c0392b;
+      --red-dim: rgba(192,57,43,0.09);
+      --shadow: 0 2px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+      --shadow-hover: 0 8px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+      --radius: 16px;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
-      padding: 24px 16px;
+      padding: 0 0 64px;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* ── HEADER ── */
     header {
-      max-width: 900px;
-      margin: 0 auto 28px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .logo { display: flex; align-items: center; gap: 10px; }
 
     .logo-badge {
       background: var(--accent);
       color: #fff;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 12px;
       padding: 4px 10px;
-      border-radius: 6px;
+      border-radius: 7px;
       letter-spacing: 0.5px;
     }
 
-    h1 {
-      font-size: 20px;
-      font-weight: 600;
+    .logo-text h1 {
+      font-size: 15px;
+      font-weight: 700;
       color: var(--text);
+      letter-spacing: -0.2px;
+      line-height: 1.2;
     }
 
-    .subtitle {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
+    .logo-text .subtitle {
+      font-size: 11px;
+      color: var(--text-2);
+      font-weight: 400;
     }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-    #last-updated {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    #refresh-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 7px 14px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    #refresh-btn:hover { background: var(--border); }
-    #refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: none;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
+    #last-updated { font-size: 11px; color: var(--text-2); white-space: nowrap; }
 
     .market-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
+      border-radius: 100px;
+      font-size: 11px;
       font-weight: 600;
-      border: 1px solid var(--border);
-    }
-
-    .market-status .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-    }
-
-    .status-open .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
-    .status-after .dot { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-    .status-pre .dot { background: #818cf8; box-shadow: 0 0 6px #818cf8; }
-    .status-closed .dot { background: var(--muted); }
-
-    .cards-grid {
-      max-width: 900px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
-      transition: border-color 0.2s, transform 0.1s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    .card.up { border-left: 3px solid var(--green); }
-    .card.down { border-left: 3px solid var(--red); }
-    .card.neutral { border-left: 3px solid var(--muted); }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .ticker {
-      font-size: 20px;
-      font-weight: 700;
       letter-spacing: 0.3px;
-    }
-
-    .rank {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 500;
-      background: var(--surface2);
-      padding: 2px 7px;
-      border-radius: 4px;
-    }
-
-    .company-name {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    }
+    .market-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+    .status-open  .dot  { background: var(--green);  animation: pulse-dot 2s ease-in-out infinite; }
+    .status-after .dot  { background: #f59e0b;       animation: pulse-dot 2s ease-in-out infinite; }
+    .status-pre   .dot  { background: var(--accent);  animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .header-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 12px; font-weight: 500; font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .header-btn:hover { background: var(--accent-dim); border-color: rgba(0,113,227,0.2); color: var(--accent); }
+    .header-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .spinner {
+      width: 12px; height: 12px;
+      border: 2px solid rgba(0,113,227,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── PAGE BODY ── */
+    .page-body {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 32px;
     }
 
-    .price-section {
-      margin-bottom: 10px;
-    }
-
-    .price-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .price-label {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 3px;
-    }
-
-    .regular-price {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 12px 0;
-    }
-
-    .ext-hours {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .ext-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .ext-left {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      min-width: 0;
-    }
-
-    .ah-label {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .ah-price {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .ah-sub {
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .ext-no-data {
-      font-size: 12px;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    .change-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 3px 8px;
-      border-radius: 5px;
+    /* ── ERROR BANNER ── */
+    .error-banner {
+      background: rgba(192,57,43,0.07);
+      border: 1px solid rgba(192,57,43,0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
       font-size: 13px;
-      font-weight: 600;
+      color: var(--red);
+      margin-bottom: 24px;
+      display: none;
     }
 
-    .change-badge.up { background: var(--green-dim); color: var(--green); }
-    .change-badge.down { background: var(--red-dim); color: var(--red); }
-    .change-badge.neutral { background: var(--surface2); color: var(--muted); }
+    /* ── SUMMARY BAR ── */
+    .summary-bar {
+      display: flex;
+      gap: 0;
+      background: var(--bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 32px;
+      display: none;
+    }
 
+    .summary-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 20px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .summary-item:last-child { border-right: none; }
+    .summary-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; }
+    .summary-value { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+
+    /* ── SECTION HEADER ── */
     .section-header {
       grid-column: 1 / -1;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
-      padding: 4px 2px;
+      letter-spacing: 0.08em;
+      color: var(--text-2);
+      padding: 6px 0;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 2px;
-    }
-
-    .etf-badge {
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .etf-card {
-      background: #1a1f32;
-      border-color: #3a4060;
-    }
-
-    .etf-card:hover { border-color: var(--accent); }
-
-    .weight-bar {
-      margin-top: 12px;
-    }
-
-    .weight-text {
-      font-size: 11px;
-      color: var(--muted);
       margin-bottom: 4px;
     }
 
-    .bar-track {
-      height: 3px;
-      background: var(--surface2);
-      border-radius: 2px;
-      overflow: hidden;
+    /* ── CARDS GRID ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
     }
 
-    .bar-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      transition: width 0.6s ease;
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
+      border-top: 2px solid transparent;
+      position: relative;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+    .card.up   { border-top-color: var(--green); }
+    .card.down { border-top-color: var(--red); }
+    .card.neutral { border-top-color: var(--border); }
+    .card.etf-card { background: #fafbff; border-top-color: var(--accent); }
+
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 3px; }
+
+    .ticker { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+
+    .rank {
+      font-size: 10px; color: var(--text-2); font-weight: 600;
+      background: var(--bg-alt);
+      padding: 3px 8px; border-radius: 6px;
+      letter-spacing: 0.3px;
+      border: 1px solid var(--border);
+    }
+    .etf-badge {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(0,113,227,0.2);
+      font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.5px;
     }
 
+    .company-name { font-size: 12px; color: var(--text-2); margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .price-section { margin-bottom: 10px; }
+    .price-label { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; font-weight: 500; }
+    .price-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .regular-price { font-size: 22px; font-weight: 700; letter-spacing: -0.8px; color: var(--text); }
+    .reg-sub { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+    .ext-hours { display: flex; flex-direction: column; gap: 10px; }
+    .ext-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .ext-left { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .ah-label { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; margin-bottom: 2px; }
+    .ah-price { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+    .ah-sub { font-size: 11px; color: var(--text-2); }
+    .ext-no-data { font-size: 12px; color: var(--text-3); font-style: italic; }
+
+    .change-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 8px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.1px; white-space: nowrap; flex-shrink: 0;
+    }
+    .change-badge.up      { background: var(--green-dim); color: var(--green); }
+    .change-badge.down    { background: var(--red-dim);   color: var(--red);   }
+    .change-badge.neutral { background: var(--bg-alt);    color: var(--text-2); }
+
+    /* ── WEIGHT BAR ── */
+    .weight-bar { margin-top: 14px; }
+    .weight-text { font-size: 11px; color: var(--text-2); margin-bottom: 5px; }
+    .bar-track { height: 3px; background: var(--bg-alt); border-radius: 3px; overflow: hidden; }
+    .bar-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), #34aadc); border-radius: 3px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+
+    /* ── 52-WEEK RANGE ── */
+    .range52 { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .range52-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .range52-title  { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; }
+    .range52-badge  { font-size: 11px; font-weight: 700; color: var(--red); }
+    .range52-badge.at-high { color: var(--green); }
+    .range52-track  { position: relative; height: 3px; background: var(--bg-alt); border-radius: 3px; margin-bottom: 8px; }
+    .range52-fill   { position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, rgba(0,113,227,0.3), var(--accent)); border-radius: 3px; }
+    .range52-dot    { position: absolute; top: 50%; width: 12px; height: 12px; background: var(--accent); border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 0 2px rgba(0,113,227,0.2); }
+    .range52-ends   { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-2); }
+    .range52-peak-date { font-size: 10px; color: var(--text-3); margin-top: 4px; text-align: right; }
+
+    /* ── SKELETON ── */
     .skeleton {
-      background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+      background: linear-gradient(90deg, var(--bg-alt) 25%, rgba(0,0,0,0.04) 50%, var(--bg-alt) 75%);
       background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 4px;
-      height: 16px;
+      animation: shimmer 1.6s infinite;
+      border-radius: 6px;
     }
-
     @keyframes shimmer { to { background-position: -200% 0; } }
 
-    .error-banner {
-      max-width: 900px;
-      margin: 0 auto 16px;
-      background: var(--red-dim);
-      border: 1px solid var(--red);
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 13px;
-      color: var(--red);
-      display: none;
+    /* ── API HINT ── */
+    .api-hint { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+    .api-hint a { color: var(--accent); text-decoration: none; }
+
+    /* ── LIVE BADGE ── */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+      background: var(--green-dim); color: var(--green);
+      border: 1px solid rgba(26,122,68,0.2);
+      border-radius: 4px; padding: 1px 6px;
+      text-transform: uppercase; vertical-align: middle; margin-left: 4px;
+    }
+    .live-badge::before {
+      content: '';
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 1.5s ease-in-out infinite;
     }
 
-    .summary-bar {
-      max-width: 900px;
-      margin: 0 auto 20px;
-      background: var(--surface);
+    /* ── WS STATUS ── */
+    .ws-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; color: var(--text-2);
+      padding: 4px 10px; border-radius: 100px;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 18px;
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .summary-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .summary-label {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .summary-value {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .news-section {
-      max-width: 900px;
-      margin: 0 auto 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 18px;
-    }
-
-    .news-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .news-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-    }
-
-    .news-source {
-      font-size: 10px;
-      color: var(--muted);
-      opacity: 0.7;
-    }
-
-    .news-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .news-item {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-
-    .news-bullet {
-      color: var(--accent);
-      font-size: 10px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .news-link {
-      font-size: 13px;
-      color: var(--text);
-      text-decoration: none;
-      line-height: 1.4;
-      flex: 1;
-    }
-
-    .news-link:hover { color: var(--accent); }
-
-    .news-age {
-      font-size: 10px;
-      color: var(--muted);
+      background: var(--bg-alt);
       white-space: nowrap;
+    }
+    .ws-status .ws-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-3);
+      transition: background 0.3s;
+    }
+    .ws-status.connected .ws-dot { background: var(--green); animation: pulse-dot 2s ease-in-out infinite; }
+    .ws-status.connecting .ws-dot { background: #f59e0b; animation: pulse-dot 1s ease-in-out infinite; }
+
+    /* ── EXT HOURS WAITING ── */
+    .ext-waiting {
+      font-size: 12px; color: var(--text-3); font-style: italic;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ext-waiting-spinner {
+      width: 10px; height: 10px;
+      border: 1.5px solid rgba(0,0,0,0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
       flex-shrink: 0;
     }
 
-    .news-skeleton {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .range52 {
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-
-    .range52-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .range52-title {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .range52-badge {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--red);
-    }
-
-    .range52-badge.at-high { color: var(--green); }
-
-    .range52-track {
-      position: relative;
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
-      margin-bottom: 6px;
-    }
-
-    .range52-fill {
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-    }
-
-    .range52-dot {
-      position: absolute;
-      top: 50%;
-      width: 13px;
-      height: 13px;
-      background: #3b82f6;
-      border: 2px solid var(--surface);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 1px #3b82f6;
-    }
-
-    .range52-ends {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .range52-peak-date {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 4px;
-      text-align: right;
-    }
-
+    /* ── SETTINGS BUTTON ── */
     .settings-btn {
-      background: var(--surface);
+      background: var(--bg-alt);
       border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 6px;
-      padding: 5px 9px;
-      font-size: 15px;
-      cursor: pointer;
-      line-height: 1;
+      color: var(--text-2);
+      border-radius: 8px; padding: 6px 10px;
+      font-size: 14px; cursor: pointer; line-height: 1;
+      transition: all 0.15s;
     }
-    .settings-btn:hover { color: var(--text); border-color: #555; }
+    .settings-btn:hover { color: var(--accent); border-color: rgba(0,113,227,0.3); background: var(--accent-dim); }
 
+    /* ── MODAL ── */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.7);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      z-index: 999; align-items: center; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
-      background: #1e2130;
+      background: #fff;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 20px; padding: 28px;
       width: min(420px, 92vw);
+      display: flex; flex-direction: column; gap: 16px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+    }
+    .modal-box h3 { font-size: 16px; font-weight: 700; color: var(--text); }
+    .modal-box p  { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+    .modal-box a  { color: var(--accent); }
+    .modal-input {
+      width: 100%; background: var(--bg-alt); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 13px; padding: 10px 14px;
+      font-family: monospace; transition: border-color 0.2s;
+    }
+    .modal-input:focus { outline: none; border-color: rgba(0,113,227,0.4); box-shadow: 0 0 0 3px rgba(0,113,227,0.08); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+    .modal-save {
+      flex: 1; background: var(--accent);
+      border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600;
+      padding: 10px; cursor: pointer; font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .modal-save:hover { opacity: 0.88; }
+    .modal-cancel {
+      background: var(--bg-alt); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 13px; padding: 10px 18px;
+      cursor: pointer; font-family: inherit; transition: border-color 0.15s;
+    }
+    .modal-cancel:hover { border-color: rgba(0,113,227,0.3); }
+
+    /* ── CARD CLICK ── */
+    .card { cursor: pointer; }
+
+    /* ── CHART SHEET ── */
+    .chart-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 600;
+    }
+    .chart-overlay.open { display: block; }
+
+    .chart-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .chart-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 72vh;
+      background: var(--bg);
+      border-radius: 20px 20px 0 0;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      overflow: hidden;
+      box-shadow: 0 -8px 48px rgba(0,0,0,0.14);
+      animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1);
     }
-    .modal-box h3 { font-size: 15px; margin: 0; }
-    .modal-box p  { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.5; }
-    .modal-box a  { color: #60a5fa; }
-    .modal-input {
-      width: 100%;
-      box-sizing: border-box;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 9px 12px;
-      font-family: monospace;
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
     }
-    .modal-input:focus { outline: none; border-color: #3b82f6; }
-    .modal-actions { display: flex; gap: 10px; }
-    .modal-save {
-      flex: 1;
-      background: #3b82f6;
-      border: none;
-      border-radius: 7px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 9px;
-      cursor: pointer;
-    }
-    .modal-save:hover { background: #2563eb; }
-    .modal-cancel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 9px 16px;
-      cursor: pointer;
-    }
-    .live-badge {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .5px;
-      background: rgba(34,197,94,.15);
-      color: #22c55e;
-      border: 1px solid rgba(34,197,94,.3);
-      border-radius: 4px;
-      padding: 1px 5px;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-    .api-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-    .api-hint a { color: #60a5fa; text-decoration: none; }
 
-    @media (max-width: 500px) {
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chart-title { display: flex; align-items: baseline; gap: 10px; }
+
+    .chart-ticker-label {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .chart-company-label {
+      font-size: 13px;
+      color: var(--text-2);
+      font-weight: 400;
+    }
+
+    .chart-price-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 2px;
+    }
+    .chart-price { font-size: 15px; font-weight: 600; color: var(--text); }
+    .chart-change { font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+    .chart-change.up   { background: var(--green-dim); color: var(--green); }
+    .chart-change.down { background: var(--red-dim);   color: var(--red);   }
+    .chart-change.flat { background: var(--bg-alt);    color: var(--text-2); }
+
+    .chart-close-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      color: var(--text-2);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .chart-close-btn:hover { background: var(--border); color: var(--text); }
+
+    .chart-body {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .chart-body iframe,
+    .chart-body > div {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .chart-drag-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 10px auto 0;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .chart-sheet { height: 80vh; }
+      header { padding: 0 16px; }
+      .page-body { padding: 24px 16px; }
       .cards-grid { grid-template-columns: 1fr; }
-      h1 { font-size: 17px; }
+      .summary-item { padding: 14px 16px; }
+      .summary-value { font-size: 18px; }
+      #last-updated { display: none; }
     }
   </style>
 </head>
 <body>
 
 <!-- Settings modal -->
-<div class="modal-overlay" id="settings-modal">
+<div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
   <div class="modal-box">
-    <h3>Live After-Hours Data</h3>
+    <h3 id="settings-title">Live After-Hours Data</h3>
     <p>
-      Proxy-based sources cache Yahoo Finance responses and can show stale prices.
-      A free <strong>Finnhub</strong> API key bypasses all proxies and delivers
-      real-time pre/post-market data directly.<br><br>
-      Get your free token (no credit card) at
+      <strong>Alpha Vantage</strong> (recommended) — CORS-native, delivers real-time
+      pre/post-market data without any proxy. Get a free key at
+      <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener">alphavantage.co</a>
+      (no credit card).<br><br>
+      <strong>Finnhub</strong> — also CORS-native, free at
       <a href="https://finnhub.io" target="_blank" rel="noopener">finnhub.io</a>
-      â Dashboard â API key.
+      → Dashboard → API key.
     </p>
+    <input class="modal-input" id="av-key-input" type="text"
+           placeholder="Alpha Vantage API key" autocomplete="off" spellcheck="false"/>
     <input class="modal-input" id="token-input" type="text"
-           placeholder="Paste Finnhub API token here" autocomplete="off" spellcheck="false"/>
+           placeholder="Finnhub API token (optional)" autocomplete="off" spellcheck="false" style="margin-top:8px"/>
     <div class="modal-actions">
       <button class="modal-save" onclick="saveToken()">Save &amp; Refresh</button>
       <button class="modal-cancel" onclick="closeSettings()">Cancel</button>
@@ -639,77 +523,92 @@
   </div>
 </div>
 
+<!-- Chart bottom sheet -->
+<div class="chart-overlay" id="chart-overlay" role="dialog" aria-modal="true" aria-labelledby="chart-ticker-label">
+  <div class="chart-backdrop" id="chart-backdrop"></div>
+  <div class="chart-sheet">
+    <div class="chart-drag-handle"></div>
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">
+          <span class="chart-ticker-label" id="chart-ticker-label"></span>
+          <span class="chart-company-label" id="chart-company-label"></span>
+        </div>
+        <div class="chart-price-row">
+          <span class="chart-price" id="chart-price"></span>
+          <span class="chart-change" id="chart-change"></span>
+        </div>
+      </div>
+      <button class="chart-close-btn" onclick="closeChart()" aria-label="Close chart">✕</button>
+    </div>
+    <div class="chart-body" id="chart-body"></div>
+  </div>
+</div>
+
 <header>
   <div class="logo">
     <span class="logo-badge">SMH</span>
-    <div>
+    <div class="logo-text">
       <h1>After-Hours Tracker</h1>
       <div class="subtitle">Top 10 SMH Semiconductor ETF Holdings</div>
     </div>
   </div>
   <div class="header-right">
+    <button class="header-btn" onclick="window.parent !== window ? window.parent.switchTab('briefing') : window.location.href='briefing.html'">
+      📰 AI Briefing
+    </button>
     <div id="market-status" class="market-status status-closed">
       <span class="dot"></span>
-      <span id="status-text">â</span>
+      <span id="status-text">–</span>
+    </div>
+    <div id="ws-status" class="ws-status connecting" title="Yahoo Finance live stream">
+      <span class="ws-dot"></span>
+      <span id="ws-label">Connecting…</span>
     </div>
     <span id="last-updated"></span>
-    <button class="settings-btn" onclick="openSettings()" title="Configure API key for live data">â</button>
-    <button id="refresh-btn" onclick="loadData()">
+    <button class="settings-btn" onclick="openSettings()" title="Configure API key for live data">⚙</button>
+    <button class="header-btn" id="refresh-btn" onclick="loadData()">
       <div class="spinner" id="spinner"></div>
       <span id="refresh-label">Refresh</span>
     </button>
   </div>
 </header>
 
-<div class="error-banner" id="error-banner"></div>
+<div class="page-body">
+  <div class="error-banner" id="error-banner"></div>
 
-<div class="news-section" id="news-section">
-  <div class="news-header">
-    <span class="news-title">&#9711; Latest Semiconductor News</span>
-    <span class="news-source">Yahoo Finance</span>
+  <div class="summary-bar" id="summary-bar">
+    <div class="summary-item">
+      <span class="summary-label">Gainers</span>
+      <span class="summary-value" id="sum-gainers" style="color:var(--green)">–</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Losers</span>
+      <span class="summary-value" id="sum-losers" style="color:var(--red)">–</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Avg AH Change</span>
+      <span class="summary-value" id="sum-avg">–</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Best AH</span>
+      <span class="summary-value" id="sum-best" style="color:var(--green)">–</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Worst AH</span>
+      <span class="summary-value" id="sum-worst" style="color:var(--red)">–</span>
+    </div>
   </div>
-  <ul class="news-list" id="news-list">
-    <li class="news-skeleton"><div class="skeleton" style="width:90%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:80%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:85%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:75%;height:13px"></div></li>
-    <li class="news-skeleton"><div class="skeleton" style="width:88%;height:13px"></div></li>
-  </ul>
+
+  <div class="cards-grid" id="grid"></div>
 </div>
-
-<div class="summary-bar" id="summary-bar" style="display:none">
-  <div class="summary-item">
-    <span class="summary-label">Gainers</span>
-    <span class="summary-value" id="sum-gainers" style="color:var(--green)">â</span>
-  </div>
-  <div class="summary-item">
-    <span class="summary-label">Losers</span>
-    <span class="summary-value" id="sum-losers" style="color:var(--red)">â</span>
-  </div>
-  <div class="summary-item">
-    <span class="summary-label">Avg AH Change</span>
-    <span class="summary-value" id="sum-avg">â</span>
-  </div>
-  <div class="summary-item">
-    <span class="summary-label">Best AH</span>
-    <span class="summary-value" id="sum-best" style="color:var(--green)">â</span>
-  </div>
-  <div class="summary-item">
-    <span class="summary-label">Worst AH</span>
-    <span class="summary-value" id="sum-worst" style="color:var(--red)">â</span>
-  </div>
-</div>
-
-<div class="cards-grid" id="grid"></div>
 
 <script>
-  // ETFs tracked separately (no weight bar)
   const ETFS = [
     { ticker: 'SMH', name: 'VanEck Semiconductor ETF', etf: true },
     { ticker: 'QQQ', name: 'Invesco QQQ Trust (Nasdaq-100)', etf: true },
   ];
 
-  // Top 10 SMH holdings (as of early 2025) with approximate weights
   const HOLDINGS = [
     { ticker: 'NVDA',  name: 'NVIDIA Corporation',             weight: 20.87 },
     { ticker: 'AVGO',  name: 'Broadcom Inc.',                  weight: 8.37  },
@@ -723,7 +622,6 @@
     { ticker: 'INTC',  name: 'Intel Corporation',              weight: 2.49  },
   ];
 
-  // Korean semiconductor stocks (priced in KRW on KRX)
   const KR_STOCKS = [
     { ticker: '005930.KS', name: 'Samsung Electronics',   kr: true },
     { ticker: '000660.KS', name: 'SK Hynix Inc.',          kr: true },
@@ -733,22 +631,21 @@
   const MAX_WEIGHT = Math.max(...HOLDINGS.map(h => h.weight));
 
   function fmt(n, decimals = 2) {
-    if (n == null || isNaN(n)) return 'â';
+    if (n == null || isNaN(n)) return '–';
     return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   }
 
   function fmtPrice(n) {
-    if (n == null || isNaN(n)) return 'â';
+    if (n == null || isNaN(n)) return '–';
     return '$' + fmt(n, 2);
   }
 
   function getMarketStatus() {
     const now = new Date();
-    // Convert to ET
     const etOffset = -4; // EDT; use -5 for EST
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
     const et = new Date(utc + 3600000 * etOffset);
-    const day = et.getDay(); // 0=Sun, 6=Sat
+    const day = et.getDay();
     const h = et.getHours();
     const m = et.getMinutes();
     const mins = h * 60 + m;
@@ -775,33 +672,37 @@
     txt.textContent = label;
   }
 
+  function buildRankBadge(h, i) {
+    if (h.etf) return `<span class="rank etf-badge">ETF</span>`;
+    if (h.kr)  return `<span class="rank" style="background:rgba(0,113,227,0.08);color:#0071e3;border-color:rgba(0,113,227,0.2)">KRX</span>`;
+    return `<span class="rank">#${i - ETFS.length + 1}</span>`;
+  }
+
+  function buildWeightSection(h) {
+    if (h.etf || h.kr || h.weight == null) return '';
+    return `
+      <div class="weight-bar">
+        <div class="weight-text">ETF Weight: ${h.weight}%</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
+      </div>`;
+  }
+
   function buildSkeletons() {
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
-    // Insert section headers
     grid.innerHTML += `<div class="section-header" id="section-etfs">ETFs</div>`;
     ALL_ITEMS.forEach((h, i) => {
       if (i === ETFS.length) {
         grid.innerHTML += `<div class="section-header" id="section-holdings">Top 10 Holdings</div>`;
       }
       if (i === ETFS.length + HOLDINGS.length) {
-        grid.innerHTML += `<div class="section-header" id="section-kr">Korean Semiconductors (KRX Â· KRW)</div>`;
+        grid.innerHTML += `<div class="section-header" id="section-kr">Korean Semiconductors (KRX · KRW)</div>`;
       }
-      const rankBadge = h.etf
-        ? `<span class="rank etf-badge">ETF</span>`
-        : h.kr
-          ? `<span class="rank" style="background:#1e3a5f;color:#60a5fa">KRX</span>`
-          : `<span class="rank">#${i - ETFS.length + 1}</span>`;
-      const weightSection = (h.etf || h.kr || h.weight == null) ? '' : `
-          <div class="weight-bar">
-            <div class="weight-text">ETF Weight: ${h.weight}%</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
-          </div>`;
       grid.innerHTML += `
-        <div class="card neutral${h.etf ? ' etf-card' : ''}" id="card-${h.ticker}">
+        <div class="card neutral${h.etf ? ' etf-card' : ''}" id="card-${h.ticker}" data-ticker="${h.ticker}" tabindex="0" role="button" aria-label="Open chart for ${h.ticker}">
           <div class="card-header">
             <span class="ticker">${h.ticker}</span>
-            ${rankBadge}
+            ${buildRankBadge(h, i)}
           </div>
           <div class="company-name">${h.name}</div>
           <div class="price-section">
@@ -816,7 +717,7 @@
             </div>
             <div class="skeleton" style="width:70px;height:26px"></div>
           </div>
-          ${weightSection}
+          ${buildWeightSection(h)}
         </div>`;
     });
   }
@@ -825,41 +726,30 @@
     const card = document.getElementById('card-' + h.ticker);
     if (!card) return;
 
-    const regularPrice = q.regularMarketPrice;
-    const ahPrice    = q.postMarketPrice;
-    const ahChange   = q.postMarketChange;
-    const ahChangePct = q.postMarketChangePercent;
-    const prePrice   = q.preMarketPrice;
-    const preChange  = q.preMarketChange;
-    const preChangePct = q.preMarketChangePercent;
+    const regularPrice  = q.regularMarketPrice;
+    const ahPrice       = q.postMarketPrice;
+    const ahChange      = q.postMarketChange;
+    const ahChangePct   = q.postMarketChangePercent;
+    const prePrice      = q.preMarketPrice;
+    const preChange     = q.preMarketChange;
+    const preChangePct  = q.preMarketChangePercent;
 
-    // Card border direction driven by most recent extended-hours move, else regular close
     const ahDir  = ahChange  > 0 ? 'up' : ahChange  < 0 ? 'down' : 'neutral';
     const preDir = preChange > 0 ? 'up' : preChange < 0 ? 'down' : 'neutral';
 
-    // Regular close day change
-    const regChange = q.regularMarketChange;
+    const regChange    = q.regularMarketChange;
     const regChangePct = q.regularMarketChangePercent;
-    const regDir = regChange > 0 ? 'up' : regChange < 0 ? 'down' : 'neutral';
-    const regSign = regChange > 0 ? '+' : '';
-    const regArrow = regChange > 0 ? 'â²' : regChange < 0 ? 'â¼' : 'â';
+    const regDir       = regChange > 0 ? 'up' : regChange < 0 ? 'down' : 'neutral';
+    const regSign      = regChange > 0 ? '+' : '';
+    const regArrow     = regChange > 0 ? '▲' : regChange < 0 ? '▼' : '–';
 
-    const rankBadge = h.etf
-      ? `<span class="rank etf-badge">ETF</span>`
-      : h.kr
-        ? `<span class="rank" style="background:#1e3a5f;color:#60a5fa">KRX</span>`
-        : `<span class="rank">#${i - ETFS.length + 1}</span>`;
-    const weightSection = (h.etf || h.kr || h.weight == null) ? '' : `
-      <div class="weight-bar">
-        <div class="weight-text">ETF Weight: ${h.weight}%</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${(h.weight / MAX_WEIGHT) * 100}%"></div></div>
-      </div>`;
+    const rankBadge = buildRankBadge(h, i);
+    const weightSection = buildWeightSection(h);
 
     const fmtP = h.kr
-      ? n => (n == null || isNaN(n) ? 'â' : 'â©' + Math.round(n).toLocaleString('en-US'))
+      ? n => (n == null || isNaN(n) ? '–' : '₩' + Math.round(n).toLocaleString('en-US'))
       : fmtPrice;
 
-    // 52-week range
     const high52 = q.fiftyTwoWeekHigh ?? null;
     const low52  = q.fiftyTwoWeekLow  ?? null;
     const pct52  = (high52 != null && low52 != null && high52 !== low52)
@@ -875,7 +765,7 @@
         <div class="range52-header">
           <span class="range52-title">52-Week Range</span>
           ${fromHighPct != null ? `<span class="range52-badge${atHigh ? ' at-high' : ''}">
-            ${atHigh ? 'â² At 52-wk high' : 'â¼ ' + fmt(Math.abs(fromHighPct), 1) + '% from peak'}
+            ${atHigh ? '▲ At 52-wk high' : '▼ ' + fmt(Math.abs(fromHighPct), 1) + '% from peak'}
           </span>` : ''}
         </div>
         <div class="range52-track">
@@ -889,32 +779,49 @@
         ${peakDateStr ? `<div class="range52-peak-date">Peaked ${peakDateStr}</div>` : ''}
       </div>` : '';
 
-    // Border colour: prefer AH, then pre, then regular
     const cardDir = ahPrice != null ? ahDir : prePrice != null ? preDir : regDir;
     card.className = `card ${cardDir}${h.etf ? ' etf-card' : ''}${h.kr ? ' etf-card' : ''}`;
+    card.dataset.ticker = h.ticker;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Open chart for ${h.ticker}`);
 
-    // Helper to build one extended-hours row
-    function extRow(label, price, change, changePct, noDataMsg) {
-      if (price == null) return `
-        <div class="ext-row">
-          <div class="ext-left">
-            <div class="ah-label">${label}</div>
-            <span class="ext-no-data">${noDataMsg}</span>
-            ${!FINNHUB_TOKEN && !h.kr ? `<div class="api-hint"><a href="#" onclick="openSettings();return false;">â Add API key</a> for live data</div>` : ''}
-          </div>
-        </div>`;
-      const d = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
-      const a = change > 0 ? 'â²' : change < 0 ? 'â¼' : 'â';
-      const s = change > 0 ? '+' : '';
-      return `
-        <div class="ext-row">
-          <div class="ext-left">
-            <div class="ah-label">${label}</div>
-            <div class="ah-price">${fmtP(price)}</div>
-            <div class="ah-sub">${s}${fmtP(change)} from close</div>
-          </div>
-          <span class="change-badge ${d}">${a} ${s}${fmt(changePct, 2)}%</span>
-        </div>`;
+    // Build a single extended-hours row for the current session
+    const session = getMarketStatus();
+    let extHtml = '';
+    if (session !== 'open' && !h.kr) {
+      const isPre    = session === 'pre';
+      const label    = isPre ? 'Pre-Market' : 'After Hours';
+      const ehPrice  = isPre ? prePrice  : ahPrice;
+      const ehChange = isPre ? preChange : ahChange;
+      const ehPct    = isPre ? preChangePct : ahChangePct;
+      const isLive   = wsConnected;
+
+      if (ehPrice != null) {
+        const d = ehChange > 0 ? 'up' : ehChange < 0 ? 'down' : 'neutral';
+        const a = ehChange > 0 ? '▲' : ehChange < 0 ? '▼' : '–';
+        const s = ehChange > 0 ? '+' : '';
+        extHtml = `
+          <div class="ext-row" data-session="${isPre ? 'pre' : 'post'}">
+            <div class="ext-left">
+              <div class="ah-label">${label}${isLive ? '<span class="live-badge">Live</span>' : ''}</div>
+              <div class="ah-price">${fmtP(ehPrice)}</div>
+              <div class="ah-sub">${s}${fmtP(ehChange)} from close</div>
+            </div>
+            <span class="change-badge ${d}">${a} ${s}${fmt(ehPct, 2)}%</span>
+          </div>`;
+      } else {
+        extHtml = `
+          <div class="ext-row" data-session="${isPre ? 'pre' : 'post'}">
+            <div class="ext-left">
+              <div class="ah-label">${label}</div>
+              <div class="ext-waiting">
+                <span class="ext-waiting-spinner"></span>
+                Waiting for live stream…
+              </div>
+            </div>
+          </div>`;
+      }
     }
 
     card.innerHTML = `
@@ -927,54 +834,54 @@
         <div class="price-label">Regular Close</div>
         <div class="price-row">
           <span class="regular-price">${fmtP(regularPrice)}</span>
-          <span class="change-badge ${regDir}" style="font-size:12px;padding:2px 6px">
+          <span class="change-badge ${regDir}" style="font-size:11px;padding:2px 8px">
             ${regArrow} ${regSign}${fmt(regChangePct, 2)}%
           </span>
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${regSign}${fmtP(regChange)} today</div>
+        <div class="reg-sub">${regSign}${fmtP(regChange)} today</div>
       </div>
-      <hr class="divider"/>
-      <div class="ext-hours">
-        ${extRow('After Hours', ahPrice,  ahChange,  ahChangePct,  'No after-hours data')}
-        ${extRow('Pre-Market',  prePrice, preChange, preChangePct, 'Pre-market trading has not started')}
-      </div>
+      ${extHtml ? `<hr class="divider"/><div class="ext-hours">${extHtml}</div>` : ''}
       ${weightSection}
       ${rangeSection}`;
   }
 
   function updateSummary(quotes) {
-    const validQuotes = quotes.filter(q => q && q.postMarketChangePercent != null);
+    const isPre = getMarketStatus() === 'pre';
+    const pctKey = isPre ? 'preMarketChangePercent' : 'postMarketChangePercent';
+    const chgKey = isPre ? 'preMarketChange'        : 'postMarketChange';
+    const label  = isPre ? 'Pre-Market Avg'         : 'After-Hours Avg';
+
+    const validQuotes = quotes.filter(q => q && q[pctKey] != null);
     if (validQuotes.length === 0) return;
 
-    const gainers = validQuotes.filter(q => q.postMarketChange > 0).length;
-    const losers  = validQuotes.filter(q => q.postMarketChange < 0).length;
-    const avg = validQuotes.reduce((s, q) => s + q.postMarketChangePercent, 0) / validQuotes.length;
-
-    const best  = validQuotes.reduce((a, b) => b.postMarketChangePercent > a.postMarketChangePercent ? b : a);
-    const worst = validQuotes.reduce((a, b) => b.postMarketChangePercent < a.postMarketChangePercent ? b : a);
+    const gainers = validQuotes.filter(q => q[chgKey] > 0).length;
+    const losers  = validQuotes.filter(q => q[chgKey] < 0).length;
+    const avg     = validQuotes.reduce((s, q) => s + q[pctKey], 0) / validQuotes.length;
+    const best    = validQuotes.reduce((a, b) => b[pctKey] > a[pctKey] ? b : a);
+    const worst   = validQuotes.reduce((a, b) => b[pctKey] < a[pctKey] ? b : a);
 
     document.getElementById('sum-gainers').textContent = gainers;
     document.getElementById('sum-losers').textContent  = losers;
+    document.querySelector('.summary-item:nth-child(3) .summary-label').textContent = label;
 
     const avgEl = document.getElementById('sum-avg');
     avgEl.textContent = (avg >= 0 ? '+' : '') + fmt(avg, 2) + '%';
     avgEl.style.color = avg >= 0 ? 'var(--green)' : 'var(--red)';
 
-    document.getElementById('sum-best').textContent  = `${best.symbol}  +${fmt(best.postMarketChangePercent, 2)}%`;
-    document.getElementById('sum-worst').textContent = `${worst.symbol}  ${fmt(worst.postMarketChangePercent, 2)}%`;
-
+    const sign = best[pctKey] >= 0 ? '+' : '';
+    document.getElementById('sum-best').textContent  = `${best.symbol} ${sign}${fmt(best[pctKey], 2)}%`;
+    document.getElementById('sum-worst').textContent = `${worst.symbol} ${fmt(worst[pctKey], 2)}%`;
     document.getElementById('summary-bar').style.display = 'flex';
   }
 
-  // corsproxy.io is first â it's a true passthrough with no server-side caching.
-  // allorigins.win caches for 2 min and is now last resort only.
   const PROXIES = [
+    u => u,
     u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+    u => `https://thingproxy.freeboard.io/fetch/${u}`,
     u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
     u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   ];
 
-  // Fetch via proxy; cache: 'no-store' prevents browser-level caching too
   async function proxyFetch(yahooUrl, asText = false, timeoutMs = 8000) {
     let lastErr = 'no proxies attempted';
     for (const proxify of PROXIES) {
@@ -997,7 +904,6 @@
     throw new Error(lastErr);
   }
 
-  // Fetch 52-week peak date per symbol using 1-year daily chart data
   async function fetchPeakDates(tickers) {
     const peakMap = {};
     await Promise.all(tickers.map(async ticker => {
@@ -1028,7 +934,6 @@
 
   const FIELDS = 'regularMarketPrice,regularMarketChange,regularMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,fiftyTwoWeekHigh,fiftyTwoWeekLow,fiftyTwoWeekHighChange,fiftyTwoWeekHighChangePercent';
 
-  // Strategy 1: crumb-based v7 quote API
   async function fetchViaCrumb(tickers) {
     const crumb = await proxyFetch('https://query2.finance.yahoo.com/v1/test/getcrumb', true);
     if (!crumb || crumb.length < 3 || crumb.startsWith('<')) throw new Error('bad crumb: ' + crumb.slice(0, 30));
@@ -1039,12 +944,11 @@
     return results;
   }
 
-  // API tokens â stored in localStorage so no code editing is needed.
-  // Click â in the header to set your Finnhub token (free at finnhub.io).
-  let FINNHUB_TOKEN   = localStorage.getItem('finnhub_token')   || '';
-  let STOCKDATA_TOKEN = localStorage.getItem('stockdata_token') || '';
+  let FINNHUB_TOKEN = localStorage.getItem('finnhub_token') || '';
+  let AV_KEY        = localStorage.getItem('av_key')        || '';
 
   function openSettings() {
+    document.getElementById('av-key-input').value = AV_KEY;
     document.getElementById('token-input').value = FINNHUB_TOKEN;
     document.getElementById('settings-modal').classList.add('open');
   }
@@ -1052,20 +956,17 @@
     document.getElementById('settings-modal').classList.remove('open');
   }
   function saveToken() {
-    const t = document.getElementById('token-input').value.trim();
-    FINNHUB_TOKEN = t;
-    localStorage.setItem('finnhub_token', t);
+    AV_KEY        = document.getElementById('av-key-input').value.trim();
+    FINNHUB_TOKEN = document.getElementById('token-input').value.trim();
+    localStorage.setItem('av_key',        AV_KEY);
+    localStorage.setItem('finnhub_token', FINNHUB_TOKEN);
     closeSettings();
     loadData();
   }
-  // Close modal on overlay click
   document.getElementById('settings-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeSettings();
   });
 
-  // Finnhub: single call per ticker, CORS-native, truly real-time.
-  // c = current price (AH price after 4 PM, pre-market price before 9:30 AM)
-  // d/dp = change & % change from most recent regular close (pc)
   async function fetchExtendedHoursViaFinnhub() {
     if (!FINNHUB_TOKEN) return {};
     const status  = getMarketStatus();
@@ -1092,122 +993,91 @@
     return map;
   }
 
-  // StockData.org: one batched call for all US tickers, CORS-native.
-  async function fetchExtendedHoursViaStockData() {
-    if (!STOCKDATA_TOKEN) return {};
+  // StockData.org removed — gated behind paid plan, not reliable for free use
+
+  async function fetchViaAlphaVantage() {
+    if (!AV_KEY) return null;
     const usItems = [...ETFS, ...HOLDINGS];
-    const symbols = usItems.map(h => h.ticker).join(',');
-    const url = `https://api.stockdata.org/v1/data/quote?symbols=${symbols}&api_token=${STOCKDATA_TOKEN}`;
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 10000);
-    try {
-      const res  = await fetch(url, { signal: ctrl.signal });
-      clearTimeout(timer);
-      const json = await res.json();
-      const map  = {};
-      for (const d of (json?.data ?? [])) {
-        if (!d?.ticker) continue;
-        map[d.ticker] = {
-          postMarketPrice:         d.post_market_price         ?? null,
-          postMarketChange:        d.post_market_change        ?? null,
-          postMarketChangePercent: d.post_market_change_percent ?? null,
-          preMarketPrice:          d.pre_market_price          ?? null,
-          preMarketChange:         d.pre_market_change         ?? null,
-          preMarketChangePercent:  d.pre_market_change_percent  ?? null,
+    const fetches = usItems.map(async h => {
+      try {
+        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(h.ticker)}&apikey=${AV_KEY}`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 10000);
+        const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data?.Note || data?.Information) { console.warn('AV rate limit hit for', h.ticker); return null; }
+        const q = data?.['Global Quote'];
+        if (!q?.['05. price']) return null;
+        const price    = parseFloat(q['05. price']);
+        const change   = parseFloat(q['09. change']);
+        const changePct = parseFloat((q['10. change percent'] || '0').replace('%', ''));
+        if (!price) return null;
+        return {
+          symbol: h.ticker,
+          regularMarketPrice: price,
+          regularMarketChange: change || 0,
+          regularMarketChangePercent: changePct || 0,
+          postMarketPrice: null, postMarketChange: null, postMarketChangePercent: null,
+          preMarketPrice:  null, preMarketChange:  null, preMarketChangePercent:  null,
+          fiftyTwoWeekHigh: parseFloat(q['03. high']) || null,
+          fiftyTwoWeekLow:  parseFloat(q['04. low'])  || null,
         };
-      }
-      return map;
-    } catch(e) { clearTimeout(timer); return {}; }
+      } catch(e) { return null; }
+    });
+    const results = (await Promise.all(fetches)).filter(Boolean);
+    if (results.length < usItems.length * 0.5) throw new Error(`Alpha Vantage: only ${results.length}/${usItems.length} quotes returned`);
+    return results;
   }
-  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-  // Parse NASDAQ API price strings like "$388.04", "+4.64", "-3.62%"
-  const nqParse = s => {
-    if (!s || s === 'N/A' || s === '--' || s === 'undefined') return null;
-    const neg = s.includes('-');
-    const n = parseFloat(s.replace(/[^0-9.]/g, ''));
-    return isNaN(n) ? null : (neg ? -n : n);
-  };
-
-  // Primary extended-hours source: NASDAQ API â structured primaryData/secondaryData, no API key needed
-  // Works for all US-listed stocks (including NYSE, NASDAQ). Korean stocks excluded (KRX, not applicable).
-  async function fetchExtendedHoursViaNasdaq() {
-    const map = {};
+  async function fetchExtendedHoursViaAlphaVantage() {
+    if (!AV_KEY) return {};
     const usItems = [...ETFS, ...HOLDINGS];
+    const map = {};
     await Promise.all(usItems.map(async h => {
       try {
-        const assetClass = h.etf ? 'etf' : 'stocks';
-        const url = `https://api.nasdaq.com/api/quote/${h.ticker}/info?assetclass=${assetClass}&_=${Date.now()}`;
-        const data = await proxyFetch(url);
-        const d = data?.data;
-        if (!d?.primaryData?.lastSalePrice) return;
-
-        const sec = d.secondaryData;
-        let postPrice = null, postChange = null, postPct = null;
-        let prePrice  = null, preChange  = null, prePct  = null;
-
-        if (sec?.lastSalePrice && sec.lastSalePrice !== 'N/A') {
-          const extPrice  = nqParse(sec.lastSalePrice);
-          const extChange = nqParse(sec.netChange);
-          const extPct    = nqParse(sec.percentageChange);
-          const label     = (sec.label ?? d.marketStatus ?? '').toLowerCase();
-          const mktStatus = getMarketStatus();
-          if (label.includes('after') || label.includes('overtime') ||
-              (mktStatus === 'closed' && !label.includes('pre'))) {
-            // After 8 PM market closes but after-hours prices remain valid
-            postPrice = extPrice; postChange = extChange; postPct = extPct;
-          } else if (label.includes('pre')) {
-            prePrice = extPrice; preChange = extChange; prePct = extPct;
-          }
+        const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${encodeURIComponent(h.ticker)}&interval=5min&extended_hours=true&outputsize=compact&apikey=${AV_KEY}`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 10000);
+        const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data?.Note || data?.Information) return;
+        const ts = data?.['Time Series (5min)'];
+        if (!ts) return;
+        const entries = Object.entries(ts).sort((a, b) => b[0].localeCompare(a[0]));
+        let regClose = null, ahPrice = null, prePrice = null;
+        for (const [time, ohlcv] of entries) {
+          const [, hhmm] = time.split(' ');
+          const [hh, mm] = hhmm.split(':').map(Number);
+          const mins = hh * 60 + mm;
+          const close = parseFloat(ohlcv['4. close']);
+          if (mins >= 16 * 60 && ahPrice == null)                                  ahPrice  = close;
+          else if (mins >= 9 * 60 + 30 && mins < 16 * 60 && regClose == null)     regClose = close;
+          else if (mins < 9 * 60 + 30 && prePrice == null)                         prePrice = close;
+          if (regClose != null && ahPrice != null && prePrice != null) break;
         }
+        if (!regClose) return;
+        const ahChg  = ahPrice  != null ? ahPrice  - regClose : null;
+        const preChg = prePrice != null ? prePrice - regClose : null;
         map[h.ticker] = {
-          postMarketPrice: postPrice, postMarketChange: postChange, postMarketChangePercent: postPct,
-          preMarketPrice:  prePrice,  preMarketChange:  preChange,  preMarketChangePercent:  prePct,
-        };
-      } catch(e) {}
-    }));
-    return map;
-  }
-
-  // Secondary extended-hours fallback: Yahoo Finance v10 quoteSummary price module
-  async function fetchExtendedHoursViaYahoo() {
-    const map = {};
-    await Promise.all(ALL_ITEMS.map(async h => {
-      try {
-        const data = await proxyFetch(
-          `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(h.ticker)}?modules=price&_=${Date.now()}`
-        );
-        const price = data?.quoteSummary?.result?.[0]?.price;
-        if (!price) return;
-        const reg     = price.regularMarketPrice?.raw ?? null;
-        const postRaw = price.postMarketPrice?.raw    ?? null;
-        const preRaw  = price.preMarketPrice?.raw     ?? null;
-        const now     = Math.floor(Date.now() / 1000);
-        const postTime = price.postMarketTime ?? 0;
-        const preTime  = price.preMarketTime  ?? 0;
-        const validPost = postTime > now - 86400;
-        // Pre-market is only valid if its timestamp is from today's morning and it's still morning
-        const todayMidnight = now - (now % 86400);
-        const validPre  = preTime > todayMidnight && preTime < now && getMarketStatus() === 'pre';
-        const postChg = validPost && postRaw != null && reg ? postRaw - reg : null;
-        const preChg  = validPre  && preRaw  != null && reg ? preRaw  - reg : null;
-        map[h.ticker] = {
-          postMarketPrice:         validPost ? postRaw : null,
-          postMarketChange:        postChg,
-          postMarketChangePercent: postChg != null && reg ? (postChg / reg) * 100 : null,
-          preMarketPrice:          validPre  ? preRaw  : null,
+          postMarketPrice:         ahPrice,
+          postMarketChange:        ahChg,
+          postMarketChangePercent: ahChg  != null ? (ahChg  / regClose) * 100 : null,
+          preMarketPrice:          prePrice,
           preMarketChange:         preChg,
-          preMarketChangePercent:  preChg  != null && reg ? (preChg  / reg) * 100 : null,
+          preMarketChangePercent:  preChg != null ? (preChg / regClose) * 100 : null,
         };
       } catch(e) {}
     }));
     return map;
   }
 
-  // Fallback: per-symbol v8 chart API â 1d/1m with pre+post market OHLCV extraction
+  // NASDAQ + Yahoo quoteSummary extended-hours removed — both fail from browser CORS.
+  // Extended hours now come exclusively from Yahoo Finance WebSocket (see startStreamer).
+
   async function fetchViaChartAPI() {
     const fetches = ALL_ITEMS.map(async h => {
-      // Cache-bust so proxies (allorigins etc.) cannot serve a stale cached response
       const url = `https://query1.finance.yahoo.com/v8/finance/chart/${h.ticker}?interval=1m&range=1d&includePrePost=true&_=${Date.now()}`;
       try {
         const data = await proxyFetch(url);
@@ -1220,7 +1090,6 @@
         const ts     = result?.timestamp ?? [];
         const closes = result?.indicators?.quote?.[0]?.close ?? [];
 
-        // Helper: scan OHLCV for last valid close within a trading period window
         function lastCloseIn(period) {
           if (!period) return null;
           for (let j = ts.length - 1; j >= 0; j--) {
@@ -1230,7 +1099,6 @@
           return null;
         }
 
-        // Post-market: scan any candle AFTER the regular session close (handles >8 PM too)
         const regEnd = meta.tradingPeriods?.regular?.[0]?.[0]?.end ?? 0;
         let postPrice = null;
         if (regEnd) {
@@ -1238,18 +1106,13 @@
             if (ts[j] > regEnd && closes[j] != null) { postPrice = closes[j]; break; }
           }
         }
-        // Fallback to official post window scan, then meta snapshot
         if (postPrice == null) postPrice = lastCloseIn(meta.tradingPeriods?.post?.[0]?.[0]);
         if (postPrice == null) postPrice = meta.postMarketPrice ?? null;
 
-        // Pre-market: only use if we are currently in pre-market hours (avoid stale morning data at night)
-        const nowSec = Math.floor(Date.now() / 1000);
-        const preEnd = meta.tradingPeriods?.pre?.[0]?.[0]?.end ?? 0;
-        let prePrice = null;
-        if (preEnd && nowSec <= preEnd + 3600) {  // within 1h after pre-market close = still morning
-          prePrice = lastCloseIn(meta.tradingPeriods?.pre?.[0]?.[0]);
-          if (prePrice == null) prePrice = meta.preMarketPrice ?? null;
-        }
+        // Pre-market: use whenever there's data in the pre window (not time-gated)
+        const preWindow = meta.tradingPeriods?.pre?.[0]?.[0];
+        let prePrice = lastCloseIn(preWindow);
+        if (prePrice == null) prePrice = meta.preMarketPrice ?? null;
 
         const postChange = postPrice != null ? postPrice - meta.regularMarketPrice : null;
         const preChange  = prePrice  != null ? prePrice  - meta.regularMarketPrice : null;
@@ -1273,108 +1136,8 @@
     return valid;
   }
 
-  function timeAgo(dateStr) {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 60) return m + 'm ago';
-    const h = Math.floor(m / 60);
-    if (h < 24) return h + 'h ago';
-    return Math.floor(h / 24) + 'd ago';
-  }
-
-  // All tracked tickers for news targeting
-  const NEWS_TICKERS = 'NVDA,AVGO,TSM,ASML,AMD,QCOM,TXN,AMAT,MU,INTC,SMH';
-
-  // Keywords that indicate semiconductor/chip relevance
-  const SEMI_RE = /nvidia|nvidias|amd|intel|tsmc|broadcom|qualcomm|micron|asml|marvell|applied material|semiconductor|chip|wafer|foundry|fab\b|nvda|avgo\b|tsm\b|mu\b|intc\b|qcom|txn\b|amat\b|smh\b|hynix|samsung|arm\b|palantir|soc\b|gpu\b|cpu\b|ai chip/i;
-  function isSemiNews(title) { return SEMI_RE.test(title); }
-
-  async function fetchNews() {
-    // Strategy 1: Yahoo Finance search API per ticker â deduplicated, ticker-specific headlines
-    try {
-      const seen = new Set();
-      const results = [];
-      // Fetch news for a few high-interest tickers in parallel
-      const searches = ['NVDA', 'AMD', 'SMH', 'AVGO', 'TSM', 'INTC', 'MU'].map(t =>
-        proxyFetch(`https://query2.finance.yahoo.com/v1/finance/search?q=${t}&newsCount=4&quotesCount=0&enableFuzzyQuery=false`)
-          .catch(() => null)
-      );
-      const pages = await Promise.all(searches);
-      for (const data of pages) {
-        for (const n of (data?.news ?? [])) {
-          if (!n.title || seen.has(n.uuid ?? n.title)) continue;
-          seen.add(n.uuid ?? n.title);
-          results.push({ title: n.title.trim(), link: n.link ?? '#',
-            date: n.providerPublishTime ? new Date(n.providerPublishTime * 1000).toString() : '' });
-        }
-      }
-      // Sort newest-first, filter to semiconductor-relevant headlines
-      results.sort((a, b) => new Date(b.date) - new Date(a.date));
-      const filtered = results.filter(n => isSemiNews(n.title));
-      if (filtered.length >= 3) return filtered.slice(0, 5);
-      if (results.length >= 3) return results.slice(0, 5);
-    } catch(e) {}
-
-    // Strategy 2: rss2json.com with all SMH tickers â returns JSON, CORS-enabled
-    try {
-      const rssEncoded = encodeURIComponent(
-        `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${NEWS_TICKERS}&region=US&lang=en-US`
-      );
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000);
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssEncoded}&count=5`, { signal: ctrl.signal });
-      clearTimeout(timer);
-      const data = await res.json();
-      if (data.status === 'ok' && data.items?.length) {
-        const items = data.items.map(n => ({ title: (n.title ?? '').trim(), link: n.link ?? '#', date: n.pubDate ?? '' })).filter(i => i.title);
-        const filtered = items.filter(n => isSemiNews(n.title));
-        return (filtered.length >= 3 ? filtered : items).slice(0, 5);
-      }
-    } catch(e) {}
-
-    // Strategy 3: RSS XML via proxy with strict HTML detection
-    const rssUrl = `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${NEWS_TICKERS}&region=US&lang=en-US`;
-    for (const proxify of PROXIES) {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000);
-      try {
-        const res = await fetch(proxify(rssUrl), { signal: ctrl.signal });
-        clearTimeout(timer);
-        const raw = await res.text();
-        const t = raw.trim();
-        const lo = t.toLowerCase();
-        if (lo.startsWith('<!doctype') || lo.startsWith('<html')) continue;
-        if (!t.startsWith('<')) continue;
-        const doc = new DOMParser().parseFromString(t, 'text/xml');
-        const items = Array.from(doc.querySelectorAll('item')).slice(0, 5);
-        if (!items.length) continue;
-        const parsed = items.map(el => ({
-          title: el.querySelector('title')?.textContent?.trim() ?? '',
-          link:  el.querySelector('link')?.textContent?.trim() ?? '#',
-          date:  el.querySelector('pubDate')?.textContent ?? '',
-        })).filter(i => i.title);
-        const filtered = parsed.filter(n => isSemiNews(n.title));
-        return (filtered.length >= 3 ? filtered : parsed).slice(0, 5);
-      } catch(e) { clearTimeout(timer); }
-    }
-
-    return [];
-  }
-
-  function renderNews(items) {
-    const list = document.getElementById('news-list');
-    if (!list) return;
-    if (!items.length) {
-      list.innerHTML = `<li style="font-size:12px;color:var(--muted)">News unavailable â check back later.</li>`;
-      return;
-    }
-    list.innerHTML = items.map(item => `
-      <li class="news-item">
-        <span class="news-bullet">â</span>
-        <a class="news-link" href="${item.link}" target="_blank" rel="noopener">${item.title}</a>
-        ${item.date ? `<span class="news-age">${timeAgo(item.date)}</span>` : ''}
-      </li>`).join('');
-  }
+  const loadedQuoteMap = {};
+  let cachedPeakDates = null;
 
   async function loadData() {
     const btn       = document.getElementById('refresh-btn');
@@ -1384,65 +1147,72 @@
 
     btn.disabled = true;
     spinner.style.display = 'block';
-    label.textContent = 'Loadingâ¦';
+    label.textContent = 'Loading…';
     errBanner.style.display = 'none';
 
     buildSkeletons();
     updateMarketStatus(getMarketStatus());
 
-    // Fetch news in parallel â renders independently of price data
-    fetchNews().then(renderNews).catch(() => renderNews([]));
-
     const tickers = ALL_ITEMS.map(h => h.ticker).join(',');
 
     try {
-      // Fire all fetches in parallel
-      const peakDatesPromise   = fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
-      const finnhubPromise     = fetchExtendedHoursViaFinnhub().catch(() => ({}));
-      const stockdataPromise   = fetchExtendedHoursViaStockData().catch(() => ({}));
-      const nasdaqPromise      = fetchExtendedHoursViaNasdaq().catch(e => { console.warn('NASDAQ:', e.message); return {}; });
-      const yahooEhPromise     = fetchExtendedHoursViaYahoo().catch(e => { console.warn('YahooEH:', e.message); return {}; });
-      const chartPromise       = fetchViaChartAPI().catch(e => { console.warn('Chart API:', e.message); return null; });
+      // ── Step 1: Load regular close prices ─────────────────────────────────
+      // Priority: Alpha Vantage (if key set) → Yahoo chart API → Yahoo crumb → WebSocket
+      const avPromise    = fetchViaAlphaVantage().catch(e => { console.warn('AV:', e.message); return null; });
+      const chartPromise = fetchViaChartAPI().catch(e => { console.warn('Chart:', e.message); return null; });
+      const crumbPromise = fetchViaCrumb(tickers).catch(e => { console.warn('Crumb:', e.message); return null; });
+      const peakPromise  = cachedPeakDates
+        ? Promise.resolve(cachedPeakDates)
+        : fetchPeakDates(ALL_ITEMS.map(h => h.ticker));
 
-      // Regular close data: crumb (batch v7) â chart API (per-symbol v8)
-      let results;
-      try {
-        results = await fetchViaCrumb(tickers);
-      } catch (e1) {
-        console.warn('Crumb failed:', e1.message);
-        results = await chartPromise;
-        if (!results) throw new Error(`Crumb: ${e1.message} | Chart API also failed`);
+      let results = await avPromise;
+      if (!results) results = await chartPromise;
+      if (!results) results = await crumbPromise;
+      if (!results) {
+        // Wait up to 8s for WebSocket to deliver prices via previousClose field
+        const threshold = [...ETFS, ...HOLDINGS].length * 0.5;
+        for (let i = 0; i < 16 && Object.keys(liveRegular).length < threshold; i++) {
+          await new Promise(r => setTimeout(r, 500));
+        }
+        const wsData = ALL_ITEMS.map(h => liveRegular[h.ticker]).filter(Boolean);
+        if (wsData.length >= threshold) results = wsData;
       }
+      if (!results) throw new Error('Could not load prices. Try refreshing, or add an Alpha Vantage key via ⚙.');
 
-      // Extended-hours priority: Finnhub > StockData > WebSocket > NASDAQ > Yahoo quoteSummary > chart OHLCV
-      const [finnhubEH, stockdataEH, nasdaqEH, yahooEH, chartResults] = await Promise.all([finnhubPromise, stockdataPromise, nasdaqPromise, yahooEhPromise, chartPromise]);
-      const chartMap = {};
-      if (chartResults && results !== chartResults) {
-        chartResults.forEach(q => { chartMap[q.symbol] = q; });
-      }
+      // ── Step 2: Merge any extended-hours data already in the WebSocket buffer
+      // The WS runs in parallel and may have already delivered EH prices.
       results.forEach(q => {
-        const live    = liveQuotes[q.symbol];
-        // Priority: Finnhub (CORS-native) > StockData (CORS-native) > WebSocket (live)
-        //          > Chart API (Yahoo-native, includePrePost=true, cache-busted)
-        //          > NASDAQ (proxied, updates slowly) > Yahoo EH (proxied)
-        const sources = [finnhubEH[q.symbol], stockdataEH[q.symbol], live, chartMap[q.symbol], nasdaqEH[q.symbol], yahooEH[q.symbol]];
-        const postSrc = sources.find(s => s?.postMarketPrice != null);
-        const preSrc  = sources.find(s => s?.preMarketPrice  != null);
-        if (postSrc) {
-          q.postMarketPrice         = postSrc.postMarketPrice;
-          q.postMarketChange        = postSrc.postMarketChange;
+        const ws = liveQuotes[q.symbol];
+        if (ws?.postMarketPrice != null && q.postMarketPrice == null) {
+          q.postMarketPrice         = ws.postMarketPrice;
+          q.postMarketChange        = ws.postMarketChange;
+          q.postMarketChangePercent = ws.postMarketChangePercent;
+        }
+        if (ws?.preMarketPrice != null && q.preMarketPrice == null) {
+          q.preMarketPrice          = ws.preMarketPrice;
+          q.preMarketChange         = ws.preMarketChange;
+          q.preMarketChangePercent  = ws.preMarketChangePercent;
+        }
+        // Also try AV/Finnhub EH if user has keys (already in flight in WS start)
+        const avEH = avKeyEH[q.symbol];
+        const fhEH = finnhubEH[q.symbol];
+        const postSrc = [avEH, fhEH].find(s => s?.postMarketPrice != null);
+        const preSrc  = [avEH, fhEH].find(s => s?.preMarketPrice  != null);
+        if (postSrc && q.postMarketPrice == null) {
+          q.postMarketPrice = postSrc.postMarketPrice;
+          q.postMarketChange = postSrc.postMarketChange;
           q.postMarketChangePercent = postSrc.postMarketChangePercent;
         }
-        if (preSrc) {
-          q.preMarketPrice          = preSrc.preMarketPrice;
-          q.preMarketChange         = preSrc.preMarketChange;
-          q.preMarketChangePercent  = preSrc.preMarketChangePercent;
+        if (preSrc && q.preMarketPrice == null) {
+          q.preMarketPrice = preSrc.preMarketPrice;
+          q.preMarketChange = preSrc.preMarketChange;
+          q.preMarketChangePercent = preSrc.preMarketChangePercent;
         }
       });
 
-      // Merge peak dates (provides date + validates high value)
+      // ── Step 3: Merge 52-week peak dates ──────────────────────────────────
       let peakDates = {};
-      try { peakDates = await peakDatesPromise; } catch(e) {}
+      try { peakDates = await peakPromise; cachedPeakDates = peakDates; } catch(e) {}
       results.forEach(q => {
         const pd = peakDates[q.symbol];
         if (pd) {
@@ -1450,19 +1220,23 @@
           if (q.fiftyTwoWeekHigh     == null) q.fiftyTwoWeekHigh     = pd.high;
           if (q.fiftyTwoWeekLow      == null) q.fiftyTwoWeekLow      = pd.low;
         }
-        // Compute % from 52-week high if not returned by quote API
-        if (q.fiftyTwoWeekHighChangePercent == null && q.fiftyTwoWeekHigh != null && q.regularMarketPrice != null) {
+        if (q.fiftyTwoWeekHighChangePercent == null && q.fiftyTwoWeekHigh && q.regularMarketPrice) {
           q.fiftyTwoWeekHighChangePercent = ((q.regularMarketPrice - q.fiftyTwoWeekHigh) / q.fiftyTwoWeekHigh) * 100;
         }
       });
 
-      const map = {};
-      results.forEach(q => { map[q.symbol] = q; });
+      // ── Step 4: Render ─────────────────────────────────────────────────────
+      const qMap = {};
+      results.forEach(q => { qMap[q.symbol] = q; });
 
       const allQuotes = [];
       ALL_ITEMS.forEach((h, i) => {
-        const q = map[h.ticker];
-        if (q) { renderCard(h, i, q); allQuotes.push(q); }
+        const q = qMap[h.ticker];
+        if (q) {
+          loadedQuoteMap[h.ticker] = q;
+          renderCard(h, i, q);
+          allQuotes.push(q);
+        }
       });
 
       updateSummary(allQuotes);
@@ -1470,7 +1244,7 @@
         'Updated ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     } catch (err) {
-      errBanner.textContent = `Failed to load data â ${err.message}`;
+      errBanner.textContent = `Failed to load data — ${err.message}`;
       errBanner.style.display = 'block';
       console.error(err);
     } finally {
@@ -1480,19 +1254,40 @@
     }
   }
 
-  // ââ Yahoo Finance WebSocket streamer ââââââââââââââââââââââââââââââââââââââââ
-  // Connects to the same real-time feed used by finance.yahoo.com â no proxy,
-  // no CORS issues, no caching. Messages are protobuf-encoded binary frames.
-  const liveQuotes = {};   // keyed by ticker; holds latest extended-hours data
-  let   streamerWs  = null;
+  // Caches for optional user-key EH sources (populated async, merged on next render)
+  let avKeyEH  = {};
+  let finnhubEH = {};
+  async function loadOptionalEH() {
+    const [a, f] = await Promise.all([
+      fetchExtendedHoursViaAlphaVantage().catch(() => ({})),
+      fetchExtendedHoursViaFinnhub().catch(() => ({})),
+    ]);
+    avKeyEH   = a;
+    finnhubEH = f;
+  }
 
-  // Minimal protobuf decoder for Yahoo Finance PricingData schema
+  // ── Yahoo Finance WebSocket streamer ────────────────────────────────────────
+  // Primary source for extended-hours prices (pre-market & after-hours).
+  // Bypasses CORS entirely — works from any domain without a proxy.
+  const liveQuotes  = {};
+  const liveRegular = {};
+  let   streamerWs  = null;
+  let   wsConnected = false;
+
+  function setWsStatus(state) {
+    wsConnected = state === 'connected';
+    const el  = document.getElementById('ws-status');
+    const lbl = document.getElementById('ws-label');
+    if (!el) return;
+    el.className = 'ws-status ' + state;
+    lbl.textContent = state === 'connected' ? 'Live' : state === 'connecting' ? 'Connecting…' : 'Reconnecting…';
+  }
+
   function decodeYahooProto(data) {
     let bytes;
     if (data instanceof ArrayBuffer) {
       bytes = new Uint8Array(data);
     } else if (typeof data === 'string') {
-      // Occasionally base64-encoded
       try {
         const b = atob(data);
         bytes = new Uint8Array(b.length);
@@ -1527,12 +1322,12 @@
       try {
         const tag = readVarint();
         const fn = tag >> 3, wt = tag & 0x7;
-        if (wt === 0) {        // varint
+        if (wt === 0) {
           const v = readVarint();
           if (fn === 3)  q.time = v;
-          if (fn === 7)  q.marketHours = v;   // 0=pre, 1=regular, 2=post, 3=ext-post
+          if (fn === 7)  q.marketHours = v;
           if (fn === 9)  q.dayVolume = v;
-        } else if (wt === 5) { // float32
+        } else if (wt === 5) {
           const v = readF32();
           if (fn === 2)  q.price = v;
           if (fn === 8)  q.changePercent = v;
@@ -1541,10 +1336,10 @@
           if (fn === 50) q.regularMarketPrice = v;
           if (fn === 52) q.regularMarketChange = v;
           if (fn === 57) q.regularMarketChangePercent = v;
-        } else if (wt === 2) { // length-delimited (string)
+        } else if (wt === 2) {
           const len = readVarint();
           if (fn === 1) q.id = readStr(len); else pos += len;
-        } else if (wt === 1) { // 64-bit â skip
+        } else if (wt === 1) {
           pos += 8;
         } else break;
       } catch(e) { break; }
@@ -1554,77 +1349,225 @@
 
   function startStreamer() {
     if (streamerWs) return;
+    setWsStatus('connecting');
     try {
       streamerWs = new WebSocket('wss://streamer.finance.yahoo.com');
       streamerWs.binaryType = 'arraybuffer';
+
       streamerWs.onopen = () => {
+        setWsStatus('connected');
         streamerWs.send(JSON.stringify({ subscribe: ALL_ITEMS.map(h => h.ticker) }));
       };
+
       streamerWs.onmessage = e => {
         const q = decodeYahooProto(e.data);
         if (!q) return;
+
         const mh = q.marketHours ?? 1;
-        if (mh === 2 || mh === 3) {   // post-market
+
+        const regPrice = q.regularMarketPrice || q.previousClose;
+        if (regPrice) {
+          const ahChg  = (mh === 2 || mh === 3) && q.price ? q.price - regPrice : null;
+          const preChg = mh === 0               && q.price ? q.price - regPrice : null;
+          liveRegular[q.id] = {
+            symbol: q.id,
+            regularMarketPrice:         regPrice,
+            regularMarketChange:        q.regularMarketChange        ?? null,
+            regularMarketChangePercent: q.regularMarketChangePercent ?? null,
+            postMarketPrice:         (mh === 2 || mh === 3) ? q.price : null,
+            postMarketChange:        ahChg,
+            postMarketChangePercent: ahChg  != null ? (ahChg  / regPrice) * 100 : null,
+            preMarketPrice:          mh === 0 ? q.price : null,
+            preMarketChange:         preChg,
+            preMarketChangePercent:  preChg != null ? (preChg / regPrice) * 100 : null,
+            fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null,
+          };
+        }
+
+        const isPost = mh === 2 || mh === 3;
+        const isPre  = mh === 0;
+        if (isPost) {
           liveQuotes[q.id] = {
-            _s: 'post',
             postMarketPrice:         q.price,
             postMarketChange:        q.change        ?? null,
             postMarketChangePercent: q.changePercent ?? null,
           };
-        } else if (mh === 0) {          // pre-market
+        } else if (isPre) {
           liveQuotes[q.id] = {
-            _s: 'pre',
             preMarketPrice:          q.price,
             preMarketChange:         q.change        ?? null,
             preMarketChangePercent:  q.changePercent ?? null,
           };
         }
+
+        const session = getMarketStatus();
+        const relevant = (isPost && (session === 'after' || session === 'closed')) ||
+                         (isPre  &&  session === 'pre');
+        if (relevant && loadedQuoteMap[q.id]) {
+          const existing = loadedQuoteMap[q.id];
+          if (isPost) {
+            existing.postMarketPrice         = q.price;
+            existing.postMarketChange        = q.change        ?? null;
+            existing.postMarketChangePercent = q.changePercent ?? null;
+          } else {
+            existing.preMarketPrice          = q.price;
+            existing.preMarketChange         = q.change        ?? null;
+            existing.preMarketChangePercent  = q.changePercent ?? null;
+          }
+          const item  = ALL_ITEMS.find(h => h.ticker === q.id);
+          const idx   = ALL_ITEMS.indexOf(item);
+          if (item) renderCard(item, idx, existing);
+        }
       };
-      streamerWs.onerror = () => { streamerWs = null; };
-      streamerWs.onclose = () => { streamerWs = null; setTimeout(startStreamer, 15000); };
-    } catch(e) { streamerWs = null; }
+
+      streamerWs.onerror = () => { streamerWs = null; setWsStatus('reconnecting'); };
+      streamerWs.onclose = () => {
+        streamerWs = null;
+        setWsStatus('reconnecting');
+        setTimeout(startStreamer, 10000);
+      };
+    } catch(e) { streamerWs = null; setWsStatus('reconnecting'); }
   }
-  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-  loadData();
+  // Start WS first — it runs in parallel so EH data is ready by the time cards render
   startStreamer();
-  setInterval(loadData, 60000);
+  loadOptionalEH();
+  loadData();
+  let dataInterval = setInterval(loadData, 60000);
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(dataInterval);
+      if (streamerWs) { streamerWs.close(); streamerWs = null; }
+    } else {
+      startStreamer();
+      loadData();
+      dataInterval = setInterval(loadData, 60000);
+    }
+  });
 
-  // ── Auto-session filter: show only the relevant extended-hours row ──
-  function applySessionFilter() {
-    const s = getMarketStatus();
-    // 'pre'=4-9:30am ET, 'after'=4-8pm ET, 'open'=market hours, 'closed'=overnight
-    // During closed/overnight hours, default to showing after-hours (most recently ended)
-    const showPre   = (s === 'pre');
-    const showAfter = (s === 'after' || s === 'closed');
-    document.querySelectorAll('.ext-row').forEach(row => {
-      const lbl = row.querySelector('.ah-label');
-      if (!lbl) return;
-      const txt = lbl.textContent.trim();
-      if (s === 'open') {
-        row.style.display = 'none'; // hide extended-hours during regular market
-      } else if (txt === 'Pre-Market') {
-        row.style.display = showPre ? '' : 'none';
-      } else if (txt === 'After Hours') {
-        row.style.display = showAfter ? '' : 'none';
-      }
-    });
-    // Update the summary label to match the active session
-    const summaryLbl = document.querySelector('.summary-ah-label');
-    if (summaryLbl) {
-      summaryLbl.textContent = showPre ? 'Pre-Market Avg' : 'After-Hours Avg';
+  window.addEventListener('beforeunload', () => {
+    if (streamerWs) streamerWs.close();
+  });
+
+  // ── Interactive chart ────────────────────────────────────────────────────────
+  const TV_SYMBOLS = {
+    'SMH':       'NASDAQ:SMH',
+    'QQQ':       'NASDAQ:QQQ',
+    'NVDA':      'NASDAQ:NVDA',
+    'AVGO':      'NASDAQ:AVGO',
+    'TSM':       'NYSE:TSM',
+    'ASML':      'NASDAQ:ASML',
+    'AMD':       'NASDAQ:AMD',
+    'QCOM':      'NASDAQ:QCOM',
+    'TXN':       'NASDAQ:TXN',
+    'AMAT':      'NASDAQ:AMAT',
+    'MU':        'NASDAQ:MU',
+    'INTC':      'NASDAQ:INTC',
+    '005930.KS': 'KRX:005930',
+    '000660.KS': 'KRX:000660',
+  };
+
+  let tvWidgetInstance = null;
+
+  function openChart(item) {
+    const tvSym = TV_SYMBOLS[item.ticker] || item.ticker;
+
+    // Populate header
+    document.getElementById('chart-ticker-label').textContent = item.ticker;
+    document.getElementById('chart-company-label').textContent = item.name;
+
+    // Find current quote data for the price display
+    const cardEl = document.getElementById('card-' + item.ticker);
+    const priceEl   = cardEl?.querySelector('.regular-price');
+    const badgeEl   = cardEl?.querySelector('.change-badge');
+    const chartPrice  = document.getElementById('chart-price');
+    const chartChange = document.getElementById('chart-change');
+
+    if (priceEl)  chartPrice.textContent  = priceEl.textContent;
+    else          chartPrice.textContent  = '';
+    if (badgeEl) {
+      chartChange.textContent = badgeEl.textContent.trim();
+      chartChange.className   = 'chart-change ' + (badgeEl.classList.contains('up') ? 'up' : badgeEl.classList.contains('down') ? 'down' : 'flat');
+    } else {
+      chartChange.textContent = '';
+      chartChange.className   = 'chart-change flat';
+    }
+
+    document.getElementById('chart-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    const body = document.getElementById('chart-body');
+    if (tvWidgetInstance) {
+      try { tvWidgetInstance.remove(); } catch(e) {}
+      tvWidgetInstance = null;
+    }
+    body.innerHTML = '';
+    const containerId = 'tv_widget_' + Date.now();
+    const widgetDiv = document.createElement('div');
+    widgetDiv.id = containerId;
+    widgetDiv.style.cssText = 'width:100%;height:100%';
+    body.appendChild(widgetDiv);
+
+    if (window.TradingView) {
+      tvWidgetInstance = new TradingView.widget({
+        container_id:        containerId,
+        symbol:              tvSym,
+        interval:            'D',
+        timezone:            'America/New_York',
+        theme:               'light',
+        style:               '1',
+        locale:              'en',
+        toolbar_bg:          '#ffffff',
+        backgroundColor:     'rgba(255,255,255,1)',
+        gridColor:           'rgba(0,0,0,0.04)',
+        width:               '100%',
+        height:              '100%',
+        allow_symbol_change: false,
+        hide_side_toolbar:   false,
+        enable_publishing:   false,
+        save_image:          false,
+        withdateranges:      true,
+        hide_volume:         false,
+        studies:             [],
+      });
+    } else {
+      // Fallback: simple Yahoo Finance chart iframe
+      body.innerHTML = `<iframe
+        src="https://finance.yahoo.com/chart/${encodeURIComponent(item.ticker)}#eyJpbnRlcnZhbCI6ImRheSIsInBlcmlvZGljaXR5IjoxLCJ0aW1lVW5pdCI6bnVsbH0="
+        style="width:100%;height:100%;border:none;"
+      ></iframe>`;
     }
   }
 
-  // Patch loadData to run the filter after each data refresh
-  const _origLoad = loadData;
-  window.loadData = async function() {
-    await _origLoad.apply(this, arguments);
-    setTimeout(applySessionFilter, 150);
-  };
-  // Also run on initial page load
-  setTimeout(applySessionFilter, 800);
+  function closeChart() {
+    document.getElementById('chart-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      document.getElementById('chart-body').innerHTML = '';
+      tvWidgetInstance = null;
+    }, 350);
+  }
+
+  function handleCardActivate(e) {
+    if (e.target.closest('a, button')) return;
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const item = ALL_ITEMS.find(h => h.ticker === card.dataset.ticker);
+    if (item) openChart(item);
+  }
+
+  document.getElementById('grid').addEventListener('click', handleCardActivate);
+  document.getElementById('grid').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardActivate(e); }
+  });
+
+  // Close on backdrop click or Escape key
+  document.getElementById('chart-backdrop').addEventListener('click', closeChart);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeChart();
+  });
+  // ────────────────────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>

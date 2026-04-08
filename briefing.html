@@ -3,438 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI &amp; Chips Daily · April 7, 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="briefing-style.css">
+<title>AI &amp; Chips Daily — April 7, 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #e2e2e2; font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; }
+  .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+  .header { text-align: center; padding: 40px 0 32px; border-bottom: 1px solid #2a2a2a; margin-bottom: 32px; }
+  .header h1 { font-size: 2rem; color: #3b82f6; margin-bottom: 8px; }
+  .header .date { color: #94a3b8; font-size: 1.1rem; }
+  .header .badge { display: inline-block; background: #1e3a5f; color: #60a5fa; padding: 4px 14px; border-radius: 20px; font-size: 0.85rem; margin-top: 8px; }
+  .section-title { font-size: 1.5rem; color: #3b82f6; margin: 36px 0 18px; padding-bottom: 8px; border-bottom: 1px solid #1e293b; }
+  .card { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card-top { background: #1a1f2e; }
+  .card h3 { color: #f1f5f9; font-size: 1.1rem; margin-bottom: 8px; }
+  .card h4 { color: #cbd5e1; font-size: 1rem; margin-bottom: 6px; }
+  .card p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 8px; }
+  .source { font-size: 0.8rem; color: #64748b; margin-top: 8px; }
+  .source a { color: #60a5fa; text-decoration: none; }
+  .source a:hover { text-decoration: underline; }
+  .stock-line { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #64748b; margin-top: 10px; padding-top: 8px; border-top: 1px solid #1e293b; flex-wrap: wrap; }
+  .stock-line .ticker { color: #94a3b8; font-weight: 600; }
+  .stock-line .bull { color: #4ade80; }
+  .stock-line .bear { color: #f87171; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+  .stat-card { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 18px; text-align: center; }
+  .stat-card .number { font-size: 1.8rem; font-weight: 700; color: #3b82f6; }
+  .stat-card .label { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
+  .tweet-section { text-align: center; }
+  .tweet-card { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 16px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .tweet-card .handle { color: #60a5fa; font-size: 0.9rem; }
+  .tweet-card .why { color: #94a3b8; font-size: 0.85rem; margin-top: 8px; font-style: italic; }
+  .tweet-card .text-label { display: inline-block; background: #1e293b; color: #94a3b8; padding: 2px 10px; border-radius: 10px; font-size: 0.75rem; margin-bottom: 10px; }
+  .footer { text-align: center; padding: 32px 0 16px; border-top: 1px solid #2a2a2a; margin-top: 40px; color: #475569; font-size: 0.8rem; }
+  a { color: #60a5fa; }
+</style>
 </head>
 <body>
+<div class="container">
 
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-label">Apr 7</div>
-  <div style="overflow:hidden;flex:1">
-    <div class="ticker-track">
-      <span class="ticker-item">AVGO <span class="up">▲ +6.0%</span></span>
-      <span class="ticker-item">TSM <span class="up">▲ +1.2%</span></span>
-      <span class="ticker-item">NVDA <span class="up">▲ +0.8%</span></span>
-      <span class="ticker-item">AMD <span class="up">▲ +1.1%</span></span>
-      <span class="ticker-item">INTC <span class="down">▼ -13.0%</span></span>
-      <span class="ticker-item">GOOGL <span class="up">▲ +2.3%</span></span>
-      <span class="ticker-item">MSFT <span class="up">▲ +0.5%</span></span>
-      <span class="ticker-item">MRVL <span class="up">▲ +3.1%</span></span>
-      <span class="ticker-item">ASML <span class="down">▼ -1.4%</span></span>
-      <span class="ticker-item">META <span class="up">▲ +1.9%</span></span>
-      <span class="ticker-item">AVGO <span class="up">▲ +6.0%</span></span>
-      <span class="ticker-item">TSM <span class="up">▲ +1.2%</span></span>
-      <span class="ticker-item">NVDA <span class="up">▲ +0.8%</span></span>
-      <span class="ticker-item">AMD <span class="up">▲ +1.1%</span></span>
-      <span class="ticker-item">INTC <span class="down">▼ -13.0%</span></span>
-      <span class="ticker-item">GOOGL <span class="up">▲ +2.3%</span></span>
-      <span class="ticker-item">MSFT <span class="up">▲ +0.5%</span></span>
-      <span class="ticker-item">MRVL <span class="up">▲ +3.1%</span></span>
-      <span class="ticker-item">ASML <span class="down">▼ -1.4%</span></span>
-      <span class="ticker-item">META <span class="up">▲ +1.9%</span></span>
-    </div>
+<div class="header">
+  <h1>🤖 AI &amp; Semiconductor Intelligence Briefing</h1>
+  <div class="date">Monday, April 7, 2026</div>
+  <div class="badge">📡 24-Hour Briefing</div>
+</div>
+
+<!-- ===== TOP STORIES ===== -->
+<h2 class="section-title">🔥 Top Stories</h2>
+
+<div class="card card-top">
+  <h3>Anthropic Hits $30B Run Rate, Signs 3.5 GW Compute Deal with Google &amp; Broadcom</h3>
+  <p>Anthropic announced a landmark expansion of its compute partnership with Google and Broadcom, securing 3.5 gigawatts of next-generation TPU capacity — the majority housed in the U.S. — set to come online in 2027. The deal covers future TPU generations, networking, and infrastructure components through 2031. Simultaneously, Anthropic revealed its annualized revenue run rate has surged to $30 billion, tripling from $9 billion at end of 2025, driven by explosive enterprise demand for Claude models.</p>
+  <div class="source">TechCrunch · Apr 7, 2026 · <a href="https://techcrunch.com/2026/04/07/anthropic-compute-deal-google-broadcom-tpus/">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">AVGO</span> <span class="ticker">GOOGL</span> <span>Broadcom benefits as custom AI chip provider; Google Cloud deepens AI infra revenue</span>
   </div>
 </div>
 
-<!-- NAV -->
-<nav id="site-nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="briefing.html">
-      <span class="nav-brand-dot"></span>
-      AI &amp; Chips Daily
-    </a>
-    <span class="nav-date">Tuesday, April 7, 2026</span>
-    <button class="nav-smh-btn" onclick="(window.parent !== window ? window.parent.switchTab('smh') : window.location.href='smh.html')">
-      📈 SMH Tracker
-    </button>
-  </div>
-</nav>
-
-<!-- DATE NAV -->
-<div class="date-nav">
-  <div class="date-nav-inner">
-    <span class="date-nav-label">Edition</span>
-    <div class="date-pills">
-      <a href="briefing-2026-04-03.html" class="date-pill">Apr 3</a>
-      <a href="briefing-2026-04-04.html" class="date-pill">Apr 4</a>
-      <a href="briefing-2026-04-06.html" class="date-pill">Apr 6</a>
-      <a href="briefing.html" class="date-pill active">Apr 7 · Today</a>
-    </div>
+<div class="card card-top">
+  <h3>Dimon Predicts AI Capital Spending Will Hit $725 Billion in 2026</h3>
+  <p>In his latest letter to JPMorgan investors, Jamie Dimon forecast that the top five hyperscalers — Microsoft, Amazon, Alphabet, Meta, and Apple — will increase annual AI-driven capital spending from $450 billion in 2025 to $725 billion in 2026, a 60%+ jump. Data center REITs, AI chipmakers, and optical equipment suppliers stand to benefit most, while legacy cloud software firms face pressure from AI-native competitors.</p>
+  <div class="source">The Motley Fool · Apr 7, 2026 · <a href="https://www.fool.com/investing/2026/04/07/dimon-says-ai-capital-spending-will-hit-725-billio/">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">NVDA</span> <span class="ticker">AVGO</span> <span class="ticker">MSFT</span> <span class="ticker">AMZN</span> <span class="ticker">GOOGL</span> <span class="ticker">META</span> <span>Massive capex surge benefits chip and infra suppliers across the board</span>
   </div>
 </div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">
-      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;display:inline-block"></span>
-      Tuesday, April 7, 2026
-    </div>
-    <h1 class="hero-h1">AI &amp; <em>Chips</em><br>Daily</h1>
-    <p class="hero-sub">Broadcom surges 6% on landmark compute deals. Intel craters 13%. The great chip divergence is here.</p>
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-val up">+6%</div>
-        <div class="hero-stat-label">AVGO Today</div>
-      </div>
-      <div class="hero-divider"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val down">-13%</div>
-        <div class="hero-stat-label">INTC Today</div>
-      </div>
-      <div class="hero-divider"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">$30B</div>
-        <div class="hero-stat-label">Anthropic Run Rate</div>
-      </div>
-      <div class="hero-divider"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">$100B</div>
-        <div class="hero-stat-label">Broadcom AI Target</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TOP STORIES -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Top Stories</div>
-      <h2 class="section-title reveal" style="--d:0.05s">Winners and losers<br>in the AI chip war.</h2>
-    </div>
-    <div class="top-stories-list">
-
-      <div class="top-story reveal" style="--d:0.1s">
-        <div>
-          <div><span class="top-story-tag tag-chip">⚡ Broadcom</span></div>
-          <a class="top-story-h" href="https://markets.financialcontent.com/stocks/article/marketminute-2026-4-7-broadcoms-custom-silicon-strategy-propels-shares-6-as-alphabet-and-anthropic-lock-in-multi-year-ai-deals" target="_blank" rel="noopener">Broadcom Surges 6% as Alphabet and Anthropic Lock In Multi-Year AI Compute Deals</a>
-          <p class="top-story-body">Broadcom's stock jumped 6% Tuesday after markets confirmed its landmark AI chip agreements: a deal with Alphabet extending through 2031 to supply Google's 7th-gen TPU "Ironwood," and a separate deal with Anthropic to deliver 1 gigawatt of TPU-based compute capacity by end of 2026, scaling to 3.5 gigawatts by 2027. Mizuho analysts estimate Broadcom will generate $21 billion from Anthropic in 2026 alone and $42 billion in 2027.</p>
-          <div class="story-meta">
-            <a class="source-chip" href="https://markets.financialcontent.com/stocks/article/marketminute-2026-4-7-broadcoms-custom-silicon-strategy-propels-shares-6-as-alphabet-and-anthropic-lock-in-multi-year-ai-deals" target="_blank" rel="noopener"><span class="source-chip-dot"></span>FinancialContent</a>
-            <a class="source-chip" href="https://www.cnbc.com/amp/2026/04/07/broadcom-shares-jump-before-bell-google-deal.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>CNBC</a>
-          </div>
-        </div>
-        <div class="stock-chips">
-          <span class="sig sig-up">▲ AVGO +6%</span>
-          <span class="sig sig-up">▲ GOOGL</span>
-          <span class="sig sig-up">▲ TSM</span>
-        </div>
-      </div>
-
-      <div class="top-story reveal" style="--d:0.15s">
-        <div>
-          <div><span class="top-story-tag tag-break">🔴 Earnings</span></div>
-          <a class="top-story-h" href="https://www.tomshardware.com/pc-components/cpus/intel-shares-down-13-percent-as-company-only-manages-to-shrink-losses-in-latest-earnings-demand-to-outpace-2026-supply-usd300-million-deficit-comes-despite-more-than-usd20-billion-in-outside-investment-from-nvidia" target="_blank" rel="noopener">Intel Shares Collapse 13% — Company Only Managed to Shrink Losses Despite $20B in Outside Investment</a>
-          <p class="top-story-body">Intel reported it only managed to narrow its losses rather than achieve profitability — despite receiving over $20 billion in outside investment including NVIDIA's $5B equity stake. A $300 million deficit remains. Demand is expected to outpace 2026 supply, yet Intel's structural challenges persist. The result underscores how difficult the turnaround remains even as 18A high-volume manufacturing was achieved.</p>
-          <div class="story-meta">
-            <a class="source-chip" href="https://www.tomshardware.com/pc-components/cpus/intel-shares-down-13-percent-as-company-only-manages-to-shrink-losses-in-latest-earnings-demand-to-outpace-2026-supply-usd300-million-deficit-comes-despite-more-than-usd20-billion-in-outside-investment-from-nvidia" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Tom's Hardware</a>
-          </div>
-        </div>
-        <div class="stock-chips">
-          <span class="sig sig-down">▼ INTC -13%</span>
-          <span class="sig sig-up">▲ TSM NVDA</span>
-        </div>
-      </div>
-
-      <div class="top-story reveal" style="--d:0.2s">
-        <div>
-          <div><span class="top-story-tag tag-ai">📱 Supply</span></div>
-          <a class="top-story-h" href="https://www.digitimes.com/news/a20260407PD221/tsmc-qualcomm-mediatek-capacity-2026.html" target="_blank" rel="noopener">MediaTek and Qualcomm Cut TSMC Smartphone Orders 10–15% as Consumer Demand Softens</a>
-          <p class="top-story-body">MediaTek and Qualcomm have reduced wafer start orders with TSMC by an estimated 10–15% on 4nm and 3nm processes, according to a Digitimes report. The cuts reflect softening demand in mid-to-low-end smartphones among Chinese brands. Meanwhile, TSMC's AI-related capacity — serving NVIDIA, Apple, and AMD — remains fully booked, reinforcing the bifurcation between AI and consumer silicon demand.</p>
-          <div class="story-meta">
-            <a class="source-chip" href="https://www.digitimes.com/news/a20260407PD221/tsmc-qualcomm-mediatek-capacity-2026.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Digitimes</a>
-          </div>
-        </div>
-        <div class="stock-chips">
-          <span class="sig sig-down">▼ QCOM MTIK</span>
-          <span class="sig sig-up">▲ TSM AI</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- SEMICONDUCTORS -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Semiconductors</div>
-      <h2 class="section-title reveal" style="--d:0.05s">Broadcom's AI bet<br>is paying off.</h2>
-    </div>
-    <div class="bento bento-2 reveal" style="--d:0.08s">
-
-      <div class="story-card card-featured" style="--card-accent: rgba(52,217,128,0.5)">
-        <div class="card-tag"><span class="top-story-tag tag-chip">🟢 AVGO</span></div>
-        <a class="card-h" href="https://247wallst.com/investing/2026/04/07/broadcoms-long-term-google-tpu-deal-is-bigger-than-it-looks-for-ai-infrastructure/" target="_blank" rel="noopener">Broadcom–Alphabet 2031 TPU Deal: Bigger Than It Looks for AI Infrastructure</a>
-        <p class="card-body">Google's 7th-gen TPU "Ironwood" supply agreement with Broadcom runs through 2031 — a signal of Alphabet's long-term compute commitment. Google's 2026 capex is projected at $180 billion. The multi-year lock-in means Broadcom is becoming the backbone of Google's AI infrastructure, not just a chip supplier. CEO Hock Tan now has "line of sight" to $100 billion in AI chip revenue.</p>
-        <div class="card-footer">
-          <a class="source-chip" href="https://247wallst.com/investing/2026/04/07/broadcoms-long-term-google-tpu-deal-is-bigger-than-it-looks-for-ai-infrastructure/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>24/7 Wall St.</a>
-          <div class="card-stocks">
-            <span class="sig sig-up">▲ AVGO GOOGL</span>
-            <span class="sig sig-up">▲ TSM</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="story-card" style="--card-accent: rgba(79,142,247,0.4)">
-        <div class="card-tag"><span class="top-story-tag tag-ai">🧠 Anthropic</span></div>
-        <a class="card-h" href="https://siliconangle.com/2026/04/06/anthropic-taps-google-broadcom-yet-ai-chips-revenue-run-rate-tops-30b/" target="_blank" rel="noopener">Anthropic Secures 3.5GW of Compute Capacity by 2027 via Broadcom Deal</a>
-        <p class="card-body">Anthropic's deal with Broadcom locks in 1 gigawatt of TPU compute by end of 2026, scaling to 3.5 gigawatts by 2027 — one of the largest AI compute commitments in history. Anthropic's revenue run rate has already topped $30 billion, up from $9 billion at end of 2025. Over 1,000 enterprise customers are now spending more than $1 million per year.</p>
-        <div class="card-footer">
-          <a class="source-chip" href="https://siliconangle.com/2026/04/06/anthropic-taps-google-broadcom-yet-ai-chips-revenue-run-rate-tops-30b/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>SiliconAngle</a>
-          <div class="card-stocks">
-            <span class="sig sig-up">▲ AVGO AMZN</span>
-            <span class="sig sig-up">▲ GOOGL TSM</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="story-card" style="--card-accent: rgba(247,82,82,0.3)">
-        <div class="card-tag"><span class="top-story-tag tag-break">🔴 Intel</span></div>
-        <a class="card-h" href="https://www.tomshardware.com/pc-components/cpus/intel-shares-down-13-percent-as-company-only-manages-to-shrink-losses-in-latest-earnings-demand-to-outpace-2026-supply-usd300-million-deficit-comes-despite-more-than-usd20-billion-in-outside-investment-from-nvidia" target="_blank" rel="noopener">Intel -13%: $300M Deficit Remains Despite $20B+ External Investment</a>
-        <p class="card-body">Intel's latest results show the company narrowed but did not eliminate its losses, with a $300 million deficit persisting despite massive outside backing. Demand is expected to outpace 2026 foundry supply — meaning Intel is leaving money on the table. The 18A node achieved HVM but profitability remains elusive, raising questions about the timeline to sustainable margins.</p>
-        <div class="card-footer">
-          <a class="source-chip" href="https://www.tomshardware.com/pc-components/cpus/intel-shares-down-13-percent-as-company-only-manages-to-shrink-losses-in-latest-earnings-demand-to-outpace-2026-supply-usd300-million-deficit-comes-despite-more-than-usd20-billion-in-outside-investment-from-nvidia" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Tom's Hardware</a>
-          <div class="card-stocks">
-            <span class="sig sig-down">▼ INTC -13%</span>
-            <span class="sig sig-up">▲ TSM NVDA</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="story-card" style="--card-accent: rgba(52,217,128,0.3)">
-        <div class="card-tag"><span class="top-story-tag tag-chip">🏭 TSMC</span></div>
-        <a class="card-h" href="https://www.digitimes.com/news/a20260407PD205/ai-chip-tsmc-chips-nvidia-amd.html" target="_blank" rel="noopener">TSMC Remains Dominant Foundry — NVIDIA and Apple Alone Are 40%+ of Revenue</a>
-        <p class="card-body">TSMC's position as the dominant AI foundry partner is strengthening. NVIDIA and Apple orders now account for over 40% of TSMC's total revenue. Despite smartphone order cuts from MediaTek and Qualcomm, TSMC's AI-related capacity is fully booked. Its 2026 revenue is expected to rise ~30% in USD terms, underpinned by AI infrastructure buildout.</p>
-        <div class="card-footer">
-          <a class="source-chip" href="https://www.digitimes.com/news/a20260407PD205/ai-chip-tsmc-chips-nvidia-amd.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Digitimes</a>
-          <div class="card-stocks">
-            <span class="sig sig-up">▲ TSM +30% rev</span>
-            <span class="sig sig-up">▲ NVDA AAPL</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- AI ECONOMY -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">AI &amp; Policy</div>
-      <h2 class="section-title reveal" style="--d:0.05s">OpenAI's vision for<br>the intelligence age.</h2>
-    </div>
-    <div class="bento bento-2 reveal" style="--d:0.08s">
-
-      <div class="story-card card-featured" style="--card-accent: rgba(168,85,247,0.5)">
-        <div class="card-tag"><span class="top-story-tag tag-fund">🌐 OpenAI Policy</span></div>
-        <a class="card-h" href="https://techcrunch.com/2026/04/06/openais-vision-for-the-ai-economy-public-wealth-funds-robot-taxes-and-a-four-day-work-week/" target="_blank" rel="noopener">OpenAI's AI Economy Blueprint: 4-Day Workweek, Robot Taxes, Public Wealth Funds</a>
-        <p class="card-body">OpenAI published a sweeping policy paper outlining its vision for the "intelligence age" — blending left-leaning economic safety nets with market-capitalist AI scaling. Key proposals: a four-day workweek with no pay loss, public wealth funds to distribute AI-driven prosperity, robot taxes to fund social safety nets, new AI oversight bodies, and tax credits for AI infrastructure buildouts. From an $852B company, the document is striking for its progressive economic framing.</p>
-        <div class="card-footer">
-          <a class="source-chip" href="https://techcrunch.com/2026/04/06/openais-vision-for-the-ai-economy-public-wealth-funds-robot-taxes-and-a-four-day-work-week/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>TechCrunch</a>
-          <div class="card-stocks">
-            <span class="sig sig-up">▲ Narrative</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="story-card" style="--card-accent: rgba(52,217,128,0.4)">
-        <div class="card-tag"><span class="top-story-tag tag-chip">📐 TSMC</span></div>
-        <a class="card-h" href="https://finance.yahoo.com/sectors/technology/articles/global-semiconductor-foundry-market-hit-102000332.html" target="_blank" rel="noopener">TSMC 2nm Node Entering Mass Production H2 2026 — 15% Faster, 35% More Efficient</a>
-        <p class="card-body">TSMC's 2nm node is on track for mass production in H2 2026 — 15% faster and 35% more energy-efficient than 3nm. TSMC's Arizona GigaFab and Japan 3nm plants are now operating as geopolitical insurance for US and Japanese supply chains. The US-Taiwan $250B investment deal is in effect, cementing TSMC's footprint outside of Taiwan.</p>
-        <div class="card-footer">
-          <a class="source-chip" href="https://finance.yahoo.com/sectors/technology/articles/global-semiconductor-foundry-market-hit-102000332.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Yahoo Finance</a>
-          <div class="card-stocks">
-            <span class="sig sig-up">▲ TSM AMAT</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- NUMBERS -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Numbers to Know</div>
-      <h2 class="section-title reveal" style="--d:0.05s">April 7 by<br>the numbers.</h2>
-    </div>
-    <div class="numbers-bento">
-      <div class="number-card" style="--nc-color: var(--green)">
-        <div class="number-badge">AVGO</div>
-        <div class="number-val up" data-target="6" data-suffix="%" data-prefix="+">+0%</div>
-        <div class="number-sub">Broadcom stock gain — driven by Google 2031 + Anthropic compute deals</div>
-      </div>
-      <div class="number-card" style="--nc-color: var(--red)">
-        <div class="number-badge">INTC</div>
-        <div class="number-val down" data-target="13" data-suffix="%" data-prefix="-">-0%</div>
-        <div class="number-sub">Intel stock drop after reporting only managed to shrink losses</div>
-      </div>
-      <div class="number-card" style="--nc-color: var(--purple)">
-        <div class="number-badge">Anthropic</div>
-        <div class="number-val" data-target="30" data-prefix="$" data-suffix="B">$0B</div>
-        <div class="number-sub">Revenue run rate — up from $9B at end of 2025</div>
-      </div>
-      <div class="number-card" style="--nc-color: var(--green)">
-        <div class="number-badge">Broadcom AI Rev</div>
-        <div class="number-val" data-target="8.4" data-prefix="$" data-suffix="B" data-decimal="1">$0B</div>
-        <div class="number-sub">Q1 2026 AI chip revenue (+106% year-over-year)</div>
-      </div>
-      <div class="number-card" style="--nc-color: var(--blue)">
-        <div class="number-badge">Anthropic Compute</div>
-        <div class="number-val" data-target="3.5" data-suffix="GW" data-decimal="1">0GW</div>
-        <div class="number-sub">TPU capacity secured via Broadcom by end of 2027</div>
-      </div>
-      <div class="number-card" style="--nc-color: var(--amber)">
-        <div class="number-badge">Broadcom Target</div>
-        <div class="number-val" data-target="100" data-prefix="$" data-suffix="B">$0B</div>
-        <div class="number-sub">CEO Hock Tan's AI chip revenue target — now in sight</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- VOICES -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Voices</div>
-      <h2 class="section-title reveal" style="--d:0.05s">What the industry<br>is saying.</h2>
-    </div>
-    <div class="voices-grid">
-
-      <div class="voice-card reveal" style="--d:0.1s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #34d980, #0ea5e9)">H</div>
-          <div>
-            <div class="voice-name">Hock Tan</div>
-            <div class="voice-handle">CEO, Broadcom</div>
-          </div>
-        </div>
-        <p class="voice-quote">"We have line of sight to $100 billion in AI chip revenue. The Google and Anthropic deals are the foundation of a decade-long infrastructure commitment."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> Broadcom's custom ASIC strategy — building chips tailored for hyperscalers rather than general-purpose GPUs — is now validated at the largest scale in the industry.</div>
-      </div>
-
-      <div class="voice-card reveal" style="--d:0.15s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #a855f7, #ec4899)">D</div>
-          <div>
-            <div class="voice-name">Dario Amodei</div>
-            <div class="voice-handle">CEO, Anthropic</div>
-          </div>
-        </div>
-        <p class="voice-quote">"We've crossed $30 billion in annualized revenue and we're accelerating. The compute infrastructure we're securing now is what allows us to train the next generation of models."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> Anthropic's $30B run rate — up 3× in 6 months — shows that safe AI development is also highly commercial. The Broadcom compute deal secures their training runway for years.</div>
-      </div>
-
-      <div class="voice-card reveal" style="--d:0.2s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #4f8ef7, #22d3ee)">S</div>
-          <div>
-            <div class="voice-name">Sundar Pichai</div>
-            <div class="voice-handle">CEO, Alphabet</div>
-          </div>
-        </div>
-        <p class="voice-quote">"Our $180 billion capex commitment for 2026 reflects the opportunity we see in AI infrastructure. Locking in TPU supply through 2031 gives us competitive certainty."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> Google's 2031 TPU deal means Broadcom is effectively embedded in Alphabet's AI infrastructure for the rest of the decade — a structural competitive moat.</div>
-      </div>
-
-      <div class="voice-card reveal" style="--d:0.25s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #f59e0b, #f97316)">M</div>
-          <div>
-            <div class="voice-name">Mizuho Analyst</div>
-            <div class="voice-handle">Equity Research</div>
-          </div>
-        </div>
-        <p class="voice-quote">"Broadcom's Anthropic deal alone is worth an estimated $21 billion in 2026 revenue and $42 billion in 2027 — this is the single largest AI chip contract in history."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> If Mizuho's estimates hold, Broadcom's Anthropic relationship alone will eclipse NVIDIA's total China revenue — a massive shift in AI chip economics.</div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- DATE NAV FOOTER -->
-<div class="date-nav date-nav-footer">
-  <div class="date-nav-inner">
-    <span class="date-nav-label">Prior editions</span>
-    <div class="date-pills">
-      <a href="briefing-2026-04-03.html" class="date-pill">Apr 3</a>
-      <a href="briefing-2026-04-04.html" class="date-pill">Apr 4</a>
-      <a href="briefing-2026-04-06.html" class="date-pill">Apr 6</a>
-      <a href="briefing.html" class="date-pill active">Apr 7 · Today</a>
-    </div>
+<div class="card card-top">
+  <h3>Eclipse Ventures Raises $1.3B for 'Physical AI' — Robotics, Defense &amp; Infrastructure</h3>
+  <p>VC firm Eclipse, an early backer of Nvidia rival Cerebras Systems, closed its largest fund to date: $1.3 billion targeting 'physical AI' — the convergence of AI with robotics, autonomous systems, and hardware. The fund splits $720M for early-stage and $591M for later-stage deals, with plans to incubate startups from scratch. Portfolio includes Arc (electric boats), Redwood Materials (battery recycling), and Bedrock Robotics (construction).</p>
+  <div class="source">Bloomberg / TechCrunch · Apr 7, 2026 · <a href="https://techcrunch.com/2026/04/07/vc-eclipse-has-a-new-1-3b-to-back-and-build-physical-ai-startups/">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">NVDA</span> <span>Physical AI buildout drives demand for GPUs in robotics and autonomous systems</span>
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div>
-      <div class="footer-brand">AI &amp; Chips Daily</div>
-      <div class="footer-sub" style="margin-top:4px">April 7, 2026 · Generated by Claude</div>
-    </div>
-    <div class="footer-sub">
-      <a href="https://amangulani-coder.github.io/ai-semis-briefing/">amangulani-coder.github.io/ai-semis-briefing</a>
-    </div>
+<div class="card card-top">
+  <h3>Nvidia Moves to Build $10B AI Empire, One Acquisition at a Time</h3>
+  <p>With free cash flow reaching $96.5 billion in fiscal 2026, Nvidia is aggressively expanding beyond GPUs through a series of strategic acquisitions and investments. Recent moves include a $2 billion investment in Synopsys for AI chip design tools, while at GTC 2026, Nvidia unveiled three new systems simultaneously — the Groq LPX inference rack, Vera ETL256 CPU rack, and STX storage architecture — signaling its push to own the full AI stack.</p>
+  <div class="source">DigiTimes · Apr 7, 2026 · <a href="https://www.digitimes.com/news/a20260407PD225/nvidia-gaming-genai-2026-gpu.html">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">NVDA</span> <span>Vertical integration strategy strengthens Nvidia's moat and recurring revenue</span>
   </div>
-</footer>
+</div>
 
-<script>
-// Scroll reveal
-const revealObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
-  });
-}, { threshold: 0.04, rootMargin: '0px 0px -30px 0px' });
-document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+<!-- ===== AI MODELS & TOOLS ===== -->
+<h2 class="section-title">🤖 AI Models &amp; New Tools</h2>
 
-// Number counters: combined reveal + animate
-function animateNumber(el) {
-  const target = parseFloat(el.dataset.target);
-  const prefix = el.dataset.prefix || '';
-  const suffix = el.dataset.suffix || '';
-  const decimals = parseInt(el.dataset.decimal || '0');
-  const duration = 1400;
-  const start = performance.now();
-  function step(now) {
-    const p = Math.min((now - start) / duration, 1);
-    const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-    el.textContent = prefix + (eased * target).toFixed(decimals) + suffix;
-    if (p < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
+<div class="card">
+  <h3>Genspark Demos AI Workspace 4.0 in First-Ever Livestream</h3>
+  <p>Genspark, the multi-agent AI workspace platform, held its first-ever live demo of AI Workspace 4.0 on April 7 (8 PM PT). Just three weeks after launching Workspace 3.0 and the Genspark Claw tool, version 4.0 promises major new capabilities for agent-orchestrated workflows. The event was streamed live on YouTube and X.</p>
+  <div class="source">Genspark (X post) · Apr 7, 2026 · <a href="https://x.com/genspark_ai/status/2040993427547172956">View post</a></div>
+</div>
 
-const counterObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('in');
-      setTimeout(() => e.target.querySelectorAll('[data-target]').forEach(animateNumber), 200);
-      counterObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
-document.querySelectorAll('.numbers-bento').forEach(el => counterObs.observe(el));
-</script>
+<div class="card">
+  <h3>OpenAI Launches AI Safety Fellowship for External Researchers</h3>
+  <p>OpenAI announced the Safety Fellowship, a new program inviting external researchers to pursue AI safety and alignment research. The fellowship runs September 2026 through February 2027, reflecting the growing institutional investment in making frontier AI systems safe and aligned.</p>
+  <div class="source">OpenAI · Apr 7, 2026 · <a href="https://llm-stats.com/llm-updates">View source</a></div>
+</div>
+
+<!-- ===== SEMICONDUCTORS ===== -->
+<h2 class="section-title">⚡ Semiconductors &amp; Chips</h2>
+
+<div class="card">
+  <h3>Global AI Chip Suppliers Compete as TSMC Remains Top Foundry Partner</h3>
+  <p>TSMC continues to command the AI chip manufacturing landscape, but the competitive dynamics are shifting. NVLink licensing is reshaping semiconductor alliances, with alternative interconnect technologies emerging as competitors develop new solutions for AI chip communication. The focus is moving from wafer capacity to system-level integration, with advanced packaging like CoWoS becoming the critical bottleneck.</p>
+  <div class="source">DigiTimes · Apr 7, 2026 · <a href="https://www.digitimes.com/news/a20260407PD205/ai-chip-tsmc-chips-nvidia-amd.html">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">TSM</span> <span class="ticker">AMAT</span> <span class="ticker">LRCX</span> <span>Packaging tech becomes new battleground; equipment makers benefit from capacity buildout</span>
+  </div>
+</div>
+
+<div class="card">
+  <h3>China's Special AI Chip Supply Ends; TSMC Plans 12 Fabs in Arizona</h3>
+  <p>In a major supply chain shift, China's access to special AI chip supply channels is ending as export controls tighten. Meanwhile, TSMC is accelerating its massive U.S. expansion — planning up to 12 fabrication plants and four advanced packaging facilities near Phoenix, representing roughly $165 billion in investment. Equipment move-in for 3nm production is targeted for Q3 2026, with high-volume production in 2027 — a full year ahead of the original schedule.</p>
+  <div class="source">DigiTimes · Apr 7, 2026 · <a href="https://www.digitimes.com/news/a20260407VL201/digitimes-asia-weekly-news-roundup-2026-ai-chip-nvidia-tsmc-arizona.html">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">TSM</span> <span class="ticker">INTC</span> <span>TSMC Arizona expansion reshapes U.S. chip manufacturing; Intel gains from onshoring trend</span>
+  </div>
+</div>
+
+<!-- ===== STARTUPS & FUNDING ===== -->
+<h2 class="section-title">💰 Startups &amp; Funding</h2>
+
+<div class="card">
+  <h4>Spirit AI — $420M</h4>
+  <p>Chinese AI startup Spirit AI raised approximately $420 million across two rounds completed within 30 days, including a $145M round co-led by Shunwei Capital (Lei Jun's fund) and Yunfeng Fund (Jack Ma-linked). The company is building foundation models for enterprise applications in China's fast-growing AI market.</p>
+  <div class="source">The AI Insider · Apr 7, 2026 · <a href="https://theaiinsider.tech/2026/04/07/report-spirit-ai-raises-420m-usd-in-funding-backed-by-lei-jun-and-jack-ma-funds/">Read article</a></div>
+</div>
+
+<div class="card">
+  <h4>Aria Networks — $125M Series A</h4>
+  <p>London-based Aria Networks raised $125 million in its first Series A to build hardware-agnostic, AI-native network infrastructure for data centers. As enterprises deploy more compute-intensive AI workloads, Aria is targeting the networking bottleneck.</p>
+  <div class="source">TechStartups · Apr 7, 2026 · <a href="https://techstartups.com/2026/04/07/top-startup-and-tech-funding-news-april-7-2025/">Read article</a></div>
+  <div class="stock-line">
+    <span class="bull">▲</span> <span class="ticker">AVGO</span> <span>AI data center networking buildout aligns with Broadcom's networking business</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>Modus — $85M (AI Audit Tech)</h4>
+  <p>Modus raised $85 million for its AI-powered audit technology platform, targeting the compliance and financial audit market with automation tools that promise to dramatically reduce manual review cycles.</p>
+  <div class="source">TechStartups · Apr 7, 2026</div>
+</div>
+
+<div class="card">
+  <h4>DepthFirst — $80M Series B (AI Cybersecurity)</h4>
+  <p>DepthFirst closed an $80 million Series B for its AI-driven cybersecurity platform, as enterprises increasingly deploy AI-native security solutions to combat sophisticated threats at machine speed.</p>
+  <div class="source">TechStartups · Apr 7, 2026</div>
+</div>
+
+<div class="card">
+  <h4>Hermeus — $350M Series D (Hypersonic Aircraft)</h4>
+  <p>Atlanta-based Hermeus closed $350 million ($200M equity led by Khosla Ventures, with Founders Fund, In-Q-Tel, RTX Ventures) for autonomous hypersonic aircraft development — a defense-tech play at the intersection of AI and aerospace.</p>
+  <div class="source">TechStartups · Apr 7, 2026</div>
+</div>
+
+<!-- ===== NUMBERS TO KNOW ===== -->
+<h2 class="section-title">📊 Numbers to Know</h2>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="number">$725B</div>
+    <div class="label">Dimon's AI capex forecast for 2026 hyperscalers (up from $450B in 2025)</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">$30B</div>
+    <div class="label">Anthropic's annualized revenue run rate (3× jump from $9B at end of 2025)</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">3.5 GW</div>
+    <div class="label">Compute capacity in Anthropic-Google-Broadcom deal (online 2027)</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">$96.5B</div>
+    <div class="label">Nvidia's free cash flow in fiscal 2026, fueling acquisition spree</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">$1.3B</div>
+    <div class="label">Eclipse Ventures' new fund for physical AI — their largest ever</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">12 fabs</div>
+    <div class="label">TSMC's planned fabrication plants in Arizona (~$165B investment)</div>
+  </div>
+</div>
+
+<!-- ===== TWITTER SECTION ===== -->
+<h2 class="section-title">🐦 X / Twitter — What the Big Names Are Saying</h2>
+
+<div class="tweet-section">
+  <div class="tweet-card">
+    <span class="text-label">📝 Text summary (screenshot unavailable — profiles require login)</span>
+    <h4>@genspark_ai</h4>
+    <p style="color:#e2e2e2; margin: 10px 0;">Announced Genspark AI Workspace 4.0 with first-ever live demo on April 7. Version 4.0 follows just three weeks after the Workspace 3.0 and Claw launch.</p>
+    <div class="handle">Genspark AI · @genspark_ai</div>
+    <div class="why">Why this matters: Rapid iteration cycle signals intensifying competition in the AI workspace/agent orchestration space.</div>
+  </div>
+
+  <div class="tweet-card">
+    <span class="text-label">📝 Note: X profile content limited for non-authenticated users</span>
+    <p style="color:#94a3b8; margin: 10px 0; font-size: 0.9rem;">Checked profiles: @sama, @karpathy, @emollick, @darioamodei — no AI-related tweets confirmed posted on April 7, 2026. Sam Altman's most recent visible post was from March 29, 2025; Karpathy's from February 24, 2025; Mollick's pinned from October 2025. X restricts tweet visibility for logged-out users.</p>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  Generated by Claude · Daily AI &amp; Semiconductor Briefing · 24-Hour Window · amangulani@gmail.com<br>
+  April 7, 2026
+</div>
+
+</div>
 </body>
 </html>

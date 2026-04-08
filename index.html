@@ -112,11 +112,19 @@
     <span class="tab-icon">📈</span>
     SMH After-Hours
   </button>
+
+  <div class="tab-divider"></div>
+
+  <button class="tab-btn" id="tab-research" role="tab" aria-selected="false" aria-controls="frame-research" onclick="switchTab('research')">
+    <span class="tab-icon">🔬</span>
+    Research
+  </button>
 </div>
 
 <div class="frame-container">
   <iframe id="frame-briefing" class="visible" src="briefing.html" title="AI & Chips Daily Briefing"></iframe>
   <iframe id="frame-smh" class="hidden" src="smh.html" title="SMH After-Hours Tracker"></iframe>
+  <iframe id="frame-research" class="hidden" src="research.html" title="AI Research Papers"></iframe>
 </div>
 
 <script>

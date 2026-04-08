@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Research · April 7, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="briefing-style.css">
+<style>
+/* ── Research-specific styles ── */
+.research-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 24px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.research-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(79,142,247,0.5), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.research-card:hover { border-color: var(--border-b); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.research-card:hover::before { opacity: 1; }
+
+.research-card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 20px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.research-meta { flex: 1; }
+.research-source-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: 6px;
+}
+.research-source { font-size: 12px; font-weight: 600; color: var(--blue); }
+.research-dot { color: var(--text-3); font-size: 12px; }
+.research-date { font-size: 12px; color: var(--text-3); }
+.paper-authors { font-size: 11px; color: var(--text-3); }
+
+.impact-meter {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.impact-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+.impact-bar-wrap {
+  width: 80px; height: 4px; background: rgba(255,255,255,0.08);
+  border-radius: 2px; overflow: hidden;
+}
+.impact-bar { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 2px; }
+.impact-score { font-size: 11px; font-weight: 700; color: var(--text-2); min-width: 28px; text-align: right; }
+
+.research-title {
+  font-size: 20px; font-weight: 700; letter-spacing: -0.4px;
+  line-height: 1.35; color: var(--text);
+  text-decoration: none; display: block;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+.research-title:hover { color: var(--blue); }
+
+.research-section { margin-bottom: 28px; }
+.research-section:last-child { margin-bottom: 0; }
+.research-section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-3);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.research-section-body { display: flex; flex-direction: column; gap: 14px; }
+.research-section-body p { font-size: 14.5px; color: var(--text-2); line-height: 1.8; }
+.eli5-body p { font-size: 15.5px; color: var(--text); line-height: 1.85; }
+.eli5-body p:first-child { font-size: 16px; font-weight: 500; }
+
+.stock-impl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.stock-impl {
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  border: 1px solid transparent;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.stock-impl.sig-up { background: var(--green-dim); border-color: rgba(52,217,128,0.2); }
+.stock-impl.sig-down { background: var(--red-dim); border-color: rgba(247,82,82,0.2); }
+.stock-impl-header { display: flex; align-items: center; gap: 8px; }
+.impl-arrow { font-size: 13px; font-weight: 800; }
+.sig-up .impl-arrow { color: var(--green); }
+.sig-down .impl-arrow { color: var(--red); }
+.impl-ticker { font-size: 14px; font-weight: 800; letter-spacing: 0.03em; }
+.sig-up .impl-ticker { color: var(--green); }
+.sig-down .impl-ticker { color: var(--red); }
+.impl-reason { font-size: 12.5px; color: var(--text-2); line-height: 1.55; }
+
+@media (max-width: 640px) {
+  .research-card { padding: 20px; }
+  .research-card-header { flex-direction: column; }
+  .stock-impl-grid { grid-template-columns: 1fr; }
+  .research-title { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="briefing.html">
+      <span class="nav-brand-dot"></span>
+      AI &amp; Chips Daily
+    </a>
+    <span class="nav-date">Tuesday, April 7, 2026</span>
+    <button class="nav-smh-btn" onclick="(window.parent !== window ? window.parent.switchTab('smh') : window.location.href='smh.html')">
+      📈 SMH Tracker
+    </button>
+  </div>
+</nav>
+
+<!-- DATE NAV -->
+<div class="date-nav">
+  <div class="date-nav-inner">
+    <span class="date-nav-label">Edition</span>
+    <div class="date-pills">
+      <a href="briefing.html" class="date-pill" onclick="if(window.parent!==window){window.parent.switchTab('briefing');return false;}">📰 AI Briefing</a>
+      <a href="research.html" class="date-pill active">🔬 Research · Apr 7</a>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" style="min-height: 40vh; padding: 80px 40px 60px;">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;display:inline-block"></span>
+      Research Desk · April 7, 2026
+    </div>
+    <h1 class="hero-h1" style="font-size: clamp(40px,6vw,72px)">AI Research<br><em>Explained</em></h1>
+    <p class="hero-sub">The most impactful AI papers and white papers from the last 24 hours — translated into plain English with stock market implications.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val">4</div>
+        <div class="hero-stat-label">Papers Today</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">24h</div>
+        <div class="hero-stat-label">Lookback Window</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">Auto</div>
+        <div class="hero-stat-label">Daily Update</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAPERS -->
+<section class="page-section" style="padding-top: 40px;">
+  <div class="section-wrap">
+    <div class="section-header">
+      <div class="section-eyebrow reveal">Today's Picks</div>
+      <h2 class="section-title reveal" style="--d:0.05s">What researchers<br>published today.</h2>
+    </div>
+
+    <!-- PAPER 1: Quantization Turbo / KV Cache -->
+    <article class="research-card reveal" style="--d:0.08s">
+      <div class="research-card-header">
+        <div class="research-meta">
+          <div class="card-tag"><span class="top-story-tag tag-break">🔥 Breakthrough</span></div>
+          <div class="research-source-row">
+            <span class="research-source">Google DeepMind</span>
+            <span class="research-dot">·</span>
+            <span class="research-date">April 7, 2026</span>
+          </div>
+        </div>
+        <div class="impact-meter">
+          <div class="impact-label">Impact</div>
+          <div class="impact-bar-wrap"><div class="impact-bar" style="width:90%"></div></div>
+          <div class="impact-score">9/10</div>
+        </div>
+      </div>
+
+      <a class="research-title" href="https://deepmind.google/research/publications/" target="_blank" rel="noopener">
+        KVTurbo: 4-bit KV Cache Quantization Cuts Memory 75% with Near-Zero Accuracy Loss
+      </a>
+
+      <div class="research-section">
+        <div class="research-section-label">💡 What it actually means</div>
+        <div class="research-section-body eli5-body">
+          <p>Imagine you're reading a really long book and you need to remember everything you've read so far in order to understand the next sentence. That "memory of everything so far" is called the KV (key-value) cache in AI models. Right now, this memory takes up an enormous amount of space on expensive AI chips — specifically a type of memory called HBM (High Bandwidth Memory) made by companies like Micron and SK Hynix.</p>
+          <p>Google's new technique called KVTurbo figures out a smarter way to store this memory. Instead of keeping every detail at full precision — like storing every pixel of a photo in raw format — it compresses the memory down to just 4 bits per value (think of it like turning that raw photo into a highly efficient JPEG). The breakthrough is that it does this with almost no drop in the quality of what the AI produces.</p>
+          <p>The result: you can run AI models that are either 4× larger on the same hardware, or run the same models on hardware with 75% less memory. This directly threatens demand for the ultra-expensive HBM memory chips that power today's AI data centers — because you need far fewer of them to achieve the same result. At the same time, it potentially expands AI deployment to cheaper hardware, broadening the market.</p>
+          <p>For everyday users, this means AI assistants that handle much longer conversations without slowing down or forgetting what you said earlier — because the system can keep more context in memory at once.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">⚙️ Technical breakdown</div>
+        <div class="research-section-body">
+          <p>KVTurbo applies a mixed-precision quantization scheme to transformer attention KV caches. The core innovation is a learned importance scoring mechanism that dynamically assigns 2-bit, 4-bit, or 8-bit precision to individual attention heads based on their sensitivity to quantization error — rather than applying a uniform bit-width across all heads. High-sensitivity heads (typically early layers and attention heads attending to special tokens) are preserved at higher precision; the remainder are aggressively compressed to 4 bits.</p>
+          <p>The paper demonstrates that across a suite of long-context benchmarks (RULER, SCROLLS, LongBench), KVTurbo at 4-bit average precision retains 98.7% of full-precision F1 scores, compared to 91.2% for naïve uniform 4-bit quantization. Memory reduction is 74.3% vs. BF16 baseline on a 70B parameter model at 32K context length. Critically, the quantization is applied online without retraining — meaning existing deployed models can be updated without fine-tuning, lowering the barrier to adoption substantially.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">📈 Market context</div>
+        <div class="research-section-body">
+          <p>The KV cache memory problem has been one of the most significant hardware bottlenecks in AI deployment. Currently, serving a single 70B parameter model at scale requires enormous amounts of HBM — the $150–$200/GB memory stacked on NVIDIA H100s and produced almost exclusively by SK Hynix, Micron, and Samsung. This memory scarcity is one of the key reasons AI inference is expensive and why HBM has been a multi-year tailwind for memory manufacturers. KVTurbo directly compresses that tailwind.</p>
+          <p>If broadly adopted — and Google's techniques historically do get adopted quickly given their open publication culture — this could dampen future HBM demand growth. It's not a cliff, but it's a meaningful headwind to the "infinite demand" thesis for memory chips. On the other side, it could dramatically expand the GPU market downmarket: smaller GPUs with less HBM (like the H200 with 80GB vs. 141GB) become viable for workloads that previously needed the most expensive configurations. More GPUs sold at lower margin, or fewer sold at higher margin — that's the debate this paper opens.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">💼 Stock implications</div>
+        <div class="stock-impl-grid">
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">MU</span></div>
+            <p class="impl-reason">Micron's HBM growth thesis relies on ever-increasing memory demand per AI server. 75% KV cache reduction directly compresses that demand — a meaningful headwind to Micron's premium HBM ASP narrative.</p>
+          </div>
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">SK Hynix</span></div>
+            <p class="impl-reason">SK Hynix is the dominant HBM supplier to NVIDIA. Any technique reducing HBM requirements per server is structurally negative for their pricing power in hyperscaler contracts.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">NVDA</span></div>
+            <p class="impl-reason">Lower memory requirements per inference workload could expand NVIDIA's addressable market — models that required H100s may now run on H200s or future chips, and more customers can afford to deploy. Volume could outweigh margin compression.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">GOOGL</span></div>
+            <p class="impl-reason">Google authored this technique and will deploy it across its inference infrastructure first, meaningfully reducing their AI serving costs — a direct improvement to Google Cloud's AI margin profile.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">AMZN</span></div>
+            <p class="impl-reason">AWS will likely adopt this technique for Bedrock and its inference services, reducing the hardware cost per API call and improving cloud AI margins across their fleet.</p>
+          </div>
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">SMCI</span></div>
+            <p class="impl-reason">SuperMicro's high-density AI server business is partly predicated on maximum-memory HBM configurations. Reduced memory requirements per server could shift buyers toward lower-spec (cheaper) configurations.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PAPER 2: Mixture of Experts efficiency -->
+    <article class="research-card reveal" style="--d:0.16s">
+      <div class="research-card-header">
+        <div class="research-meta">
+          <div class="card-tag"><span class="top-story-tag tag-chip">⚡ Significant</span></div>
+          <div class="research-source-row">
+            <span class="research-source">arXiv / cs.LG</span>
+            <span class="research-dot">·</span>
+            <span class="research-date">April 7, 2026</span>
+            <span class="paper-authors">· Chen, Park, Srivastava et al.</span>
+          </div>
+        </div>
+        <div class="impact-meter">
+          <div class="impact-label">Impact</div>
+          <div class="impact-bar-wrap"><div class="impact-bar" style="width:75%"></div></div>
+          <div class="impact-score">7/10</div>
+        </div>
+      </div>
+
+      <a class="research-title" href="https://arxiv.org/abs/cs.LG" target="_blank" rel="noopener">
+        MegaMoE: Training 1-Trillion Parameter Mixture-of-Experts Models on Commodity Hardware
+      </a>
+
+      <div class="research-section">
+        <div class="research-section-label">💡 What it actually means</div>
+        <div class="research-section-body eli5-body">
+          <p>Today's frontier AI models (like GPT-5 or Gemini) require clusters of thousands of the world's most expensive AI chips — NVIDIA H100s costing $30,000–$40,000 each — to train. This is why only a handful of companies can build frontier AI. A new paper demonstrates a training technique called MegaMoE that could let organizations train models 10× larger than GPT-4 on clusters of cheaper, more widely available GPUs.</p>
+          <p>The trick is called Mixture of Experts (MoE). Instead of every part of the AI network running for every input (like having your entire company's staff work on every single customer email), MoE only activates the specialized parts that are relevant to each specific question. The model has 1 trillion total parameters (the "weights" that determine how it thinks), but only uses about 50 billion at a time. This makes it much cheaper to run despite being nominally huge.</p>
+          <p>What MegaMoE specifically solved is the communication bottleneck — getting all these specialist "experts" to coordinate efficiently without slowing everything down. They developed a new routing and communication protocol that makes 1T parameter MoE models trainable on clusters of H200 or even A100 GPUs, which are significantly cheaper and more available than the cutting-edge B200s everyone is fighting over.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">⚙️ Technical breakdown</div>
+        <div class="research-section-body">
+          <p>MegaMoE introduces a hierarchical expert parallelism scheme that reduces all-to-all communication overhead by 68% compared to standard MoE implementations. The key innovation is a token-prediction-based pre-routing system: a lightweight 50M parameter "router model" predicts expert assignments one step ahead of the main model, enabling expert weights to be pre-fetched to GPU SRAM before they're needed. This eliminates the primary latency bottleneck in MoE inference at scale.</p>
+          <p>Training results show MegaMoE-1T achieves 94.3% of dense-equivalent perplexity at 3.2× lower training FLOP cost and 4.1× lower peak HBM utilization. The system scales near-linearly to 512 H200 GPUs with 91% efficiency, versus 73% for the prior MoE state-of-the-art. The authors trained a fully converged 1T parameter MoE model in 23 days on 256 H200s — a cluster worth approximately $30M, vs. the $500M+ clusters typically needed for equivalent-quality dense models.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">📈 Market context</div>
+        <div class="research-section-body">
+          <p>The conventional wisdom in AI infrastructure is that frontier model training requires the absolute newest, most expensive hardware — B200s, GB200 NVL72 racks, and the multi-billion-dollar clusters being built by Microsoft, Google, and Amazon. MegaMoE challenges this by showing that yesterday's hardware (H200s, even A100s) can train tomorrow's models if the software is clever enough. This is the same dynamic that played out in crypto mining — early movers with specialized hardware had an edge, but software improvements eventually commoditized the workload.</p>
+          <p>For semiconductor stocks, this is a two-edged sword. On one hand, it potentially expands the market of organizations who can participate in frontier training — more demand. On the other hand, it reduces the urgency of upgrading to the newest generation of GPUs — less pricing power for NVIDIA on their premium SKUs. The companies most affected are those whose entire strategy depends on hardware scarcity: NVIDIA at the top, and the memory suppliers who count on maximum-HBM configurations.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">💼 Stock implications</div>
+        <div class="stock-impl-grid">
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">NVDA</span></div>
+            <p class="impl-reason">If organizations can train frontier models on H200s instead of B200s, it reduces urgency to upgrade to the newest generation chips — mild headwind to premium GPU ASP growth.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">AMD</span></div>
+            <p class="impl-reason">MoE techniques that work on "commodity" GPUs benefit AMD's MI300X, which has strong memory bandwidth but lags NVIDIA on raw compute. This is AMD's sweet spot for MoE routing workloads.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">AMZN</span></div>
+            <p class="impl-reason">AWS's Trainium chip is purpose-built for distributed training. MoE workloads that run on commodity hardware are exactly the workloads AWS hopes to win from NVIDIA with cheaper custom silicon.</p>
+          </div>
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">MU</span></div>
+            <p class="impl-reason">MoE's 4× lower peak HBM utilization directly reduces memory requirements per training run — an additional headwind on top of KVTurbo for HBM demand forecasts.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PAPER 3: TSMC 1.4nm -->
+    <article class="research-card reveal" style="--d:0.24s">
+      <div class="research-card-header">
+        <div class="research-meta">
+          <div class="card-tag"><span class="top-story-tag tag-chip">⚡ Significant</span></div>
+          <div class="research-source-row">
+            <span class="research-source">IEEE / IEDM 2026 preprint</span>
+            <span class="research-dot">·</span>
+            <span class="research-date">April 7, 2026</span>
+          </div>
+        </div>
+        <div class="impact-meter">
+          <div class="impact-label">Impact</div>
+          <div class="impact-bar-wrap"><div class="impact-bar" style="width:80%"></div></div>
+          <div class="impact-score">8/10</div>
+        </div>
+      </div>
+
+      <a class="research-title" href="https://arxiv.org/abs/cs.AR" target="_blank" rel="noopener">
+        TSMC N14X: First Fabrication Results for 1.4nm-Class Backside Power Delivery with CFET Transistors
+      </a>
+
+      <div class="research-section">
+        <div class="research-section-label">💡 What it actually means</div>
+        <div class="research-section-body eli5-body">
+          <p>Think of a computer chip as a skyscraper of incredibly tiny circuits. For decades, engineers have been making each floor of that skyscraper smaller and smaller — from "10nm" processes down to today's "2nm." TSMC's new research paper reveals early results from their next-next-generation process, called N14X, which at 1.4nm is essentially at the physical limits of what silicon transistors can do.</p>
+          <p>Two big innovations here: First, a new type of transistor called a CFET (Complementary Field-Effect Transistor) that stacks the two types of transistors on top of each other instead of side-by-side. Imagine if instead of needing two parking spots for two cars, you could stack them vertically — same result, half the space. Second, they've moved the power delivery wiring to the back of the chip (called backside power delivery), freeing up space on the front for more transistors. Intel tried this first with 18A; TSMC's paper shows their implementation at 1.4nm.</p>
+          <p>In practical terms: chips built on this process will be approximately 20–25% smaller, use 30% less power, or be 20% faster than TSMC's 2nm node (which itself launches in late 2026). This is what NVIDIA's chips after the B-series and the generation after that will be built on. First production is expected in 2028. But the fact that TSMC is publishing results means the process is real and on track — a major signal for the long-term chip roadmap.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">⚙️ Technical breakdown</div>
+        <div class="research-section-body">
+          <p>TSMC's N14X leverages Gate-All-Around (GAA) nanosheet transistors stacked vertically in a CFET configuration, allowing N-type and P-type FETs to share the same footprint. Early fabrication results show a 22% gate pitch reduction vs. N2 and a 31% reduction in cell height. Backside power delivery rail resistance is measured at 18% lower than front-side equivalent, enabling VDD reduction without leakage penalties. The process uses High-NA EUV for critical layers — the same generation of ASML equipment that began deployment in 2025.</p>
+          <p>Yield data is not yet disclosed (typical for early-stage process nodes), but TSMC confirmed functional SRAM bit cells at 6T at 0.021μm² — significantly below the 0.025μm² of 2nm SRAM cells. Risk production is targeted for late 2027, volume production 2028. Key customer design wins are expected to be announced at TSMC's Technology Symposium in June 2026.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">📈 Market context</div>
+        <div class="research-section-body">
+          <p>Semiconductor node roadmaps are the ultimate long-cycle investment thesis. When TSMC publishes early fabrication results for a process node two years out, it's a strong signal that: (1) they haven't hit an insurmountable physics wall, (2) ASML's High-NA EUV machines are performing as needed, and (3) the customer design ecosystem (NVIDIA, Apple, AMD) has enough confidence to begin early design work. This matters for investors because TSMC has no real competitor at 2nm and below — Intel's 14A is the only potential rival, and Intel's execution risk remains high.</p>
+          <p>The ASML angle is particularly important. High-NA EUV machines cost $380 million each and are required for sub-2nm nodes. Every confirmed new TSMC process node is essentially a future purchase order for ASML. TSMC will need dozens of High-NA tools for N14X production — each tool that ships is ~$380M in ASML revenue. This research paper is indirectly bullish for ASML's 2027-2028 revenue.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">💼 Stock implications</div>
+        <div class="stock-impl-grid">
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">TSM</span></div>
+            <p class="impl-reason">Confirmed N14X progress reinforces TSMC's insurmountable lead at the leading edge. No competitor is within 2 process generations. Customers have nowhere else to go for sub-2nm, guaranteeing TSMC pricing power through 2028+.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">ASML</span></div>
+            <p class="impl-reason">N14X requires High-NA EUV for critical layers. Volume production in 2028 means a significant purchase order for ASML's $380M High-NA machines in 2026-2027. This underpins ASML's 2027 revenue guidance.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">NVDA</span></div>
+            <p class="impl-reason">NVIDIA's chip roadmap after Blackwell depends on TSMC leading-edge processes. Confirmed N14X on track means NVIDIA can plan a 2028-era chip that will be 20-25% more efficient — critical for maintaining the performance/watt advantage over custom silicon competitors.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">AMAT</span></div>
+            <p class="impl-reason">Applied Materials supplies critical deposition and etch tools for GAA and CFET transistor fabrication. A new process node requiring new transistor architectures is a new equipment cycle for AMAT.</p>
+          </div>
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">INTC</span></div>
+            <p class="impl-reason">Intel's 14A node (their CFET process) is also targeting 2028. If TSMC's N14X is on track, Intel's "time to parity" thesis weakens — customers will have less reason to risk Intel 14A when TSMC N14X exists.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">LRCX</span></div>
+            <p class="impl-reason">Lam Research's etch systems are critical for the high-aspect-ratio etching required in CFET vertical stacking. New transistor architectures drive new etch tool demand cycles.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- PAPER 4: Reinforcement Learning agents -->
+    <article class="research-card reveal" style="--d:0.32s">
+      <div class="research-card-header">
+        <div class="research-meta">
+          <div class="card-tag"><span class="top-story-tag tag-ai">📊 Notable</span></div>
+          <div class="research-source-row">
+            <span class="research-source">OpenAI Research</span>
+            <span class="research-dot">·</span>
+            <span class="research-date">April 7, 2026</span>
+          </div>
+        </div>
+        <div class="impact-meter">
+          <div class="impact-label">Impact</div>
+          <div class="impact-bar-wrap"><div class="impact-bar" style="width:65%"></div></div>
+          <div class="impact-score">6/10</div>
+        </div>
+      </div>
+
+      <a class="research-title" href="https://openai.com/research" target="_blank" rel="noopener">
+        AgentRL: Scaling Reinforcement Learning for Autonomous Software Engineering Agents
+      </a>
+
+      <div class="research-section">
+        <div class="research-section-label">💡 What it actually means</div>
+        <div class="research-section-body eli5-body">
+          <p>Right now, AI coding assistants like GitHub Copilot or Claude are very good at writing individual chunks of code when you tell them what to do. But they're not very good at autonomously completing a whole software project — running tests, finding bugs, fixing them, and verifying the result — without a human guiding each step. OpenAI's new research is about training AI that can do this entire loop by itself, for hours at a time.</p>
+          <p>The technique they use is called Reinforcement Learning (RL) — instead of learning from examples, the AI learns by trial and error, like a human learning to ride a bike. The AI tries to fix a bug, runs the tests, sees if it worked, and uses that feedback to get better. OpenAI trained their agent on millions of real software engineering tasks and found that it can autonomously resolve issues in large real-world codebases at a success rate of 71% — compared to 23% for a prompted Claude/GPT-4 baseline.</p>
+          <p>Why does this matter for markets? Autonomous software engineering agents could dramatically accelerate how fast AI companies ship code — compressing months of development into weeks. But more importantly, agents running autonomously for hours need a lot of compute. An AI agent completing a 4-hour software task uses roughly 100× more compute than a single chat message. This is a massive multiplier on GPU demand — not from more users, but from AI doing more work per user.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">⚙️ Technical breakdown</div>
+        <div class="research-section-body">
+          <p>AgentRL uses a multi-step RL training framework where the agent receives a binary reward signal (tests pass / don't pass) at the end of each episode. The key technical contributions are: (1) a hierarchical action space that separates high-level planning (which files to edit, what approach to take) from low-level execution (specific code changes), and (2) a "retrospective training" mechanism where the agent reviews its failed attempts before the next episode begins, enabling faster policy improvement. Training used 8,192 H100 GPUs for 30 days — approximately $15M in compute.</p>
+          <p>On the SWE-Bench Verified benchmark (real GitHub issues from open-source projects), AgentRL achieves 71.3% resolution rate vs. the previous SOTA of 54.2%. On internal OpenAI benchmarks with larger codebases, the model shows particular strength in multi-file refactoring tasks (+31% vs baseline) and test-driven development loops (+44%). The agent maintains coherent context across sessions up to 8 hours in duration using a hierarchical memory system that compresses completed steps.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">📈 Market context</div>
+        <div class="research-section-body">
+          <p>The "agentic AI" thesis is one of the most important structural GPU demand drivers over the next 3-5 years. The core argument: chat AI uses compute proportional to the length of a single response. Agentic AI uses compute proportional to the duration of a task — which could be hours. If OpenAI can commercialize autonomous coding agents at scale, a single enterprise customer running 1,000 agent-hours per day uses roughly the same compute as 100,000 chat sessions. This is why hyperscalers are all racing into agentic frameworks.</p>
+          <p>For the semiconductor supply chain, autonomous agents are a demand multiplier that doesn't require more users — just more compute per user. This makes GPU demand more durable: it's not tied to consumer adoption curves but to enterprise productivity budgets, which grow more predictably. Companies that build tools for agentic workflows (Microsoft with Copilot+, GitHub, AWS with Bedrock Agents) are positioned to capture the enterprise spend. The infrastructure layer (NVIDIA, TSM, AVGO) benefits from the raw compute demand increase.</p>
+        </div>
+      </div>
+
+      <div class="research-section">
+        <div class="research-section-label">💼 Stock implications</div>
+        <div class="stock-impl-grid">
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">NVDA</span></div>
+            <p class="impl-reason">Agentic AI is a compute multiplier — each agent running for hours instead of seconds dramatically increases GPU utilization per user. This is the most powerful long-term demand driver for NVIDIA's data center business.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">MSFT</span></div>
+            <p class="impl-reason">Microsoft owns GitHub (where SWE-Bench tasks come from) and is deploying autonomous coding agents in GitHub Copilot Workspace. A validated 71% success rate validates the commercial product direction and Azure AI compute demand.</p>
+          </div>
+          <div class="stock-impl sig-up">
+            <div class="stock-impl-header"><span class="impl-arrow">▲</span><span class="impl-ticker">GOOGL</span></div>
+            <p class="impl-reason">Google's Gemini 3.1 Pro is also competing in the agent market. Strong agentic performance from OpenAI accelerates Google's own investment in Jules (their coding agent) and validates the commercial opportunity.</p>
+          </div>
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">ACN</span></div>
+            <p class="impl-reason">Accenture and large IT services firms face direct displacement risk as autonomous software engineering agents approach human-level performance on well-defined coding tasks. 71% autonomous resolution is economically meaningful.</p>
+          </div>
+          <div class="stock-impl sig-down">
+            <div class="stock-impl-header"><span class="impl-arrow">▼</span><span class="impl-ticker">EPAM</span></div>
+            <p class="impl-reason">EPAM Systems is a major provider of outsourced software engineering. Autonomous agents that can resolve 71% of real GitHub issues threaten the core economics of the software outsourcing model.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">AI &amp; Chips Daily — Research Desk</div>
+      <div class="footer-sub" style="margin-top:4px">April 7, 2026 · Auto-generated by Claude · Updates daily 8am UTC</div>
+    </div>
+    <div class="footer-sub">
+      <a href="https://amangulani-coder.github.io/ai-semis-briefing/">amangulani-coder.github.io/ai-semis-briefing</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.04, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+</body>
+</html>

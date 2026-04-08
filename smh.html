@@ -495,7 +495,20 @@
       .summary-value { font-size: 18px; }
       #last-updated { display: none; }
     }
-  </style>
+  
+    .session-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
+      padding: 2px 7px; border-radius: 20px;
+      white-space: nowrap; text-transform: uppercase;
+    }
+    .session-badge.regular   { background: rgba(34,197,94,0.15);  color: #22c55e; }
+    .session-badge.afterhours{ background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .session-badge.blueocean { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .session-badge.premarket { background: rgba(168,85,247,0.15); color: #c084fc; }
+    .session-badge.closed    { background: rgba(100,116,139,0.15);color: #94a3b8; }
+
+    </style>
 </head>
 <body>
 
@@ -640,7 +653,28 @@
     return '$' + fmt(n, 2);
   }
 
-  function getMarketStatus() {
+  function getTradingSession() {
+      const now = new Date();
+      const etOffset = -4;
+      const etNow = new Date(now.getTime() + (now.getTimezoneOffset() + etOffset * 60) * 60000);
+      const day = etNow.getDay();
+      const h = etNow.getHours();
+      const m = etNow.getMinutes();
+      const mins = h * 60 + m;
+      if (day === 0) return { id: 'blueocean', label: 'Blue Ocean ATS', short: 'Blue Ocean ATS' };
+      if (day === 6) return { id: 'blueocean', label: 'Blue Ocean ATS', short: 'Blue Ocean ATS' };
+      const PRE_START = 4 * 60;
+      const OPEN      = 9 * 60 + 30;
+      const CLOSE     = 16 * 60;
+      const AH_END    = 20 * 60;
+      if (mins < PRE_START) return { id: 'blueocean', label: 'Blue Ocean ATS',  short: 'Blue Ocean ATS'  };
+      if (mins < OPEN)      return { id: 'premarket',  label: 'Pre-Market',      short: 'Pre-Market'      };
+      if (mins < CLOSE)     return { id: 'regular',    label: 'Regular Market',  short: 'Regular Market'  };
+      if (mins < AH_END)    return { id: 'afterhours', label: 'After Hours',     short: 'After Hours'     };
+      return                       { id: 'blueocean', label: 'Blue Ocean ATS',  short: 'Blue Ocean ATS'  };
+    }
+    
+    function getMarketStatus() {
     const now = new Date();
     const etOffset = -4; // EDT; use -5 for EST
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
@@ -788,7 +822,14 @@
 
     // Build a single extended-hours row for the current session
     const session = getMarketStatus();
+    const tradingSession = getTradingSession();
+    const sessionBadgeHtml = '<span class="session-badge ' + tradingSession.id + '" title="' + tradingSession.label + '">' + tradingSession.short + '</span>';
     let extHtml = '';
+    const existingBadge = card.querySelector('.session-badge');
+    if (existingBadge) existingBadge.remove();
+    const tickerSymEl = card.querySelector('.ticker-symbol, .ticker, [class*="ticker"]');
+    if (tickerSymEl) tickerSymEl.insertAdjacentHTML('afterend', sessionBadgeHtml);
+    else card.insertAdjacentHTML('afterbegin', sessionBadgeHtml);
     if (session !== 'open' && !h.kr) {
       const isPre    = session === 'pre';
       const label    = isPre ? 'Pre-Market' : 'After Hours';

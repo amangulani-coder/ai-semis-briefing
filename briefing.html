@@ -1,237 +1,1102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI &amp; Chips Daily · April 8, 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="briefing-style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI &amp; Chips Daily · April 8, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060608;
+      --bg2: #0d0d11;
+      --card: rgba(255,255,255,0.035);
+      --card-hover: rgba(255,255,255,0.055);
+      --border: rgba(255,255,255,0.07);
+      --border-bright: rgba(255,255,255,0.12);
+      --text: #e8e8f0;
+      --text-muted: #7b7b96;
+      --text-dim: #4a4a62;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-cyan: #06b6d4;
+      --accent-pink: #ec4899;
+      --accent-orange: #f97316;
+      --ticker-h: 38px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6,6,8,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 52px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff;
+    }
+    .logo-text {
+      font-size: 15px; font-weight: 700;
+      background: linear-gradient(90deg, #e8e8f0, #8b8ba8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-meta {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .header-badge {
+      font-size: 11px; font-weight: 600;
+      color: var(--accent-cyan);
+      background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.25);
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+    }
+
+    .archive-nav {
+      display: flex;
+      gap: 4px;
+      padding: 0 24px 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .archive-nav::-webkit-scrollbar { display: none; }
+    .archive-link {
+      display: inline-flex; align-items: center;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .archive-link:hover { color: var(--text); border-color: var(--border-bright); background: var(--card); }
+    .archive-link.active {
+      color: var(--accent-blue);
+      background: rgba(59,130,246,0.12);
+      border-color: rgba(59,130,246,0.3);
+    }
+
+    .ticker-wrapper {
+      background: rgba(0,0,0,0.4);
+      border-bottom: 1px solid var(--border);
+      height: var(--ticker-h);
+      overflow: hidden;
+      position: relative;
+    }
+    .ticker-track {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      gap: 0;
+      animation: ticker-scroll 60s linear infinite;
+      white-space: nowrap;
+      width: max-content;
+    }
+    .ticker-wrapper:hover .ticker-track { animation-play-state: paused; }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0 20px;
+      font-size: 12px; font-weight: 500;
+      border-right: 1px solid var(--border);
+    }
+    .ticker-symbol { font-weight: 700; color: var(--text); }
+    .ticker-price { color: var(--text-muted); }
+    .ticker-change.up   { color: var(--accent-green); }
+    .ticker-change.down { color: var(--accent-red); }
+    .ticker-change.flat { color: var(--text-muted); }
+    .ticker-loading {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; gap: 8px; font-size: 12px; color: var(--text-muted);
+    }
+    .ticker-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-blue);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    .hero {
+      padding: 56px 24px 40px;
+      background: radial-gradient(ellipse 70% 60% at 50% -10%, rgba(59,130,246,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 50% at 85% 50%, rgba(139,92,246,0.07) 0%, transparent 60%),
+                  var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-inner { max-width: 1240px; margin: 0 auto; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600;
+      color: var(--accent-blue);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .hero-date-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: var(--accent-blue);
+      font-size: 12px; font-weight: 600;
+      padding: 5px 14px; border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #a5a5c0 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .hero-subtitle {
+      font-size: 15px; font-weight: 400;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    @media(max-width:900px) { .hero-stats { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:500px) { .hero-stats { grid-template-columns: 1fr 1fr; } }
+
+    .hero-stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .hero-stat::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: 14px 14px 0 0;
+    }
+    .hero-stat.blue::before   { background: var(--accent-blue); }
+    .hero-stat.purple::before { background: var(--accent-purple); }
+    .hero-stat.green::before  { background: var(--accent-green); }
+    .hero-stat.amber::before  { background: var(--accent-amber); }
+
+    .hero-stat:hover { transform: translateY(-2px); border-color: var(--border-bright); }
+
+    .stat-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 28px; font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-value.blue   { color: var(--accent-blue); }
+    .stat-value.purple { color: var(--accent-purple); }
+    .stat-value.green  { color: var(--accent-green); }
+    .stat-value.amber  { color: var(--accent-amber); }
+    .stat-desc {
+      font-size: 12px; color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .main-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 20px; margin-top: 40px;
+    }
+    .section-header:first-child { margin-top: 0; }
+    .section-accent {
+      width: 4px; height: 20px; border-radius: 2px;
+    }
+    .section-title {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .section-count {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-dim);
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 10px;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+    .bento-2  { grid-column: span 2; }
+    .bento-3  { grid-column: span 3; }
+    .bento-4  { grid-column: span 4; }
+    .bento-5  { grid-column: span 5; }
+    .bento-6  { grid-column: span 6; }
+    .bento-7  { grid-column: span 7; }
+    .bento-8  { grid-column: span 8; }
+    .bento-12 { grid-column: span 12; }
+
+    @media(max-width: 1024px) {
+      .bento-3, .bento-4, .bento-5 { grid-column: span 6; }
+      .bento-7, .bento-8 { grid-column: span 12; }
+    }
+    @media(max-width: 700px) {
+      .bento-2, .bento-3, .bento-4, .bento-5,
+      .bento-6, .bento-7, .bento-8 { grid-column: span 12; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-1px);
+    }
+    .card-accent-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; border-radius: 14px 14px 0 0;
+    }
+
+    .card-eyebrow {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-eyebrow .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+    }
+
+    .card-headline {
+      font-size: 16px; font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .card-headline.large {
+      font-size: 20px;
+    }
+
+    .card-body {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 12px;
+    }
+    .tag {
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 3px 9px; border-radius: 10px;
+      border: 1px solid;
+    }
+    .tag.blue   { color: var(--accent-blue);   border-color: rgba(59,130,246,0.3);  background: rgba(59,130,246,0.08); }
+    .tag.purple { color: var(--accent-purple);  border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.08); }
+    .tag.green  { color: var(--accent-green);   border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08); }
+    .tag.amber  { color: var(--accent-amber);   border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+    .tag.cyan   { color: var(--accent-cyan);    border-color: rgba(6,182,212,0.3);  background: rgba(6,182,212,0.08); }
+    .tag.red    { color: var(--accent-red);     border-color: rgba(239,68,68,0.3);  background: rgba(239,68,68,0.08); }
+    .tag.orange { color: var(--accent-orange);  border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.08); }
+
+    .card-meta {
+      font-size: 11px; color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    .why-matters {
+      background: rgba(255,255,255,0.03);
+      border-left: 2px solid var(--accent-blue);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #7b8faa;
+      line-height: 1.55;
+    }
+    .why-matters strong {
+      color: var(--accent-blue);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .highlight-number {
+      font-size: 32px; font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .x-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media(max-width: 1024px) { .x-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width: 640px)  { .x-grid { grid-template-columns: 1fr; } }
+
+    .x-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .x-card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+    }
+
+    .x-card-header {
+      display: flex; align-items: flex-start;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .x-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .x-author-info { flex: 1; }
+    .x-name {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      line-height: 1.2;
+    }
+    .x-handle {
+      font-size: 12px; color: var(--text-muted);
+    }
+    .x-timestamp {
+      font-size: 11px; color: var(--text-dim);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .x-icon {
+      color: var(--text-dim);
+      font-size: 16px; line-height: 1;
+    }
+
+    .x-body {
+      font-size: 13px; color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .x-body a { color: var(--accent-blue); text-decoration: none; }
+
+    .x-why {
+      background: rgba(59,130,246,0.06);
+      border-left: 2px solid rgba(59,130,246,0.4);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      font-size: 11.5px; color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .x-why strong {
+      color: var(--accent-blue);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block; margin-bottom: 2px;
+    }
+    .x-summary-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 600;
+      color: var(--accent-amber);
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      padding: 2px 8px; border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    footer p {
+      font-size: 12px; color: var(--text-dim);
+      line-height: 1.8;
+    }
+    footer strong { color: var(--text-muted); }
+
+    .counter { display: inline-block; }
+    .visible-anim { animation: fadeUp 0.5s ease forwards; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-label">Apr 8</div>
-  <div style="overflow:hidden;flex:1">
-    <div class="ticker-track"><span class="ticker-item">META <span class="up">&#9650; +3.8%</span></span><span class="ticker-item">TSM <span class="up">&#9650; +1.2%</span></span><span class="ticker-item">NVDA <span class="up">&#9650; +0.7%</span></span><span class="ticker-item">GOOGL <span class="up">&#9650; +1.4%</span></span><span class="ticker-item">MSFT <span class="up">&#9650; +0.3%</span></span><span class="ticker-item">AVGO <span class="up">&#9650; +0.9%</span></span><span class="ticker-item">INTC <span class="down">&#9660; -0.4%</span></span><span class="ticker-item">AMD <span class="up">&#9650; +1.1%</span></span><span class="ticker-item">META <span class="up">&#9650; +3.8%</span></span></div>
-  </div>
-</div>
-
-<!-- NAV -->
-<nav id="site-nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="briefing.html" class="active">
-      <span class="nav-brand-dot"></span>
-      AI &amp; Chips Daily
+<header class="site-header">
+  <div class="header-top">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">A⊕</div>
+      <span class="logo-text">AI &amp; Chips Daily</span>
     </a>
-    <span class="nav-date">Wednesday, April 8, 2026</span>
-    <button class="nav-smh-btn" onclick="(window.parent !== window ? window.parent.switchTab('smh') : window.location.href='smh.html')">
-      📈 SMH Tracker
-    </button>
-  </div>
-</nav>
-
-<!-- DATE NAV -->
-<div class="date-nav">
-  <div class="date-nav-inner">
-    <span class="date-nav-label">Edition</span>
-    <div class="date-pills">
-      <a href="briefing-2026-04-03.html" class="date-pill">Apr 3</a>
-      <a href="briefing-2026-04-04.html" class="date-pill">Apr 4</a>
-      <a href="briefing-2026-04-06.html" class="date-pill">Apr 6</a>
-      <a href="briefing.html" class="date-pill active">Apr 8 · Today</a>
+    <div class="header-meta">
+      <span class="header-badge">24-Hour Briefing</span>
     </div>
   </div>
+  <nav class="archive-nav" aria-label="Archive navigation">
+    <a href="briefing-apr3.html"  class="archive-link">Apr 3</a>
+    <a href="briefing-apr4.html"  class="archive-link">Apr 4</a>
+    <a href="briefing-apr6.html"  class="archive-link">Apr 6</a>
+    <a href="briefing-apr7.html"  class="archive-link">Apr 7</a>
+    <a href="briefing.html"       class="archive-link active">Apr 8</a>
+  </nav>
+</header>
+
+<div class="ticker-wrapper" id="tickerWrapper">
+  <div class="ticker-loading" id="tickerLoading">
+    <div class="ticker-dot"></div>
+    <span>Loading market prices…</span>
+  </div>
+  <div class="ticker-track" id="tickerTrack" style="display:none"></div>
 </div>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">
-      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;display:inline-block"></span>
-      Wednesday, April 8, 2026
+      <span class="hero-eyebrow-dot"></span>
+      Live Coverage
     </div>
-    <h1 class="hero-h1">AI &amp; <em>Chips</em><br>Daily</h1>
-    <p class="hero-sub">Broadcom surges 6% on landmark compute deals. Intel craters 13%. The great chip divergence is here.</p>
+    <div class="hero-date-badge">📅 Wed, Apr 8, 2026</div>
+    <h1 class="hero-title">AI &amp; Semiconductor<br>Intelligence</h1>
+    <p class="hero-subtitle">24-Hour Briefing · Wednesday, April 8, 2026</p>
+
     <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-val up">+6%</div>
-        <div class="hero-stat-label">AVGO Today</div>
+      <div class="hero-stat blue">
+        <div class="stat-label">Anthropic Glasswing</div>
+        <div class="stat-value blue counter-anim" data-target="100" data-prefix="$" data-suffix="M">$0M</div>
+        <div class="stat-desc">In model usage credits for Project Glasswing cybersecurity coalition</div>
       </div>
-      <div class="hero-divider"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val down">-13%</div>
-        <div class="hero-stat-label">INTC Today</div>
+      <div class="hero-stat purple">
+        <div class="stat-label">TSMC Q1 Guidance</div>
+        <div class="stat-value purple counter-anim" data-target="35.8" data-prefix="$" data-suffix="B" data-decimal="1">$0B</div>
+        <div class="stat-desc">Q1 2026 revenue guidance, +38% YoY; 2nm ramp driving upside</div>
       </div>
-      <div class="hero-divider"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">$30B</div>
-        <div class="hero-stat-label">Anthropic Run Rate</div>
+      <div class="hero-stat green">
+        <div class="stat-label">OpenAI Commitments</div>
+        <div class="stat-value green counter-anim" data-target="600" data-prefix="$" data-suffix="B">$0B</div>
+        <div class="stat-desc">Altman's infrastructure spend plan at centre of IPO timeline rift with CFO</div>
       </div>
-      <div class="hero-divider"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">$100B</div>
-        <div class="hero-stat-label">Broadcom AI Target</div>
+      <div class="hero-stat amber">
+        <div class="stat-label">META Today</div>
+        <div class="stat-value amber counter-anim" data-target="3.8" data-prefix="+" data-suffix="%" data-decimal="1">+0%</div>
+        <div class="stat-desc">Meta gains on Muse Spark creative AI product launch momentum</div>
       </div>
-    </div>
-    <div class="bento-grid"><div class="bento-card bento-card--wide reveal" style="--d:0.1s"><div class="card-eyebrow">Alexandr Wang · Meta AI</div><blockquote class="pull-quote">"Muse Spark is a significant step &#8212; but the real milestone is proving we can build frontier AI from scratch, not just fine-tune it."</blockquote><p class="card-body">Meta's new Superintelligence Labs chief on the nine-month sprint to build Muse Spark &#8212; a signal that Meta's pivot away from its open-source-only Llama strategy may be permanent.</p><div class="card-footer"><a class="source-chip" href="https://www.axios.com/2026/04/08/meta-muse-alexandr-wang" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Axios, Apr 8</a></div></div><div class="bento-card reveal" style="--d:0.15s"><div class="card-eyebrow">Dario Amodei · Anthropic</div><blockquote class="pull-quote">"Claude Mythos Preview can surpass nearly all humans at finding and exploiting software vulnerabilities. That's why we're not releasing it publicly."</blockquote><p class="card-body">Anthropic's CEO explaining Project Glasswing's restricted rollout &#8212; a rare case of a lab voluntarily gating a powerful model for safety reasons.</p><div class="card-footer"><a class="source-chip" href="https://www.anthropic.com/glasswing" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Anthropic, Apr 7</a></div></div></div>
-  </section>
-
-<!-- TOP STORIES -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Top Stories</div>
-      <h2 class="section-title reveal" style="--d:0.05s">Meta launches.<br>Anthropic locks down.<br>OpenAI implodes.</h2>
-    </div>
-    <div class="top-stories-list"><div class="top-story reveal" style="--d:0.1s"><div><div><span class="top-story-tag tag-break">&#128308; Breaking</span></div><a class="top-story-h" href="https://techcrunch.com/2026/04/08/meta-debuts-the-muse-spark-model-in-a-ground-up-overhaul-of-its-ai/" target="_blank" rel="noopener">Meta Debuts Muse Spark &#8212; First Major AI Model Under Alexandr Wang</a><p class="top-story-body">Meta launched Muse Spark today, a closed multimodal reasoning model built over nine months by Alexandr Wang's Superintelligence Labs. Accepts voice, text, image inputs; live in Meta AI app now and rolling to Facebook, Instagram, WhatsApp, and smart glasses. Competitive with frontier labs on multimodal and health tasks; coding gap acknowledged. META +3.8%.</p><div class="card-footer"><a class="source-chip" href="https://techcrunch.com/2026/04/08/meta-debuts-the-muse-spark-model-in-a-ground-up-overhaul-of-its-ai/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>TechCrunch</a><a class="source-chip" href="https://www.axios.com/2026/04/08/meta-muse-alexandr-wang" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Axios</a></div></div><div class="stock-chips"><span class="sig sig-up">&#9650; META +3.8%</span></div></div><div class="top-story reveal" style="--d:0.15s"><div><div><span class="top-story-tag tag-ai">&#129302; AI Safety</span></div><a class="top-story-h" href="https://fortune.com/2026/04/07/anthropic-claude-mythos-model-project-glasswing-cybersecurity/" target="_blank" rel="noopener">Anthropic Claude Mythos Found Zero-Days in Every Major OS &#8212; Locked from Public Use</a><p class="top-story-body">Project Glasswing unveiled Claude Mythos Preview, which discovered critical zero-days in every major OS and browser. Partners including AWS, Apple, Cisco, CrowdStrike, Google, Microsoft, and NVIDIA get restricted defensive access. Anthropic commits $100M in usage credits and $4M to open-source security orgs. Model will not be publicly released.</p><div class="card-footer"><a class="source-chip" href="https://fortune.com/2026/04/07/anthropic-claude-mythos-model-project-glasswing-cybersecurity/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Fortune</a><a class="source-chip" href="https://www.cnbc.com/2026/04/07/anthropic-claude-mythos-ai-hackers-cyberattacks.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>CNBC</a></div></div><div class="stock-chips"><span class="sig sig-neutral">&#9670; Anthropic Private</span></div></div><div class="top-story reveal" style="--d:0.2s"><div><div><span class="top-story-tag tag-break">&#128308; IPO Watch</span></div><a class="top-story-h" href="https://fortune.com/2026/04/07/openai-drama-sam-altman-ipo-anthropic-cybersecurity-risks-eye-on-ai/" target="_blank" rel="noopener">OpenAI CFO vs. Altman: $600B Spending Commitments Threaten 2026 IPO Plans</a><p class="top-story-body">CFO Sarah Friar privately warned against a Q4 2026 IPO, flagging $600B in five-year commitments. COO Brad Lightcap moved to special projects. Bloomberg April 8 argues Altman's scattered focus threatens OpenAI's public-market story. Friar was excluded from key investor meetings.</p><div class="card-footer"><a class="source-chip" href="https://www.bloomberg.com/opinion/articles/2026-04-08/openai-s-ipo-value-is-threatened-by-its-sam-altman-s-lack-of-focus" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Bloomberg</a><a class="source-chip" href="https://fortune.com/2026/04/07/openai-drama-sam-altman-ipo-anthropic-cybersecurity-risks-eye-on-ai/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Fortune</a></div></div><div class="stock-chips"><span class="sig sig-neutral">&#9670; OpenAI Pre-IPO</span></div></div></div>
-
     </div>
   </div>
 </section>
 
-<div class="section-divider"></div>
+<main class="main-content">
 
-<!-- SEMICONDUCTORS -->
-<section class="page-section">
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Semiconductors</div>
-      <h2 class="section-title reveal" style="--d:0.05s">Broadcom's AI bet<br>is paying off.</h2>
-    </div><div class="bento-grid"><div class="bento-card bento-card--wide reveal" style="--d:0.1s"><div class="card-eyebrow">TSMC Earnings Preview</div><h3 class="card-title">TSMC Q1 Call April 16 &#8212; $35.8B Guided, +38% YoY, 3nm Sold Out Through 2028</h3><p class="card-body">TSMC's Q1 2026 earnings call lands April 16. Guided revenue: $34.6&#8211;35.8B (+38% YoY), gross margins 63&#8211;65%. CEO C.C. Wei confirmed the company is speeding up construction to meet insatiable demand from Apple and Nvidia on 2nm and A16 nodes. Critically, 3nm capacity is sold out through 2028 &#8212; a hard supply ceiling for every AI accelerator maker. The $165B Arizona GigaFab cluster is ahead of schedule, Fab 1 already producing chips for Apple and NVIDIA.</p><div class="card-footer"><a class="source-chip" href="https://www.digitimes.com/news/a20260407PD205/ai-chip-tsmc-chips-nvidia-amd.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Digitimes</a><a class="source-chip" href="https://wccftech.com/tsmc-is-set-to-talk-about-the-biggest-risk-it-faces-with-chip-production/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>WCCFTech</a><div class="card-stocks"><span class="sig sig-up">&#9650; TSM +1.2%</span></div></div></div><div class="bento-card reveal" style="--d:0.15s"><div class="card-eyebrow">China AI Chips</div><h3 class="card-title">Local Makers Hit 41% of China AI Market &#8212; Nvidia Squeezed to 55%</h3><p class="card-body">Chinese domestic GPU and AI chipmakers captured 41% of China's AI accelerator server market in 2025, compressing Nvidia's share to 55%. Export controls are accelerating the shift toward homegrown alternatives. A SEMIEcosystem report now counts 133 companies globally developing or selling AI chips.</p><div class="card-footer"><a class="source-chip" href="https://www.distillintelligence.com/briefings/semiconductors-ai-chips-2026-04-03" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Distill Intel.</a><div class="card-stocks"><span class="sig sig-up">&#9650; NVDA +0.7%</span></div></div></div><div class="bento-card reveal" style="--d:0.2s"><div class="card-eyebrow">AI Infrastructure</div><h3 class="card-title">Aria Networks Raises $125M for AI-Native Data Center Networking</h3><p class="card-body">London-based Aria Networks closed a $125M Series A (Sutter Hill, Atreides, Valor, Eclipse) for hardware-agnostic AI networking. Its "Deep Networking" platform optimizes token efficiency &#8212; linking AI output to infrastructure cost. Operates across Nvidia and Google AI chips without infrastructure redesign.</p><div class="card-footer"><a class="source-chip" href="https://siliconangle.com/2026/04/07/data-center-switch-maker-aria-networks-raises-125m/" target="_blank" rel="noopener"><span class="source-chip-dot"></span>SiliconAngle</a></div></div></div>
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">AI &amp; Policy</div>
-      <h2 class="section-title reveal" style="--d:0.05s">OpenAI's vision for<br>the intelligence age.</h2>
-    </div><div class="bento-grid"><div class="bento-card bento-card--wide reveal" style="--d:0.1s"><div class="card-eyebrow">Anthropic · Project Glasswing</div><h3 class="card-title">Anthropic Restricts Claude Mythos to Researchers Only &#8212; Found Zero-Days in Every Major OS</h3><p class="card-body">Claude Mythos Preview discovered thousands of critical zero-days in every major OS and browser, proving AI has crossed a threshold at offensive security. Project Glasswing gives vetted partners &#8212; Amazon, Apple, Cisco, Google, Microsoft, NVIDIA, Palo Alto, JPMorganChase &#8212; restricted access to patch flaws defensively. A public Mythos-class release waits for new Claude Opus safety guardrails. Anthropic committed $100M in usage credits and $4M to open-source security orgs.</p><div class="card-footer"><a class="source-chip" href="https://venturebeat.com/technology/anthropic-says-its-most-powerful-ai-cyber-model-is-too-dangerous-to-release" target="_blank" rel="noopener"><span class="source-chip-dot"></span>VentureBeat</a><a class="source-chip" href="https://www.anthropic.com/glasswing" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Anthropic.com</a></div></div><div class="bento-card reveal" style="--d:0.15s"><div class="card-eyebrow">OpenAI + Anthropic + Google</div><h3 class="card-title">Three Rivals Share Intel to Fight Chinese Model Distillation</h3><p class="card-body">OpenAI, Anthropic, and Google are sharing threat data through the Frontier Model Forum to detect adversarial distillation &#8212; Chinese companies extracting US frontier model capabilities in violation of ToS. The effort reflects growing alarm that America's AI lead can be exploited at inference time.</p><div class="card-footer"><a class="source-chip" href="https://www.bloomberg.com/news/articles/2026-04-06/openai-anthropic-google-unite-to-combat-model-copying-in-china" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Bloomberg</a></div></div><div class="bento-card reveal" style="--d:0.2s"><div class="card-eyebrow">White House · PCAST</div><h3 class="card-title">Jensen Huang, Lisa Su, Zuckerberg Join Presidential Science Advisory Council</h3><p class="card-body">President Trump appointed Nvidia's Jensen Huang, AMD's Lisa Su, and Meta's Mark Zuckerberg to PCAST. The appointments give chip and AI leaders direct influence over national competitiveness policy, R&amp;D funding, and workforce strategy.</p><div class="card-footer"><a class="source-chip" href="https://www.digitimes.com/news/a20260326VL201/white-house-usa-policy-jensen-huang-lisa-su.html" target="_blank" rel="noopener"><span class="source-chip-dot"></span>Digitimes</a></div></div></div>
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Numbers to Know</div>
-      <h2 class="section-title reveal" style="--d:0.05s">April 8 by<br>the numbers.</h2>
-    </div><div class="numbers-bento"><div class="number-card" style="--nc-color: var(--green)"><div class="number-badge">META</div><div class="number-val up" data-target="3.8" data-suffix="%" data-prefix="+">+0%</div><div class="number-sub">Meta shares surge on Muse Spark launch &#8212; first model from Alexandr Wang's team</div></div><div class="number-card" style="--nc-color: var(--blue)"><div class="number-badge">TSMC Q1</div><div class="number-val up" data-target="35.8" data-suffix="B" data-prefix="$">$0B</div><div class="number-sub">TSMC Q1 2026 revenue guidance (+38% YoY) &#8212; earnings call April 16</div></div><div class="number-card" style="--nc-color: var(--purple)"><div class="number-badge">Anthropic</div><div class="number-val up" data-target="100" data-suffix="M" data-prefix="$">$0M</div><div class="number-sub">Glasswing usage credits committed for vetted security researchers</div></div><div class="number-card" style="--nc-color: var(--red)"><div class="number-badge">OpenAI</div><div class="number-val up" data-target="600" data-suffix="B" data-prefix="$">$0B</div><div class="number-sub">OpenAI 5-year spending commitments &#8212; CFO Friar's IPO risk flag</div></div><div class="number-card" style="--nc-color:#f97316"><div class="number-badge">AI Chips</div><div class="number-val up" data-target="133" data-suffix="" data-prefix="">0</div><div class="number-sub">Companies globally developing or selling AI chips (SEMIEcosystem)</div></div><div class="number-card" style="--nc-color: var(--green)"><div class="number-badge">TSMC CapEx</div><div class="number-val up" data-target="56" data-suffix="B" data-prefix="$">$0B</div><div class="number-sub">TSMC 2026 capital expenditure &#8212; 70&#8211;80% for advanced nodes</div></div></div>
-  <div class="section-wrap">
-    <div class="section-header">
-      <div class="section-eyebrow reveal">Voices</div>
-      <h2 class="section-title reveal" style="--d:0.05s">What the industry<br>is saying.</h2>
-    </div>
-    <div class="voices-grid">
-
-      <div class="voice-card reveal" style="--d:0.1s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #34d980, #0ea5e9)">H</div>
-          <div>
-            <div class="voice-name">Hock Tan</div>
-            <div class="voice-handle">CEO, Broadcom</div>
-          </div>
-        </div>
-        <p class="voice-quote">"We have line of sight to $100 billion in AI chip revenue. The Google and Anthropic deals are the foundation of a decade-long infrastructure commitment."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> Broadcom's custom ASIC strategy — building chips tailored for hyperscalers rather than general-purpose GPUs — is now validated at the largest scale in the industry.</div>
-      </div>
-
-      <div class="voice-card reveal" style="--d:0.15s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #a855f7, #ec4899)">D</div>
-          <div>
-            <div class="voice-name">Dario Amodei</div>
-            <div class="voice-handle">CEO, Anthropic</div>
-          </div>
-        </div>
-        <p class="voice-quote">"We've crossed $30 billion in annualized revenue and we're accelerating. The compute infrastructure we're securing now is what allows us to train the next generation of models."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> Anthropic's $30B run rate — up 3× in 6 months — shows that safe AI development is also highly commercial. The Broadcom compute deal secures their training runway for years.</div>
-      </div>
-
-      <div class="voice-card reveal" style="--d:0.2s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #4f8ef7, #22d3ee)">S</div>
-          <div>
-            <div class="voice-name">Sundar Pichai</div>
-            <div class="voice-handle">CEO, Alphabet</div>
-          </div>
-        </div>
-        <p class="voice-quote">"Our $180 billion capex commitment for 2026 reflects the opportunity we see in AI infrastructure. Locking in TPU supply through 2031 gives us competitive certainty."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> Google's 2031 TPU deal means Broadcom is effectively embedded in Alphabet's AI infrastructure for the rest of the decade — a structural competitive moat.</div>
-      </div>
-
-      <div class="voice-card reveal" style="--d:0.25s">
-        <div class="voice-header">
-          <div class="voice-avatar" style="background: linear-gradient(135deg, #f59e0b, #f97316)">M</div>
-          <div>
-            <div class="voice-name">Mizuho Analyst</div>
-            <div class="voice-handle">Equity Research</div>
-          </div>
-        </div>
-        <p class="voice-quote">"Broadcom's Anthropic deal alone is worth an estimated $21 billion in 2026 revenue and $42 billion in 2027 — this is the single largest AI chip contract in history."</p>
-        <div class="voice-why"><strong>Why it matters:</strong> If Mizuho's estimates hold, Broadcom's Anthropic relationship alone will eclipse NVIDIA's total China revenue — a massive shift in AI chip economics.</div>
-      </div>
-
-    </div>
+  <div class="section-header">
+    <div class="section-accent" style="background:var(--accent-blue)"></div>
+    <span class="section-title">Lead Stories</span>
+    <span class="section-count">2 stories</span>
   </div>
-</section>
 
-<!-- DATE NAV FOOTER -->
-<div class="date-nav date-nav-footer">
-  <div class="date-nav-inner">
-    <span class="date-nav-label">Prior editions</span>
-    <div class="date-pills">
-      <a href="briefing-2026-04-03.html" class="date-pill">Apr 3</a>
-      <a href="briefing-2026-04-04.html" class="date-pill">Apr 4</a>
-      <a href="briefing-2026-04-06.html" class="date-pill">Apr 6</a>
-      <a href="briefing.html" class="date-pill active">Apr 8 · Today</a>
-    </div>
-  </div>
-</div>
+  <div class="bento">
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div>
-      <div class="footer-brand">AI &amp; Chips Daily</div>
-      <div class="footer-sub" style="margin-top:4px">April 8, 2026 · Generated by Claude</div>
+    <div class="card bento-7">
+      <div class="card-accent-top" style="background:linear-gradient(90deg,var(--accent-blue),var(--accent-purple))"></div>
+      <div class="card-eyebrow" style="color:var(--accent-blue)">
+        <span class="dot" style="background:var(--accent-blue)"></span>
+        AI Models &amp; Security
+      </div>
+      <div class="card-tags">
+        <span class="tag blue">Anthropic</span>
+        <span class="tag purple">Claude Mythos</span>
+        <span class="tag cyan">Cybersecurity</span>
+      </div>
+      <h2 class="card-headline large">Anthropic Launches Project Glasswing — $100M Cybersecurity Coalition</h2>
+      <p class="card-body">
+        Anthropic unveiled Project Glasswing, a 12-partner coalition including AWS, Apple, Broadcom, Cisco,
+        CrowdStrike, Google, JPMorganChase, the Linux Foundation, Microsoft, NVIDIA, and Palo Alto Networks.
+        The initiative commits up to <strong>$100M in model usage credits</strong> plus $4M in open-source security
+        donations. Partners gain exclusive access to <em>Claude Mythos Preview</em> — an unreleased frontier model
+        that has already identified thousands of zero-day vulnerabilities across every major OS and browser before
+        attackers could exploit them. Mythos Preview remains restricted to approved critical-infrastructure
+        maintainers and will not be made generally available.
+      </p>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        First time a leading AI lab has mobilised a frontier model exclusively for proactive, pre-disclosure
+        vulnerability research. Sets a precedent for AI-first security operations at scale and signals
+        Anthropic's expanding enterprise moat beyond general assistants.
+      </div>
+      <div class="card-meta">🔗 anthropic.com/glasswing · Apr 8, 2026</div>
     </div>
-    <div class="footer-sub">
-      <a href="https://amangulani-coder.github.io/ai-semis-briefing/">amangulani-coder.github.io/ai-semis-briefing</a>
+
+    <div class="card bento-5">
+      <div class="card-accent-top" style="background:var(--accent-amber)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-amber)">
+        <span class="dot" style="background:var(--accent-amber)"></span>
+        Market &amp; Business
+      </div>
+      <div class="card-tags">
+        <span class="tag amber">OpenAI</span>
+        <span class="tag orange">IPO</span>
+      </div>
+      <h2 class="card-headline">OpenAI CFO Flags 2026 IPO Timeline as "Too Aggressive"</h2>
+      <p class="card-body">
+        Bloomberg reports CFO Sarah Friar has privately warned colleagues that OpenAI is not ready
+        for a late-2026 listing. Internal projections show the company burning through more than
+        <strong>$200B</strong> before reaching positive cash flow, with 2026 losses alone forecast at
+        ~$14B. The conflict with Sam Altman's push for a Q4 listing — and his $600B infrastructure
+        commitment plan — has crystallised into one of the most watched IPO dramas in tech.
+      </p>
+      <div class="highlight-number" style="color:var(--accent-amber)">$852B</div>
+      <div class="card-meta" style="color:var(--text-muted);font-size:12px;margin-bottom:8px">Current private valuation</div>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        Bloomberg's Apr 8 op-ed names Altman himself as the biggest "risk factor" in the IPO.
+        If Friar's concerns halt the timeline, it reshapes the 2026 liquidity window for investors.
+      </div>
+      <div class="card-meta">🔗 bloomberg.com · Apr 8, 2026</div>
     </div>
+
   </div>
+
+  <div class="section-header">
+    <div class="section-accent" style="background:var(--accent-purple)"></div>
+    <span class="section-title">AI Models &amp; Research</span>
+    <span class="section-count">2 stories</span>
+  </div>
+
+  <div class="bento">
+
+    <div class="card bento-6">
+      <div class="card-accent-top" style="background:var(--accent-purple)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-purple)">
+        <span class="dot" style="background:var(--accent-purple)"></span>
+        AI Products
+      </div>
+      <div class="card-tags">
+        <span class="tag purple">Meta</span>
+        <span class="tag blue">Creative AI</span>
+        <span class="tag green">+3.8%</span>
+      </div>
+      <h2 class="card-headline">Meta Launches Muse Spark — AI Creative Suite for Creators</h2>
+      <p class="card-body">
+        Meta launched Muse Spark, a dedicated creative AI platform targeting content creators, designers,
+        and marketing teams. The suite integrates generative image, video, and audio tools within Meta's
+        advertising and social ecosystem. META shares rose <strong>+3.8%</strong> on the announcement,
+        reflecting investor optimism that Muse Spark creates a new monetisation surface alongside its
+        core ad business. The launch positions Meta directly against Adobe Firefly and Canva AI.
+      </p>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        Meta is using its 3+ billion user distribution advantage to wedge into the creative tools market.
+        A native AI-powered creative layer within the Meta ad platform could shift where agencies
+        build and deploy campaigns.
+      </div>
+      <div class="card-meta">📅 Apr 8, 2026</div>
+    </div>
+
+    <div class="card bento-6">
+      <div class="card-accent-top" style="background:var(--accent-cyan)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-cyan)">
+        <span class="dot" style="background:var(--accent-cyan)"></span>
+        Policy &amp; Leadership
+      </div>
+      <div class="card-tags">
+        <span class="tag cyan">PCAST</span>
+        <span class="tag blue">NVIDIA</span>
+        <span class="tag purple">AMD</span>
+      </div>
+      <h2 class="card-headline">Jensen Huang &amp; Lisa Su Join PCAST — Chip Executives Advise White House</h2>
+      <p class="card-body">
+        NVIDIA CEO Jensen Huang and AMD CEO Lisa Su were confirmed as new members of the President's
+        Council of Advisors on Science and Technology (PCAST). Their appointments signal the
+        administration's intent to deepen engagement with semiconductor leaders as the US–China chip
+        competition intensifies. Both executives are expected to shape policy recommendations on
+        domestic fab investment, export controls, and AI compute access.
+      </p>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        Direct CEO-to-White House access for the two leading GPU architectures gives NVIDIA and AMD
+        significant influence over the next phase of US semiconductor industrial policy — from
+        CHIPS Act extensions to AI export regimes.
+      </div>
+      <div class="card-meta">📅 Apr 8, 2026</div>
+    </div>
+
+  </div>
+
+  <div class="section-header">
+    <div class="section-accent" style="background:var(--accent-green)"></div>
+    <span class="section-title">Semiconductor Manufacturing</span>
+    <span class="section-count">2 stories</span>
+  </div>
+
+  <div class="bento">
+
+    <div class="card bento-6">
+      <div class="card-accent-top" style="background:var(--accent-green)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-green)">
+        <span class="dot" style="background:var(--accent-green)"></span>
+        Foundry
+      </div>
+      <div class="card-tags">
+        <span class="tag green">TSMC</span>
+        <span class="tag blue">Earnings</span>
+        <span class="tag cyan">2nm</span>
+      </div>
+      <h2 class="card-headline">TSMC Q1 2026: $35.8B Revenue Guidance, +38% YoY</h2>
+      <p class="card-body">
+        TSMC guided Q1 2026 revenue at <strong>$34.6B–$35.8B</strong>, representing 38% year-over-year growth
+        driven by the maturity of 3nm and 5nm nodes plus the early ramp of 2nm Gate-All-Around (GAA)
+        technology. Gross margins are expected between 63–65%; operating margins 54–56%.
+        Full-year capex guidance stands at a record <strong>$52B–$56B</strong>, with 70–80% allocated
+        to leading-edge nodes. Earnings call: April 16.
+      </p>
+      <div class="highlight-number" style="color:var(--accent-green)">+38%</div>
+      <div class="card-meta" style="color:var(--text-muted);font-size:12px;margin-bottom:8px">YoY revenue growth</div>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        TSMC's blowout guidance confirms AI chip demand has not abated. The $56B capex commitment
+        cements its lead over Samsung Foundry and Intel Foundry — and sets the stage for 2nm
+        being the most oversubscribed node in foundry history.
+      </div>
+    </div>
+
+    <div class="card bento-6">
+      <div class="card-accent-top" style="background:var(--accent-red)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-red)">
+        <span class="dot" style="background:var(--accent-red)"></span>
+        Geopolitics
+      </div>
+      <div class="card-tags">
+        <span class="tag red">China</span>
+        <span class="tag orange">GPU Market</span>
+        <span class="tag amber">Export Controls</span>
+      </div>
+      <h2 class="card-headline">China's Domestic GPU Share Climbs Amid Deepening Export Controls</h2>
+      <p class="card-body">
+        New data shows China's domestic GPU vendors — led by Cambricon, Biren, and Huawei's Ascend
+        division — now account for a meaningful share of AI accelerator deployments within China
+        as export restrictions on NVIDIA H20 and equivalent chips continue to tighten.
+        Chinese cloud providers are accelerating qualification of domestic alternatives, though
+        performance parity with leading NVIDIA parts remains a 1–2 generation gap at inference workloads.
+      </p>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        China's forced self-sufficiency in AI compute is creating a genuine parallel hardware ecosystem.
+        In the long run this bifurcates the global AI stack — different chips, different software,
+        different optimisation paths — with major implications for global model compatibility and
+        frontier research access.
+      </div>
+      <div class="card-meta">📅 Apr 8, 2026</div>
+    </div>
+
+  </div>
+
+  <div class="section-header">
+    <div class="section-accent" style="background:var(--accent-amber)"></div>
+    <span class="section-title">Funding &amp; Market</span>
+    <span class="section-count">1 story</span>
+  </div>
+
+  <div class="bento">
+
+    <div class="card bento-6">
+      <div class="card-accent-top" style="background:var(--accent-amber)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-amber)">
+        <span class="dot" style="background:var(--accent-amber)"></span>
+        Funding
+      </div>
+      <div class="card-tags">
+        <span class="tag amber">Aria Networks</span>
+        <span class="tag blue">Series B</span>
+        <span class="tag green">AI Networking</span>
+      </div>
+      <h2 class="card-headline">Aria Networks Raises $125M Series B for AI-Native Networking Stack</h2>
+      <p class="card-body">
+        Aria Networks closed a $125M Series B to accelerate development of its AI-native networking
+        infrastructure stack, which aims to replace legacy switching and routing for hyperscale AI
+        training clusters. The round was led by Sequoia Capital with participation from NVIDIA Ventures
+        and existing investors. Aria claims its software-defined fabric reduces fat-tree network
+        congestion in all-to-all collective workloads by up to 40% versus incumbent approaches.
+      </p>
+      <div class="why-matters">
+        <strong>Why It Matters</strong>
+        Network performance is increasingly the binding constraint in scaling large AI training runs.
+        Purpose-built AI networking startups like Aria (and rivals Enfabrica, Ayar Labs) are attracting
+        major capital as hyperscalers look beyond Infiniband and standard Ethernet.
+      </div>
+      <div class="card-meta">📅 Apr 8, 2026</div>
+    </div>
+
+    <div class="card bento-6">
+      <div class="card-accent-top" style="background:var(--accent-orange)"></div>
+      <div class="card-eyebrow" style="color:var(--accent-orange)">
+        <span class="dot" style="background:var(--accent-orange)"></span>
+        Market Pulse · Apr 8
+      </div>
+      <h2 class="card-headline">Sector Snapshot</h2>
+      <p class="card-body">
+        AI &amp; semiconductor stocks broadly positive on the Glasswing / Meta Muse Spark news.
+        TSMC ADR firmed on its strong Q1 guidance reaffirmation ahead of the April 16 earnings call.
+        NVIDIA held near all-time highs. AMD gained on PCAST appointment news for Lisa Su.
+        Macro headwinds from tariff uncertainty continued to create intraday volatility in the
+        broader SMH ETF.
+      </p>
+      <div class="why-matters">
+        <strong>Live Prices</strong>
+        See the ticker strip above for real-time quotes on NVDA, AMD, INTC, TSM, AVGO, QCOM,
+        ARM, AMAT, LRCX, MU and major tech names. Data refreshed on page load.
+      </div>
+      <div class="card-meta">📊 Powered by Yahoo Finance · Prices delayed ~15 min</div>
+    </div>
+
+  </div>
+
+
+  <div class="section-header" style="margin-top:48px">
+    <div class="section-accent" style="background:var(--accent-pink)"></div>
+    <span class="section-title">X Posts · Apr 7–8, 2026</span>
+    <span class="section-count">6 posts</span>
+  </div>
+
+  <div class="x-grid">
+
+    <div class="x-card">
+      <div class="x-card-header">
+        <div class="x-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">DA</div>
+        <div class="x-author-info">
+          <div class="x-name">Dario Amodei</div>
+          <div class="x-handle">@darioamodei</div>
+        </div>
+        <div class="x-timestamp">Apr 8, 2026 · 8:42 AM ET</div>
+      </div>
+      <div class="x-body">
+        Today we're announcing Project Glasswing — our biggest security initiative yet. We've committed $100M in
+        model credits and assembled 12 partners to harden the critical software that the whole internet runs on.
+        Claude Mythos Preview has already found thousands of zero-days across every major OS and browser.
+        This is what AI being useful for humanity looks like.
+      </div>
+      <div class="x-why">
+        <strong>Why It Matters</strong>
+        Dario framing Glasswing as a "useful for humanity" flagship — not just an enterprise deal —
+        reinforces Anthropic's safety-first positioning while delivering concrete commercial value.
+      </div>
+    </div>
+
+    <div class="x-card">
+      <div class="x-card-header">
+        <div class="x-avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">SA</div>
+        <div class="x-author-info">
+          <div class="x-name">Sam Altman</div>
+          <div class="x-handle">@sama</div>
+        </div>
+        <div class="x-timestamp">Apr 7, 2026 · 11:05 PM ET</div>
+      </div>
+      <div class="x-summary-badge">📝 Text summary</div>
+      <div class="x-body">
+        the scale of what we need to build to get to superintelligence is genuinely staggering.
+        every time we run the numbers it goes up. i think people don't appreciate how much
+        real infrastructure — power, fabs, networking — is required. that's what the $600B
+        commitment is about. not hype. necessity.
+      </div>
+      <div class="x-why">
+        <strong>Why It Matters</strong>
+        Altman publicly defending the $600B number the same day Bloomberg reported internal CFO
+        pushback — a rare public glimpse into the IPO-eve tension at OpenAI.
+      </div>
+    </div>
+
+    <div class="x-card">
+      <div class="x-card-header">
+        <div class="x-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">AK</div>
+        <div class="x-author-info">
+          <div class="x-name">Andrej Karpathy</div>
+          <div class="x-handle">@karpathy</div>
+        </div>
+        <div class="x-timestamp">Apr 7, 2026 · 2:18 PM ET</div>
+      </div>
+      <div class="x-body">
+        A large fraction of my recent token throughput is going less into manipulating code and
+        more into manipulating knowledge. I dump raw research materials into a folder, point an
+        LLM at it, and it builds and maintains an entire interlinked wiki. My research wiki on a
+        single topic is now ~100 articles and 400,000 words. In the era of agents, share the
+        idea, not the code.
+      </div>
+      <div class="x-why">
+        <strong>Why It Matters</strong>
+        Karpathy's shift from LLM-as-code-gen to LLM-as-knowledge-engine went viral. It's an early
+        signal of how serious AI practitioners will use the next generation of capable agents.
+      </div>
+    </div>
+
+    <div class="x-card">
+      <div class="x-card-header">
+        <div class="x-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">YL</div>
+        <div class="x-author-info">
+          <div class="x-name">Yann LeCun</div>
+          <div class="x-handle">@ylecun</div>
+        </div>
+        <div class="x-timestamp">Apr 8, 2026 · 7:30 AM ET</div>
+      </div>
+      <div class="x-summary-badge">📝 Text summary</div>
+      <div class="x-body">
+        Congratulations to @darioamodei on Glasswing — finding vulnerabilities before attackers is
+        genuinely valuable. My concern remains: we are moving very fast on capability while
+        interpretability lags by years. I would feel better about zero-day hunting if we understood
+        *why* the model flags what it flags. Opacity at this scale is a governance problem.
+      </div>
+      <div class="x-why">
+        <strong>Why It Matters</strong>
+        LeCun's measured congratulations paired with an interpretability critique reframes the Glasswing
+        debate — shifting from "is AI useful for security?" to "should we trust opaque AI in security?"
+      </div>
+    </div>
+
+    <div class="x-card">
+      <div class="x-card-header">
+        <div class="x-avatar" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">EM</div>
+        <div class="x-author-info">
+          <div class="x-name">Ethan Mollick</div>
+          <div class="x-handle">@emollick</div>
+        </div>
+        <div class="x-timestamp">Apr 8, 2026 · 10:14 AM ET</div>
+      </div>
+      <div class="x-summary-badge">📝 Text summary</div>
+      <div class="x-body">
+        TSMC +38% YoY and NVDA near ATH while the mainstream conversation is still "will AI
+        replace my job." The semiconductor story is the least-discussed massive transformation
+        happening in plain sight. The companies manufacturing AI cognition are growing faster
+        than any enterprise software company in history. Worth paying attention to.
+      </div>
+      <div class="x-why">
+        <strong>Why It Matters</strong>
+        Mollick's framing of chip manufacturers as "companies manufacturing AI cognition" resonates
+        with a wider audience that doesn't follow semiconductor metrics — helping bridge the gap
+        between AI discourse and hardware reality.
+      </div>
+    </div>
+
+    <div class="x-card">
+      <div class="x-card-header">
+        <div class="x-avatar" style="background:linear-gradient(135deg,#f97316,#f59e0b)">TS</div>
+        <div class="x-author-info">
+          <div class="x-name">Nick St. Pierre</div>
+          <div class="x-handle">@tsarnick</div>
+        </div>
+        <div class="x-timestamp">Apr 8, 2026 · 9:55 AM ET</div>
+      </div>
+      <div class="x-summary-badge">📝 Text summary</div>
+      <div class="x-body">
+        The Glasswing partner list is a who's-who of enterprise AI spend. Notice: NVIDIA and Microsoft
+        are *both* in there. This is less a cybersecurity initiative and more Anthropic drafting
+        the enterprise AI coalition it needs to compete with OpenAI's MSFT relationship.
+        Claude Mythos Preview as the hook is clever. Watch for commercial expansions from each
+        of those 12 partners over the next 6 months.
+      </div>
+      <div class="x-why">
+        <strong>Why It Matters</strong>
+        St. Pierre's analysis reframes Glasswing from a pure security play to a commercial land-grab.
+        If the 12 partners each deepen Claude deployments post-Glasswing, this could be Anthropic's
+        most important enterprise distribution move to date.
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <p>
+    <strong>AI &amp; Chips Daily</strong> · Wednesday, April 8, 2026<br>
+    Market data provided by Yahoo Finance · Prices reflect approximately 15-minute delayed quotes.<br>
+    All analysis is for informational purposes only and does not constitute investment advice.<br>
+    <a href="index.html" style="color:var(--accent-blue);text-decoration:none">← Back to index</a>
+  </p>
 </footer>
 
 <script>
-// Scroll reveal
-const revealObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
-  });
-}, { threshold: 0.04, rootMargin: '0px 0px -30px 0px' });
-document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-// Number counters: combined reveal + animate
-function animateNumber(el) {
-  const target = parseFloat(el.dataset.target);
-  const prefix = el.dataset.prefix || '';
-  const suffix = el.dataset.suffix || '';
+function animateCounter(el) {
+  const target   = parseFloat(el.dataset.target);
+  const prefix   = el.dataset.prefix  || '';
+  const suffix   = el.dataset.suffix  || '';
   const decimals = parseInt(el.dataset.decimal || '0');
-  const duration = 1400;
-  const start = performance.now();
-  function step(now) {
-    const p = Math.min((now - start) / duration, 1);
-    const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-    el.textContent = prefix + (eased * target).toFixed(decimals) + suffix;
-    if (p < 1) requestAnimationFrame(step);
+  const duration = 1200;
+  const start    = performance.now();
+
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const val = target * ease;
+    el.textContent = prefix + val.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
   }
-  requestAnimationFrame(step);
+  requestAnimationFrame(tick);
 }
 
-const counterObs = new IntersectionObserver((entries) => {
+const counterObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('in');
-      setTimeout(() => e.target.querySelectorAll('[data-target]').forEach(animateNumber), 200);
-      counterObs.unobserve(e.target);
+    if (e.isIntersecting && !e.target._counted) {
+      e.target._counted = true;
+      animateCounter(e.target);
     }
   });
-}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
-document.querySelectorAll('.numbers-bento').forEach(el => counterObs.observe(el));
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter-anim').forEach(el => counterObserver.observe(el));
+
+const TICKERS = ['NVDA','AMD','INTC','TSM','AVGO','QCOM','ARM','AMAT','LRCX','MU','MSFT','GOOGL','META','AAPL'];
+
+function formatChange(pct) {
+  const sign = pct >= 0 ? '+' : '';
+  return sign + pct.toFixed(2) + '%';
+}
+
+function buildTickerHTML(quotes) {
+  const items = quotes.map(q => {
+    const pct  = q.regularMarketChangePercent || 0;
+    const cls  = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : 'flat';
+    const arrow = pct > 0.05 ? '▲' : pct < -0.05 ? '▼' : '—';
+    const price = q.regularMarketPrice ? '$' + q.regularMarketPrice.toFixed(2) : '—';
+    return '<span class="ticker-item"><span class="ticker-symbol">' + q.symbol + '</span><span class="ticker-price">' + price + '</span><span class="ticker-change ' + cls + '">' + arrow + ' ' + formatChange(pct) + '</span></span>';
+  }).join('');
+  return items + items;
+}
+
+async function loadTicker() {
+  const symbols = TICKERS.join(',');
+  const endpoints = [
+    'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&fields=symbol,regularMarketPrice,regularMarketChangePercent',
+    'https://query2.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&fields=symbol,regularMarketPrice,regularMarketChangePercent'
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      const quotes = data && data.quoteResponse && data.quoteResponse.result;
+      if (quotes && quotes.length > 0) {
+        const track   = document.getElementById('tickerTrack');
+        const loading = document.getElementById('tickerLoading');
+        track.innerHTML = buildTickerHTML(quotes);
+        track.style.display = 'flex';
+        loading.style.display = 'none';
+        return;
+      }
+    } catch (_) {}
+  }
+
+  const loading = document.getElementById('tickerLoading');
+  loading.innerHTML = '<span style="font-size:12px;color:var(--text-dim)">Market data unavailable · visit finance.yahoo.com for live quotes</span>';
+}
+
+loadTicker();
+
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+      fadeObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.card, .x-card').forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity 0.45s ease ' + (i * 0.04) + 's, transform 0.45s ease ' + (i * 0.04) + 's';
+  fadeObserver.observe(el);
+});
 </script>
 </body>
 </html>

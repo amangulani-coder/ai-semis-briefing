@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memory Intelligence Â· DRAM Â· HBM Â· NAND Â· Apr 8, 2026</title>
+  <title>Memory Intelligence · DRAM · HBM · NAND · Apr 8, 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="briefing-style.css">
   <style>
-    /* ââ MEMORY-PAGE OVERRIDES & EXTENSIONS ââ */
+    /* ── MEMORY-PAGE OVERRIDES & EXTENSIONS ── */
     .mem-hero::before {
       background:
         radial-gradient(ellipse 80% 55% at 15% 35%, rgba(79,142,247,0.10) 0%, transparent 65%),
@@ -17,7 +17,7 @@
         radial-gradient(ellipse 50% 40% at 50% 90%, rgba(52,217,128,0.05) 0%, transparent 60%);
     }
 
-    /* ââ SECTION ACCENTS ââ */
+    /* ── SECTION ACCENTS ── */
     .mem-section { padding: 72px 40px; border-top: 1px solid var(--border); }
     .mem-section .section-eyebrow.blue::before  { background: var(--blue); }
     .mem-section .section-eyebrow.blue          { color: var(--blue); }
@@ -37,7 +37,7 @@
     .story-card.b-green  { border-left: 3px solid rgba(52,217,128,0.5); }
     .story-card.b-red    { border-left: 3px solid rgba(247,82,82,0.5); }
 
-    /* ââ SOURCE CHIPS ââ */
+    /* ── SOURCE CHIPS ── */
     .source-chip {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
@@ -47,7 +47,7 @@
       margin-right: 6px; margin-bottom: 6px;
     }
 
-    /* ââ STOCK IMPLICATION PILLS ââ */
+    /* ── STOCK IMPLICATION PILLS ── */
     .impl-pill {
       display: inline-flex; align-items: center; gap: 4px;
       font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
@@ -56,7 +56,7 @@
     .impl-pill.bull { background: var(--green-dim); color: var(--green); border: 1px solid rgba(52,217,128,0.2); }
     .impl-pill.bear { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(247,82,82,0.2); }
 
-    /* ââ PRICING TABLE ââ */
+    /* ── PRICING TABLE ── */
     .price-grid { display: grid; gap: 10px; }
     .price-row {
       display: grid; grid-template-columns: 1fr 120px 100px 28px;
@@ -80,7 +80,7 @@
     .price-arrow.up   { color: var(--green); }
     .price-arrow.down { color: var(--red); }
 
-    /* ââ VENDOR UTILIZATION BARS ââ */
+    /* ── VENDOR UTILIZATION BARS ── */
     .vendor-grid { display: flex; flex-direction: column; gap: 14px; }
     .vendor-row { display: flex; align-items: center; gap: 14px; }
     .vendor-name { font-size: 12px; font-weight: 700; color: var(--text-2); width: 85px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -89,7 +89,7 @@
     .vendor-val { font-size: 14px; font-weight: 800; color: var(--text); width: 48px; text-align: right; }
     .vendor-sublabel { font-size: 10px; font-weight: 500; color: var(--text-3); margin-top: 3px; }
 
-    /* ââ HBM SHARE BARS ââ */
+    /* ── HBM SHARE BARS ── */
     .hbm-share-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
     .hbm-share-row { display: flex; align-items: center; gap: 12px; }
     .hbm-share-name { font-size: 12px; font-weight: 700; color: var(--text-2); width: 90px; flex-shrink: 0; }
@@ -97,7 +97,7 @@
     .hbm-share-bar { height: 100%; border-radius: 5px; width: 0; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
     .hbm-share-pct { font-size: 14px; font-weight: 800; color: var(--text); width: 42px; text-align: right; }
 
-    /* ââ CAPEX GRID ââ */
+    /* ── CAPEX GRID ── */
     .capex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .capex-card {
       background: var(--glass); border: 1px solid var(--border);
@@ -110,7 +110,7 @@
     .capex-delta { font-size: 12px; font-weight: 700; margin-top: 6px; }
     .capex-note  { font-size: 11px; color: var(--text-2); margin-top: 6px; line-height: 1.4; }
 
-    /* ââ HERO STATS ââ */
+    /* ── HERO STATS ── */
     .hero-stats { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
     .hero-stat { text-align: center; }
     .hero-stat-val { font-size: 36px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; }
@@ -120,14 +120,14 @@
     .hero-stat-val.amber { color: var(--amber); }
     .hero-stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); margin-top: 6px; }
 
-    /* ââ FOOTER ââ */
+    /* ── FOOTER ── */
     .mem-footer {
       background: var(--bg-2); border-top: 1px solid var(--border);
       padding: 24px 40px; text-align: center;
       font-size: 12px; color: var(--text-3);
     }
 
-    /* ââ RESPONSIVE ââ */
+    /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .capex-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -139,52 +139,10 @@
       .hero-stats { gap: 24px; }
       .hero-stat-val { font-size: 28px; }
     }
-  
-/* ═══════════════════════════════════════════
-   SILICON WAFER BACKGROUND SYSTEM
-   ═══════════════════════════════════════════ */
-.wafer-bg {
-  position: fixed;
-  top: 50%;
-  right: -8%;
-  transform: translateY(-50%);
-  width: min(90vw, 720px);
-  height: min(90vw, 720px);
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.38;
-}
-.circuit-traces {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.14;
-}
-.content-layer {
-  position: relative;
-  z-index: 1;
-}
-@keyframes trace-flow {
-  0%   { stroke-dashoffset: 1000; }
-  100% { stroke-dashoffset: 0; }
-}
-.circuit-line {
-  stroke: #38bdf8;
-  stroke-width: 0.8;
-  fill: none;
-  stroke-dasharray: 200 800;
-  animation: trace-flow 6s linear infinite;
-}
-.circuit-pad { fill: rgba(56,189,248,0.5); }
-@media (max-width: 768px) {
-  .wafer-bg { opacity: 0.18; right: -30%; }
-  .circuit-traces { opacity: 0.07; }
-}
+  undefined
 
 /* Glassmorphism for memory page */
-.price-row, .mem-section, .entry-card, [class*="card"], [class*="section-block"] {
+.price-row, .mem-section, .entry-card {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -196,174 +154,54 @@
     </style>
 </head>
 <body>
-<!-- ═══ SILICON WAFER BACKGROUND ═══ -->
-<div class="wafer-bg" aria-hidden="true">
-  <svg id="wafer-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="wafer-iridescent" cx="38%" cy="38%" r="65%">
-        <stop offset="0%"   stop-color="#7dd3fc"/>
-        <stop offset="14%"  stop-color="#818cf8"/>
-        <stop offset="28%"  stop-color="#c084fc"/>
-        <stop offset="42%"  stop-color="#38bdf8"/>
-        <stop offset="56%"  stop-color="#34d399"/>
-        <stop offset="70%"  stop-color="#fbbf24"/>
-        <stop offset="84%"  stop-color="#60a5fa"/>
-        <stop offset="100%" stop-color="#818cf8"/>
-      </radialGradient>
-      <filter id="edge-glow" x="-15%" y="-15%" width="130%" height="130%">
-        <feGaussianBlur stdDeviation="5" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <linearGradient id="scan-line" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%"   stop-color="transparent"/>
-        <stop offset="43%"  stop-color="transparent"/>
-        <stop offset="47%"  stop-color="rgba(120,210,255,0.07)"/>
-        <stop offset="50%"  stop-color="rgba(160,230,255,0.22)"/>
-        <stop offset="53%"  stop-color="rgba(120,210,255,0.07)"/>
-        <stop offset="57%"  stop-color="transparent"/>
-        <stop offset="100%" stop-color="transparent"/>
-        <animateTransform attributeName="gradientTransform" type="rotate"
-          values="0 300 300;360 300 300" dur="8s" repeatCount="indefinite"/>
-      </linearGradient>
-      <radialGradient id="wafer-shimmer" cx="28%" cy="28%" r="55%">
-        <stop offset="0%"   stop-color="rgba(255,255,255,0.14)"/>
-        <stop offset="50%"  stop-color="rgba(255,255,255,0.03)"/>
-        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-      </radialGradient>
-      <clipPath id="wafer-clip">
-        <path d="M300,22 A278,278 0 1,1 216,562 L230,556 A264,264 0 0,0 300,568 A264,264 0 1,0 300,36 Z"/>
-      </clipPath>
-    </defs>
-    <!-- Base silicon disc -->
-    <circle cx="300" cy="300" r="280" fill="#07090f" stroke="#1a2a4a" stroke-width="1.5"/>
-    <!-- Iridescent thin-film surface -->
-    <circle cx="300" cy="300" r="278" fill="url(#wafer-iridescent)" clip-path="url(#wafer-clip)" opacity="0.42"/>
-    <!-- Die grid (populated by script) -->
-    <g id="die-group" clip-path="url(#wafer-clip)"/>
-    <!-- Specular shimmer -->
-    <circle cx="300" cy="300" r="278" fill="url(#wafer-shimmer)" clip-path="url(#wafer-clip)"/>
-    <!-- Rotating scan-line sweep -->
-    <circle cx="300" cy="300" r="278" fill="url(#scan-line)" clip-path="url(#wafer-clip)"/>
-    <!-- Inner edge ring -->
-    <circle cx="300" cy="300" r="278" fill="none" stroke="rgba(56,189,248,0.22)" stroke-width="2"/>
-    <!-- Wafer flat/notch at bottom (standard 300mm orientation) -->
-    <rect x="218" y="558" width="164" height="10" rx="3" fill="#060608"/>
-    <rect x="218" y="558" width="164" height="1.5" rx="1" fill="rgba(56,189,248,0.3)"/>
-    <!-- Outer glow rings -->
-    <circle cx="300" cy="300" r="282" fill="none" stroke="rgba(56,189,248,0.45)" stroke-width="2" filter="url(#edge-glow)"/>
-    <circle cx="300" cy="300" r="289" fill="none" stroke="rgba(139,92,246,0.18)" stroke-width="7"/>
-  </svg>
-</div>
-<!-- Circuit board traces overlay -->
-<svg class="circuit-traces" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path class="circuit-line" d="M0,180 L120,180 L120,300 L240,300" style="animation-delay:0s;animation-duration:7s"/>
-  <circle class="circuit-pad" cx="120" cy="180" r="2.5"/>
-  <circle class="circuit-pad" cx="120" cy="300" r="2.5"/>
-  <circle class="circuit-pad" cx="240" cy="300" r="2.5"/>
-  <path class="circuit-line" d="M0,420 L80,420 L80,520 L180,520" style="animation-delay:1.5s;animation-duration:9s"/>
-  <circle class="circuit-pad" cx="80" cy="420" r="2.5"/>
-  <circle class="circuit-pad" cx="80" cy="520" r="2.5"/>
-  <path class="circuit-line" d="M0,660 L200,660 L200,760" style="animation-delay:3s;animation-duration:8s"/>
-  <circle class="circuit-pad" cx="200" cy="660" r="2.5"/>
-  <path class="circuit-line" d="M1440,220 L1300,220 L1300,360 L1180,360" style="animation-delay:0.8s;animation-duration:10s"/>
-  <circle class="circuit-pad" cx="1300" cy="220" r="2.5"/>
-  <circle class="circuit-pad" cx="1300" cy="360" r="2.5"/>
-  <path class="circuit-line" d="M1440,500 L1350,500 L1350,620 L1250,620" style="animation-delay:2.2s;animation-duration:7.5s"/>
-  <circle class="circuit-pad" cx="1350" cy="500" r="2.5"/>
-  <circle class="circuit-pad" cx="1350" cy="620" r="2.5"/>
-  <path class="circuit-line" d="M200,0 L200,80 L340,80" style="animation-delay:0.5s;animation-duration:6s"/>
-  <circle class="circuit-pad" cx="200" cy="80" r="2.5"/>
-  <path class="circuit-line" d="M580,0 L580,120 L460,120 L460,210" style="animation-delay:2s;animation-duration:8.5s"/>
-  <circle class="circuit-pad" cx="580" cy="120" r="2.5"/>
-  <circle class="circuit-pad" cx="460" cy="120" r="2.5"/>
-  <path class="circuit-line" d="M920,900 L920,820 L1060,820 L1060,740" style="animation-delay:1s;animation-duration:9.5s"/>
-  <circle class="circuit-pad" cx="920" cy="820" r="2.5"/>
-  <circle class="circuit-pad" cx="1060" cy="820" r="2.5"/>
-  <path class="circuit-line" d="M400,900 L400,800 L270,800 L270,710" style="animation-delay:3.5s;animation-duration:7s"/>
-  <circle class="circuit-pad" cx="400" cy="800" r="2.5"/>
-  <circle class="circuit-pad" cx="270" cy="800" r="2.5"/>
-  <path class="circuit-line" d="M700,0 L700,60 L820,60 L820,140" style="animation-delay:4s;animation-duration:11s"/>
-  <circle class="circuit-pad" cx="700" cy="60" r="2.5"/>
-  <circle class="circuit-pad" cx="820" cy="60" r="2.5"/>
-</svg>
-<!-- Die grid generation script -->
-<script>
-(function(){
-  var svg=document.getElementById('wafer-svg');
-  if(!svg)return;
-  var g=svg.querySelector('#die-group');
-  var cx=300,cy=300,r=268,dieW=22,dieH=18,gap=2;
-  var cols=Math.ceil(600/(dieW+gap)),rows=Math.ceil(600/(dieH+gap));
-  var startX=300-cols*(dieW+gap)/2,startY=300-rows*(dieH+gap)/2;
-  var hues=[218,224,230,236,242];
-  for(var row=0;row<rows;row++){
-    for(var col=0;col<cols;col++){
-      var x=startX+col*(dieW+gap),y=startY+row*(dieH+gap);
-      var dcx=x+dieW/2-cx,dcy=y+dieH/2-cy;
-      if(dcx*dcx+dcy*dcy<(r-6)*(r-6)){
-        var rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
-        rect.setAttribute('x',x);rect.setAttribute('y',y);
-        rect.setAttribute('width',dieW);rect.setAttribute('height',dieH);
-        rect.setAttribute('rx','2');
-        var h=hues[Math.floor(Math.random()*hues.length)];
-        var l=7+Math.random()*6;
-        rect.setAttribute('fill','hsl('+h+',28%,'+l+'%)');
-        rect.setAttribute('stroke','rgba(56,189,248,0.13)');
-        rect.setAttribute('stroke-width','0.5');
-        g.appendChild(rect);
-      }
-    }
-  }
-})();
-</script>
-<!-- ═══ END WAFER BACKGROUND ═══ -->
+undefined
 <div class="content-layer">
 
 
-<!-- ââ TICKER ââ -->
+<!-- ══ TICKER ══ -->
 <div class="ticker-wrap">
   <span class="ticker-label">MEMORY</span>
   <div class="ticker-track" id="mem-ticker-track">
-    <div class="ticker-item" data-sym="MU">MU <span class="up">â² $118.45 +1.8%</span></div>
-    <div class="ticker-item" data-sym="WDC">WDC <span class="up">â² $68.20 +0.9%</span></div>
-    <div class="ticker-item" data-sym="AMAT">AMAT <span class="up">â² $225.80 +1.1%</span></div>
-    <div class="ticker-item" data-sym="LRCX">LRCX <span class="up">â² $975.60 +0.8%</span></div>
-    <div class="ticker-item" data-sym="ASML">ASML <span class="up">â² $835.20 +0.6%</span></div>
-    <div class="ticker-item">SK Hynix <span class="up">â² +1.4%</span></div>
-    <div class="ticker-item">Samsung <span class="up">â² +0.7%</span></div>
-    <div class="ticker-item" data-sym="MU">MU <span class="up">â² $118.45 +1.8%</span></div>
-    <div class="ticker-item" data-sym="WDC">WDC <span class="up">â² $68.20 +0.9%</span></div>
-    <div class="ticker-item" data-sym="AMAT">AMAT <span class="up">â² $225.80 +1.1%</span></div>
-    <div class="ticker-item" data-sym="LRCX">LRCX <span class="up">â² $975.60 +0.8%</span></div>
-    <div class="ticker-item" data-sym="ASML">ASML <span class="up">â² $835.20 +0.6%</span></div>
-    <div class="ticker-item">SK Hynix <span class="up">â² +1.4%</span></div>
-    <div class="ticker-item">Samsung <span class="up">â² +0.7%</span></div>
+    <div class="ticker-item" data-sym="MU">MU <span class="up">▲ $118.45 +1.8%</span></div>
+    <div class="ticker-item" data-sym="WDC">WDC <span class="up">▲ $68.20 +0.9%</span></div>
+    <div class="ticker-item" data-sym="AMAT">AMAT <span class="up">▲ $225.80 +1.1%</span></div>
+    <div class="ticker-item" data-sym="LRCX">LRCX <span class="up">▲ $975.60 +0.8%</span></div>
+    <div class="ticker-item" data-sym="ASML">ASML <span class="up">▲ $835.20 +0.6%</span></div>
+    <div class="ticker-item">SK Hynix <span class="up">▲ +1.4%</span></div>
+    <div class="ticker-item">Samsung <span class="up">▲ +0.7%</span></div>
+    <div class="ticker-item" data-sym="MU">MU <span class="up">▲ $118.45 +1.8%</span></div>
+    <div class="ticker-item" data-sym="WDC">WDC <span class="up">▲ $68.20 +0.9%</span></div>
+    <div class="ticker-item" data-sym="AMAT">AMAT <span class="up">▲ $225.80 +1.1%</span></div>
+    <div class="ticker-item" data-sym="LRCX">LRCX <span class="up">▲ $975.60 +0.8%</span></div>
+    <div class="ticker-item" data-sym="ASML">ASML <span class="up">▲ $835.20 +0.6%</span></div>
+    <div class="ticker-item">SK Hynix <span class="up">▲ +1.4%</span></div>
+    <div class="ticker-item">Samsung <span class="up">▲ +0.7%</span></div>
   </div>
 </div>
 
-<!-- ââ NAV ââ -->
+<!-- ══ NAV ══ -->
 <nav id="site-nav">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html">
       <span class="nav-logo-dot"></span> AI &amp; Chips Daily
     </a>
     <span class="nav-date">Wednesday, April 8, 2026</span>
-    <a class="nav-cta" href="smh.html">ð SMH Tracker</a>
+    <a class="nav-cta" href="smh.html">📈 SMH Tracker</a>
   </div>
 </nav>
 
-<!-- ââ HERO ââ -->
+<!-- ══ HERO ══ -->
 <section class="hero mem-hero">
   <div>
-    <div class="hero-eyebrow">Â· WEDNESDAY, APRIL 8, 2026</div>
+    <div class="hero-eyebrow">· WEDNESDAY, APRIL 8, 2026</div>
     <h1 class="hero-title">Memory<br><em>Intelligence</em></h1>
     <p class="hero-sub">
-      Spot pricing Â· CapEx Â· Capacity Â· Demand signals<br>
-      DRAM Â· HBM Â· NAND Â· 24-Hour Window
+      Spot pricing · CapEx · Capacity · Demand signals<br>
+      DRAM · HBM · NAND · 24-Hour Window
     </p>
     <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-val red">â1.18%</div>
+        <div class="hero-stat-val red">−1.18%</div>
         <div class="hero-stat-label">DDR4 Spot WoW</div>
       </div>
       <div class="hero-stat">
@@ -382,13 +220,13 @@
   </div>
 </section>
 
-<!-- ââââââââââ Â§1 SPOT PRICING ââââââââââ -->
+<!-- ══════════ §1 SPOT PRICING ══════════ -->
 <section class="mem-section reveal" id="pricing">
   <div class="section-wrap">
     <div class="section-header">
-      <div class="section-eyebrow blue">ð§ Spot &amp; Contract Pricing</div>
+      <div class="section-eyebrow blue">💧 Spot &amp; Contract Pricing</div>
       <h2 class="section-title">Memory Prices,<br>Apr 8, 2026</h2>
-      <p style="font-size:13px;color:var(--text-2);margin-top:12px;">Spot data: TrendForce Â· Apr 8, 2026 Â· Prices per-unit or per-GB where noted</p>
+      <p style="font-size:13px;color:var(--text-2);margin-top:12px;">Spot data: TrendForce · Apr 8, 2026 · Prices per-unit or per-GB where noted</p>
     </div>
 
     <div class="bento bento-2" style="margin-bottom:14px;">
@@ -398,60 +236,60 @@
         <div class="card-h">DDR4 &amp; DDR5 Spot Market</div>
         <div class="price-grid" style="margin-top:12px;">
           <div class="price-row">
-            <div class="price-product">DDR4 1Gx8 3200MT/s<small>Mainstream benchmark Â· Apr 8</small></div>
+            <div class="price-product">DDR4 1Gx8 3200MT/s<small>Mainstream benchmark · Apr 8</small></div>
             <div class="price-val">$33.56</div>
-            <div class="price-delta down">WoW â1.18%<br><span style="color:var(--text-3);font-weight:500;">Gradual downtrend</span></div>
-            <div class="price-arrow down">â</div>
+            <div class="price-delta down">WoW −1.18%<br><span style="color:var(--text-3);font-weight:500;">Gradual downtrend</span></div>
+            <div class="price-arrow down">↓</div>
           </div>
           <div class="price-row">
             <div class="price-product">DDR5-5600 16Gb<small>Client / consumer</small></div>
             <div class="price-val">$4.28/Gb</div>
             <div class="price-delta up">WoW +0.5%<br><span style="color:var(--text-3);font-weight:500;">MoM +3.1%</span></div>
-            <div class="price-arrow up">â</div>
+            <div class="price-arrow up">↑</div>
           </div>
           <div class="price-row">
             <div class="price-product">DDR5-6400 ECC Server<small>AI rack / data center</small></div>
             <div class="price-val">$5.90/Gb</div>
             <div class="price-delta up">WoW +1.2%<br><span style="color:var(--text-3);font-weight:500;">MoM +6.4%</span></div>
-            <div class="price-arrow up">â</div>
+            <div class="price-arrow up">↑</div>
           </div>
         </div>
         <div style="margin-top:14px;">
-          <span class="source-chip">TrendForce Â· Apr 8</span>
-          <span class="impl-pill bull">â² MU</span>
-          <span class="impl-pill bull">â² SK Hynix</span>
+          <span class="source-chip">TrendForce · Apr 8</span>
+          <span class="impl-pill bull">▲ MU</span>
+          <span class="impl-pill bull">▲ SK Hynix</span>
         </div>
-        <p style="font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;">DDR4 spot extends gradual downtrend as spot traders liquidate inventory for arbitrage â but selling pressure remains contained. Server DDR5 continues upward trajectory driven by AI rack builders configuring 192GB DIMM slots.</p>
+        <p style="font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;">DDR4 spot extends gradual downtrend as spot traders liquidate inventory for arbitrage — but selling pressure remains contained. Server DDR5 continues upward trajectory driven by AI rack builders configuring 192GB DIMM slots.</p>
       </div>
 
       <div class="story-card b-blue reveal">
         <div class="card-tag"><span class="tag tag-green">HBM3E Pricing</span></div>
-        <div class="card-h">HBM3E Contract â 2026 Cycle</div>
+        <div class="card-h">HBM3E Contract — 2026 Cycle</div>
         <div class="price-grid" style="margin-top:12px;">
           <div class="price-row">
             <div class="price-product">HBM3E 8-Hi (24GB stack)<small>NVIDIA H200 / B200 spec</small></div>
             <div class="price-val">~$2.50/GB</div>
             <div class="price-delta up">YoY +20%<br><span style="color:var(--text-3);font-weight:500;">vs 2025 contracts</span></div>
-            <div class="price-arrow up">â</div>
+            <div class="price-arrow up">↑</div>
           </div>
           <div class="price-row">
             <div class="price-product">HBM3E 12-Hi (36GB stack)<small>B300 / next-gen platform</small></div>
             <div class="price-val">~$2.80/GB</div>
             <div class="price-delta up">+12% premium<br><span style="color:var(--text-3);font-weight:500;">vs 8-Hi per GB</span></div>
-            <div class="price-arrow up">â</div>
+            <div class="price-arrow up">↑</div>
           </div>
           <div class="price-row">
             <div class="price-product">HBM4 early qual pricing<small>SK Hynix / Samsung samples</small></div>
             <div class="price-val">~$3.20/GB</div>
             <div class="price-delta up">+28% vs HBM3E<br><span style="color:var(--text-3);font-weight:500;">2H 2026 target</span></div>
-            <div class="price-arrow up">â</div>
+            <div class="price-arrow up">↑</div>
           </div>
         </div>
         <div style="margin-top:14px;">
-          <span class="source-chip">TrendForce Â· Dec 2025</span>
-          <span class="source-chip">DigiTimes Â· Dec 2025</span>
-          <span class="impl-pill bull">â² SK Hynix</span>
-          <span class="impl-pill bull">â² MU</span>
+          <span class="source-chip">TrendForce · Dec 2025</span>
+          <span class="source-chip">DigiTimes · Dec 2025</span>
+          <span class="impl-pill bull">▲ SK Hynix</span>
+          <span class="impl-pill bull">▲ MU</span>
         </div>
         <p style="font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;">Samsung and SK Hynix raised 2026 HBM3E supply prices ~20%. Soaring DDR5 profitability now rivals HBM, prompting suppliers to reallocate DRAM wafer capacity and pushing HBM3E ASPs higher than earlier forecasts predicted.</p>
       </div>
@@ -459,11 +297,11 @@
 
     <div class="story-card b-blue reveal">
       <div class="card-tag"><span class="tag tag-amber">NAND Flash Spot</span></div>
-      <div class="card-h">NAND Flash â Structural Undersupply Regime</div>
+      <div class="card-h">NAND Flash — Structural Undersupply Regime</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;">
         <div class="price-row" style="grid-template-columns:1fr auto;gap:8px;">
           <div class="price-product">512Gb TLC Wafer<small>Enterprise SSD input</small></div>
-          <div><div class="price-val">$6.46</div><div class="price-delta up">Q1 +33â38%</div></div>
+          <div><div class="price-val">$6.46</div><div class="price-delta up">Q1 +33–38%</div></div>
         </div>
         <div class="price-row" style="grid-template-columns:1fr auto;gap:8px;">
           <div class="price-product">Enterprise SSD (TLC)<small>CSP bulk</small></div>
@@ -475,53 +313,53 @@
         </div>
       </div>
       <div style="margin-top:14px;">
-        <span class="source-chip">TrendForce Â· Nov 2025</span>
-        <span class="source-chip">TrendForce Â· Jan 2026</span>
-        <span class="impl-pill bull">â² WDC</span>
-        <span class="impl-pill bull">â² MU</span>
-        <span class="impl-pill bull">â² SK Hynix</span>
+        <span class="source-chip">TrendForce · Nov 2025</span>
+        <span class="source-chip">TrendForce · Jan 2026</span>
+        <span class="impl-pill bull">▲ WDC</span>
+        <span class="impl-pill bull">▲ MU</span>
+        <span class="impl-pill bull">▲ SK Hynix</span>
       </div>
-      <p style="font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;">NAND demand growing 20â22% YoY vs. supply +15â17% â widening gap is inevitable. By Q2 2026 the market may face a scenario "where there's simply no stock left to ship." AI storage demand and HDD shortages are pushing CSPs toward enterprise SSDs at record rates. Further Q2 contract price hikes expected.</p>
+      <p style="font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.6;">NAND demand growing 20–22% YoY vs. supply +15–17% — widening gap is inevitable. By Q2 2026 the market may face a scenario "where there's simply no stock left to ship." AI storage demand and HDD shortages are pushing CSPs toward enterprise SSDs at record rates. Further Q2 contract price hikes expected.</p>
     </div>
   </div>
 </section>
 
-<!-- ââââââââââ Â§2 SUPPLY & CAPACITY ââââââââââ -->
+<!-- ══════════ §2 SUPPLY & CAPACITY ══════════ -->
 <section class="mem-section reveal" id="supply">
   <div class="section-wrap">
     <div class="section-header">
-      <div class="section-eyebrow purple">ð Supply &amp; Capacity</div>
+      <div class="section-eyebrow purple">📊 Supply &amp; Capacity</div>
       <h2 class="section-title">Utilization at<br>Record Highs</h2>
     </div>
 
     <div class="bento bento-2">
       <div class="story-card b-purple reveal">
         <div class="card-tag"><span class="tag" style="background:var(--purple-dim);color:var(--purple);border:1px solid rgba(168,85,247,0.2);">Capacity Utilization</span></div>
-        <div class="card-h">DRAM Fab Utilization â Q1 2026</div>
-        <p style="font-size:12px;color:var(--text-2);margin-bottom:18px;line-height:1.6;">All three major suppliers running near 100% capacity. 18â28% of DRAM wafer starts allocated to HBM, squeezing general-purpose supply further.</p>
+        <div class="card-h">DRAM Fab Utilization — Q1 2026</div>
+        <p style="font-size:12px;color:var(--text-2);margin-bottom:18px;line-height:1.6;">All three major suppliers running near 100% capacity. 18–28% of DRAM wafer starts allocated to HBM, squeezing general-purpose supply further.</p>
         <div class="vendor-grid" id="util-grid">
           <div class="vendor-row">
             <div class="vendor-name">SK Hynix</div>
             <div class="vendor-bar-wrap"><div class="vendor-bar" data-pct="98" style="background:linear-gradient(90deg,var(--green),rgba(52,217,128,0.4));"></div></div>
             <div class="vendor-val">~98%</div>
           </div>
-          <p style="font-size:10px;color:var(--text-3);margin:2px 0 10px 99px;">Sold out through 2026 Â· NVIDIA contracted entire HBM output</p>
+          <p style="font-size:10px;color:var(--text-3);margin:2px 0 10px 99px;">Sold out through 2026 · NVIDIA contracted entire HBM output</p>
           <div class="vendor-row">
             <div class="vendor-name">Samsung</div>
             <div class="vendor-bar-wrap"><div class="vendor-bar" data-pct="92" style="background:linear-gradient(90deg,var(--blue),rgba(79,142,247,0.4));"></div></div>
             <div class="vendor-val">~92%</div>
           </div>
-          <p style="font-size:10px;color:var(--text-3);margin:2px 0 10px 99px;">Scaling +50% Â· 1C node transition underway Â· HBM4 qual Q2 2026</p>
+          <p style="font-size:10px;color:var(--text-3);margin:2px 0 10px 99px;">Scaling +50% · 1C node transition underway · HBM4 qual Q2 2026</p>
           <div class="vendor-row">
             <div class="vendor-name">Micron</div>
             <div class="vendor-bar-wrap"><div class="vendor-bar" data-pct="89" style="background:linear-gradient(90deg,var(--amber),rgba(245,158,11,0.4));"></div></div>
             <div class="vendor-val">~89%</div>
           </div>
-          <p style="font-size:10px;color:var(--text-3);margin:2px 0 0 99px;">Consumer exit Â· pivoting to AI data center only</p>
+          <p style="font-size:10px;color:var(--text-3);margin:2px 0 0 99px;">Consumer exit · pivoting to AI data center only</p>
         </div>
         <div style="margin-top:16px;">
-          <span class="source-chip">DataCenter Dynamics Â· 2026</span>
-          <span class="source-chip">NotebookCheck Â· 2026</span>
+          <span class="source-chip">DataCenter Dynamics · 2026</span>
+          <span class="source-chip">NotebookCheck · 2026</span>
         </div>
       </div>
 
@@ -530,37 +368,37 @@
         <div class="card-h">Production Output Changes</div>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px;">
           <div style="padding:14px;background:var(--glass);border-radius:var(--radius-sm);border:1px solid var(--border);">
-            <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:5px;">SK Hynix Â· M15X Fab Â· Icheon</div>
-            <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin:0;">Targeting 8Ã DRAM output growth by 2026. HBM4 cleanroom expansion fast-tracked. Advanced TC-NCF packaging lines at capacity. Additional $15B approved Mar 2026 for next-gen cleanrooms.</p>
+            <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:5px;">SK Hynix · M15X Fab · Icheon</div>
+            <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin:0;">Targeting 8× DRAM output growth by 2026. HBM4 cleanroom expansion fast-tracked. Advanced TC-NCF packaging lines at capacity. Additional $15B approved Mar 2026 for next-gen cleanrooms.</p>
           </div>
           <div style="padding:14px;background:var(--glass);border-radius:var(--radius-sm);border:1px solid var(--border);">
-            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:5px;">Samsung Â· P4L + P5 Â· Pyeongtaek</div>
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:5px;">Samsung · P4L + P5 · Pyeongtaek</div>
             <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin:0;">Capacity +50%. 1C process HBM fast-tracking. Slight P4L wafer expansion. HBM4 high-volume qualification target: Q2 2026. Paid samples delivered to NVIDIA in Q1 2026.</p>
           </div>
           <div style="padding:14px;background:var(--glass);border-radius:var(--radius-sm);border:1px solid var(--border);">
-            <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:5px;">Micron Â· Idaho + Singapore</div>
+            <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:5px;">Micron · Idaho + Singapore</div>
             <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin:0;">Acquiring greenfield site for HBM cleanroom. 1-gamma node + TSV equipment ramp. Consumer memory exit frees wafer capacity for premium AI memory products.</p>
           </div>
         </div>
         <div style="margin-top:14px;">
-          <span class="source-chip">TrendForce Â· Mar 2026</span>
-          <span class="source-chip">TrendForce Â· Feb 2026</span>
-          <span class="impl-pill bull">â² MU</span>
-          <span class="impl-pill bull">â² SK Hynix</span>
+          <span class="source-chip">TrendForce · Mar 2026</span>
+          <span class="source-chip">TrendForce · Feb 2026</span>
+          <span class="impl-pill bull">▲ MU</span>
+          <span class="impl-pill bull">▲ SK Hynix</span>
         </div>
       </div>
     </div>
 
     <div class="story-card b-purple reveal" style="margin-top:14px;background:var(--purple-dim);border-color:rgba(168,85,247,0.3);">
       <div style="display:flex;align-items:flex-start;gap:16px;">
-        <div style="font-size:28px;flex-shrink:0;">â ï¸</div>
+        <div style="font-size:28px;flex-shrink:0;">⚠️</div>
         <div>
           <div class="card-h">HBM Consumes 23% of Global DRAM Wafer Starts</div>
-          <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:6px;">Each HBM stack requires ~3Ã the wafer capacity per GB vs. DDR5. With HBM fully allocated across all three suppliers, general-purpose DRAM supply is structurally constrained. Real GP-DRAM capacity additions won't materialize until 2027 at the earliest.</p>
+          <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:6px;">Each HBM stack requires ~3× the wafer capacity per GB vs. DDR5. With HBM fully allocated across all three suppliers, general-purpose DRAM supply is structurally constrained. Real GP-DRAM capacity additions won't materialize until 2027 at the earliest.</p>
           <div style="margin-top:10px;">
-            <span class="source-chip">Tom's Hardware Â· 2026</span>
-            <span class="source-chip">Tech-Insider Â· 2026</span>
-            <span class="impl-pill bull">â² MU</span><span class="impl-pill bull">â² SK Hynix</span><span class="impl-pill bull">â² Samsung</span>
+            <span class="source-chip">Tom's Hardware · 2026</span>
+            <span class="source-chip">Tech-Insider · 2026</span>
+            <span class="impl-pill bull">▲ MU</span><span class="impl-pill bull">▲ SK Hynix</span><span class="impl-pill bull">▲ Samsung</span>
           </div>
         </div>
       </div>
@@ -568,11 +406,11 @@
   </div>
 </section>
 
-<!-- ââââââââââ Â§3 CAPEX ââââââââââ -->
+<!-- ══════════ §3 CAPEX ══════════ -->
 <section class="mem-section reveal" id="capex">
   <div class="section-wrap">
     <div class="section-header">
-      <div class="section-eyebrow amber">ð° CapEx &amp; WFE Spending</div>
+      <div class="section-eyebrow amber">💰 CapEx &amp; WFE Spending</div>
       <h2 class="section-title">$54B+ in<br>Memory CapEx 2026</h2>
       <p style="font-size:13px;color:var(--text-2);margin-top:12px;">Largest synchronized memory investment cycle in history</p>
     </div>
@@ -617,44 +455,44 @@
           </div>
         </div>
         <div style="margin-top:14px;">
-          <span class="source-chip">DigiTimes Â· Feb 2026</span>
-          <span class="source-chip">TrendForce Â· Nov 2025</span>
-          <span class="impl-pill bull">â² AMAT</span>
-          <span class="impl-pill bull">â² LRCX</span>
-          <span class="impl-pill bull">â² ASML</span>
+          <span class="source-chip">DigiTimes · Feb 2026</span>
+          <span class="source-chip">TrendForce · Nov 2025</span>
+          <span class="impl-pill bull">▲ AMAT</span>
+          <span class="impl-pill bull">▲ LRCX</span>
+          <span class="impl-pill bull">▲ ASML</span>
         </div>
       </div>
 
       <div class="story-card b-amber reveal">
         <div class="card-tag"><span class="tag tag-amber">CapEx Signal</span></div>
-        <div class="card-h">HBM Cleanroom Race â SK Hynix Extra $15B</div>
+        <div class="card-h">HBM Cleanroom Race — SK Hynix Extra $15B</div>
         <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:8px;">Samsung and SK Hynix fast-tracking HBM cleanroom construction while Micron acquires greenfield sites. The synchronized buildout signals supplier confidence that AI HBM demand sustains elevated pricing through at least 2028.</p>
-        <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:10px;">TSMC and memory makers are also boosting capex specifically to offset China export restriction impact â a rare demand-side capex driver that accelerates fab diversification to US, Japan, and Korea.</p>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:10px;">TSMC and memory makers are also boosting capex specifically to offset China export restriction impact — a rare demand-side capex driver that accelerates fab diversification to US, Japan, and Korea.</p>
         <div style="margin-top:12px;padding:16px;background:rgba(245,158,11,0.06);border-radius:var(--radius-sm);border:1px solid rgba(245,158,11,0.15);">
           <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:5px;">CAPEX HOTSPOT</div>
           <p style="font-size:12px;color:var(--text);margin:0;line-height:1.5;">SK Hynix's March 2026 announcement of an additional $15B beyond its $20.5B base plan is the most aggressive single-vendor memory capex escalation in history. Board approval fast-tracked given fully-contracted 2026 revenue.</p>
         </div>
         <div style="margin-top:14px;">
-          <span class="source-chip">TrendForce Â· Mar 2026</span>
-          <span class="source-chip">DigiTimes Â· Feb 2026</span>
+          <span class="source-chip">TrendForce · Mar 2026</span>
+          <span class="source-chip">DigiTimes · Feb 2026</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ââââââââââ Â§4 HBM DEEP DIVE ââââââââââ -->
+<!-- ══════════ §4 HBM DEEP DIVE ══════════ -->
 <section class="mem-section reveal" id="hbm">
   <div class="section-wrap">
     <div class="section-header">
-      <div class="section-eyebrow green">ð HBM Deep Dive</div>
+      <div class="section-eyebrow green">🚀 HBM Deep Dive</div>
       <h2 class="section-title">HBM4 Race<br>Begins Q2 2026</h2>
     </div>
 
     <div class="bento bento-3">
       <div class="story-card b-green reveal">
         <div class="card-tag"><span class="tag tag-green">Market Share</span></div>
-        <div class="card-h">HBM Supplier Share â 2026</div>
+        <div class="card-h">HBM Supplier Share — 2026</div>
         <div class="hbm-share-grid" id="hbm-share-grid">
           <div class="hbm-share-row">
             <div class="hbm-share-name">SK Hynix</div>
@@ -673,7 +511,7 @@
           </div>
         </div>
         <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-top:14px;">Micron overtook Samsung in 2026 HBM share. Market battle now pivots to HBM4 where Samsung aims to reclaim #2. SK Hynix holds multi-year NVIDIA agreements locking majority of output through 2026.</p>
-        <div style="margin-top:12px;"><span class="source-chip">Astute Group Â· 2026</span></div>
+        <div style="margin-top:12px;"><span class="source-chip">Astute Group · 2026</span></div>
       </div>
 
       <div class="story-card b-green reveal">
@@ -682,70 +520,70 @@
         <div style="padding:16px;background:var(--green-dim);border-radius:var(--radius-sm);border:1px solid rgba(52,217,128,0.2);margin-bottom:14px;">
           <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px;">GPU MEMORY MATH</div>
           <div style="font-size:18px;font-weight:900;letter-spacing:-0.5px;color:var(--text);">96 DRAM dies / B300</div>
-          <p style="font-size:11px;color:var(--text-2);margin:4px 0 0;line-height:1.5;">8 HBM stacks Ã 12 dies Â· vs. 6 stacks Ã 8 dies on H200 (+60% more die)</p>
+          <p style="font-size:11px;color:var(--text-2);margin:4px 0 0;line-height:1.5;">8 HBM stacks × 12 dies · vs. 6 stacks × 8 dies on H200 (+60% more die)</p>
         </div>
         <p style="font-size:12px;color:var(--text-2);line-height:1.6;">SK Hynix production capacity is fully booked through 2026, driven primarily by NVIDIA. B300's 96-die HBM configuration consumes 60% more DRAM die than H200, accelerating the supply squeeze into 2H 2026.</p>
         <div style="margin-top:12px;">
-          <span class="source-chip">TrendForce Â· Dec 2025</span>
-          <span class="source-chip">NotebookCheck Â· 2026</span>
-          <span class="impl-pill bull">â² SK Hynix</span>
-          <span class="impl-pill bull">â² MU</span>
+          <span class="source-chip">TrendForce · Dec 2025</span>
+          <span class="source-chip">NotebookCheck · 2026</span>
+          <span class="impl-pill bull">▲ SK Hynix</span>
+          <span class="impl-pill bull">▲ MU</span>
         </div>
       </div>
 
       <div class="story-card b-green reveal">
         <div class="card-tag"><span class="tag tag-green">Roadmap</span></div>
-        <div class="card-h">HBM3E â HBM4 Transition</div>
+        <div class="card-h">HBM3E → HBM4 Transition</div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
           <div style="padding:12px;background:var(--glass);border-radius:var(--radius-sm);border-left:3px solid var(--green);">
-            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">NOW Â· HBM3E 8-Hi / 12-Hi</div>
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">NOW · HBM3E 8-Hi / 12-Hi</div>
             <p style="font-size:11px;color:var(--text-2);margin:0;line-height:1.5;">Mass production at all 3 vendors. Powers H200, B200. SK Hynix dominant. Samsung recovering from earlier qual issues.</p>
           </div>
           <div style="padding:12px;background:var(--glass);border-radius:var(--radius-sm);border-left:3px solid var(--blue);">
-            <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:3px;">Q2 2026 Â· HBM4 Qualification</div>
+            <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:3px;">Q2 2026 · HBM4 Qualification</div>
             <p style="font-size:11px;color:var(--text-2);margin:0;line-height:1.5;">SK Hynix + Samsung paid samples delivered to NVIDIA Q1 2026. Samsung HVM target Q2. Micron sampling 11Gbps HBM4 + early HBM4E (16-die). Hybrid bonding enables higher bandwidth ceiling.</p>
           </div>
           <div style="padding:12px;background:var(--glass);border-radius:var(--radius-sm);border-left:3px solid var(--purple);">
-            <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:3px;">H2 2026 Â· HBM4 Revenue Ramp</div>
+            <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:3px;">H2 2026 · HBM4 Revenue Ramp</div>
             <p style="font-size:11px;color:var(--text-2);margin:0;line-height:1.5;">Powers B300 / GB300 platforms. ~+28% pricing premium over HBM3E. HBM market TAM on trajectory to $100B by 2028 (from $35B in 2025).</p>
           </div>
         </div>
         <div style="margin-top:12px;">
-          <span class="source-chip">Tom's Hardware Â· 2026</span>
-          <span class="source-chip">TrendForce Â· Dec 2025</span>
+          <span class="source-chip">Tom's Hardware · 2026</span>
+          <span class="source-chip">TrendForce · Dec 2025</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ââââââââââ Â§5 CHINA MEMORY ââââââââââ -->
+<!-- ══════════ §5 CHINA MEMORY ══════════ -->
 <section class="mem-section reveal" id="china">
   <div class="section-wrap">
     <div class="section-header">
-      <div class="section-eyebrow red">ð China Memory Watch</div>
+      <div class="section-eyebrow red">🌏 China Memory Watch</div>
       <h2 class="section-title">MATCH Act Tightens<br>Grip on YMTC &amp; CXMT</h2>
     </div>
 
     <div class="bento bento-2">
       <div class="story-card b-red reveal">
-        <div class="card-tag"><span class="tag tag-red">NAND Â· YMTC</span></div>
+        <div class="card-tag"><span class="tag tag-red">NAND · YMTC</span></div>
         <div class="card-h">YMTC: Targeting 15% Global NAND Share by Late 2026</div>
         <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:8px;">Despite Entity List since 2022, YMTC is building its third fab in Wuhan and replacing US equipment with domestic alternatives (NAURA, ACM Research). Flagship: 232-layer Xtacking 3.0, competitive at time of release with Micron and Samsung offerings.</p>
         <div style="padding:14px;background:rgba(247,82,82,0.05);border-radius:var(--radius-sm);border:1px solid rgba(247,82,82,0.15);margin-top:12px;">
-          <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px;">MATCH ACT Â· Apr 3, 2026</div>
+          <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px;">MATCH ACT · Apr 3, 2026</div>
           <p style="font-size:12px;color:var(--text-2);margin:0;line-height:1.5;">Bipartisan legislation introduced April 3 to block semiconductor equipment sales to SMIC, Hua Hong, Huawei, CXMT, YMTC, and affiliates. Specifically targets ASML DUV sales. Aims to close Entity List loopholes.</p>
         </div>
         <p style="font-size:12px;color:var(--text-2);line-height:1.6;margin-top:10px;">If YMTC achieves 15% NAND share via domestic-tool production lines, it could undercut contract prices in commodity segments. However, yield gaps vs. international peers remain significant.</p>
         <div style="margin-top:14px;">
-          <span class="source-chip">Tom's Hardware Â· 2026</span>
-          <span class="source-chip">WCCFTech Â· Apr 2026</span>
-          <span class="impl-pill bear">â¼ WDC (risk)</span>
+          <span class="source-chip">Tom's Hardware · 2026</span>
+          <span class="source-chip">WCCFTech · Apr 2026</span>
+          <span class="impl-pill bear">▼ WDC (risk)</span>
         </div>
       </div>
 
       <div class="story-card b-red reveal">
-        <div class="card-tag"><span class="tag tag-red">DRAM Â· CXMT</span></div>
+        <div class="card-tag"><span class="tag tag-red">DRAM · CXMT</span></div>
         <div class="card-h">CXMT: 5% DRAM Share, DDR5 Mass Production, HBM2 Next</div>
         <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-top:8px;">Chang Xin Memory Technologies grew from near-zero to ~5% global DRAM share since 2020. Achieved DDR5 mass production as of 2024. Planning new Shanghai fab targeting HBM2 production.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;">
@@ -758,11 +596,11 @@
             <div style="font-size:10px;color:var(--text-2);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;">Next Target (Shanghai)</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--text-2);line-height:1.6;">China's equipment leaders pushing HBM autonomy as US tightens restrictions. CXMT's DRAM progress represents a longer-term commodity pricing risk, though HBM capability remains 2â3 generations behind leaders.</p>
+        <p style="font-size:12px;color:var(--text-2);line-height:1.6;">China's equipment leaders pushing HBM autonomy as US tightens restrictions. CXMT's DRAM progress represents a longer-term commodity pricing risk, though HBM capability remains 2–3 generations behind leaders.</p>
         <div style="margin-top:14px;">
-          <span class="source-chip">DigiTimes Â· Jan 2026</span>
-          <span class="source-chip">TechInsights Â· 2025</span>
-          <span class="impl-pill bear">â¼ DDR4 commodity risk</span>
+          <span class="source-chip">DigiTimes · Jan 2026</span>
+          <span class="source-chip">TechInsights · 2025</span>
+          <span class="impl-pill bear">▼ DDR4 commodity risk</span>
         </div>
       </div>
     </div>
@@ -780,47 +618,47 @@
         </div>
         <div style="padding:14px;background:var(--glass);border-radius:var(--radius-sm);">
           <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px;">PRICING IMPACT</div>
-          <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin:0;">Structural support for DRAM and NAND prices. Removes ~1â2% potential global bit supply growth per year, amplifying undersupply dynamics through the upcycle.</p>
+          <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin:0;">Structural support for DRAM and NAND prices. Removes ~1–2% potential global bit supply growth per year, amplifying undersupply dynamics through the upcycle.</p>
         </div>
       </div>
       <div style="margin-top:14px;">
-        <span class="source-chip">Congress.gov Â· Apr 2026</span>
-        <span class="source-chip">DigiTimes Â· Jan 2026</span>
-        <span class="impl-pill bull">â² MU</span>
-        <span class="impl-pill bull">â² AMAT</span>
-        <span class="impl-pill bull">â² LRCX</span>
+        <span class="source-chip">Congress.gov · Apr 2026</span>
+        <span class="source-chip">DigiTimes · Jan 2026</span>
+        <span class="impl-pill bull">▲ MU</span>
+        <span class="impl-pill bull">▲ AMAT</span>
+        <span class="impl-pill bull">▲ LRCX</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ââââââââââ Â§6 NUMBERS TO KNOW ââââââââââ -->
+<!-- ══════════ §6 NUMBERS TO KNOW ══════════ -->
 <section class="mem-section reveal" id="numbers">
   <div class="section-wrap">
     <div class="section-header">
-      <div class="section-eyebrow blue">ð Numbers to Know</div>
-      <h2 class="section-title">Apr 8 Â· Memory<br>By the Numbers</h2>
+      <div class="section-eyebrow blue">📈 Numbers to Know</div>
+      <h2 class="section-title">Apr 8 · Memory<br>By the Numbers</h2>
     </div>
     <div class="numbers-bento">
       <div class="number-card reveal" style="--nc-color:var(--green);">
         <div class="number-label">HBM3E Contract Price Hike</div>
         <div class="number-val up" data-target="20" data-suffix="%" data-decimal="0">+20%</div>
-        <div class="number-note">YoY vs 2025 Â· Samsung &amp; SK Hynix Â· TrendForce</div>
+        <div class="number-note">YoY vs 2025 · Samsung &amp; SK Hynix · TrendForce</div>
       </div>
       <div class="number-card reveal" style="--nc-color:var(--red);">
         <div class="number-label">DDR4 Spot Price (1Gx8)</div>
         <div class="number-val" data-target="33.56" data-prefix="$" data-decimal="2">$33.56</div>
-        <div class="number-note">â1.18% WoW Â· TrendForce Apr 8, 2026</div>
+        <div class="number-note">−1.18% WoW · TrendForce Apr 8, 2026</div>
       </div>
       <div class="number-card reveal" style="--nc-color:var(--amber);">
         <div class="number-label">NAND TLC Q1 2026 Contract</div>
         <div class="number-val up" data-target="35" data-suffix="%" data-decimal="0">+35%</div>
-        <div class="number-note">Midpoint +33â38% Â· TrendForce Jan 2026</div>
+        <div class="number-note">Midpoint +33–38% · TrendForce Jan 2026</div>
       </div>
       <div class="number-card reveal" style="--nc-color:var(--blue);">
         <div class="number-label">SK Hynix HBM Market Share</div>
         <div class="number-val up" data-target="62" data-suffix="%" data-decimal="0">62%</div>
-        <div class="number-note">2026 est. Â· Micron overtook Samsung for #2</div>
+        <div class="number-note">2026 est. · Micron overtook Samsung for #2</div>
       </div>
       <div class="number-card reveal" style="--nc-color:var(--purple);">
         <div class="number-label">Memory CapEx Combined</div>
@@ -836,9 +674,9 @@
   </div>
 </section>
 
-<!-- ââ FOOTER ââ -->
+<!-- ══ FOOTER ══ -->
 <footer class="mem-footer">
-  <div>AI &amp; Chips Daily Â· Memory Intelligence Â· April 8, 2026 Â· Generated by Claude</div>
+  <div>AI &amp; Chips Daily · Memory Intelligence · April 8, 2026 · Generated by Claude</div>
   <div style="margin-top:6px;">
     <a href="briefing.html" style="color:var(--text-2);text-decoration:none;margin:0 10px;">AI Briefing</a>
     <a href="smh.html" style="color:var(--text-2);text-decoration:none;margin:0 10px;">SMH Tracker</a>
@@ -847,7 +685,7 @@
 </footer>
 
 <script>
-// ââ SCROLL REVEAL ââ
+// ── SCROLL REVEAL ──
 const revealObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
@@ -855,7 +693,7 @@ const revealObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.04, rootMargin: '0px 0px -30px 0px' });
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-// ââ NUMBER COUNTERS ââ
+// ── NUMBER COUNTERS ──
 function animateNumber(el) {
   const target   = parseFloat(el.dataset.target);
   const prefix   = el.dataset.prefix  || '';
@@ -882,7 +720,7 @@ const counterObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
 document.querySelectorAll('.numbers-bento, .capex-grid').forEach(el => counterObs.observe(el));
 
-// ââ VENDOR + HBM BAR ANIMATIONS ââ
+// ── VENDOR + HBM BAR ANIMATIONS ──
 const barObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -895,7 +733,7 @@ const barObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 document.querySelectorAll('#util-grid, #hbm-share-grid').forEach(el => barObs.observe(el));
 
-// ââ LIVE TICKER (Yahoo Finance v8 â falls back to static) ââ
+// ── LIVE TICKER (Yahoo Finance v8 — falls back to static) ──
 const MEM_TICKERS = ['MU','WDC','AMAT','LRCX','ASML'];
 async function fetchQuote(sym) {
   try {
@@ -920,7 +758,7 @@ async function fetchQuote(sym) {
   const track = document.getElementById('mem-ticker-track');
   const mk = q => {
     const up = q.chg >= 0;
-    return `<div class="ticker-item">${q.sym} <span class="${up?'up':'down'}">${up?'â²':'â¼'} $${q.price.toFixed(2)} ${up?'+':''}${q.pct.toFixed(2)}%</span></div>`;
+    return `<div class="ticker-item">${q.sym} <span class="${up?'up':'down'}">${up?'▲':'▼'} $${q.price.toFixed(2)} ${up?'+':''}${q.pct.toFixed(2)}%</span></div>`;
   };
   const html = results.map(mk).join('');
   track.innerHTML = html + html;

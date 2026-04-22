@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI &amp; Chips Daily</title>
+  <title>AI & Chips Daily</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -47,18 +47,17 @@
       align-items: center;
       gap: 6px;
       padding: 6px 14px;
-      border-radius: 8px;
-      border: none;
       background: transparent;
-      color: rgba(226,232,240,0.55);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
       font-size: 13px;
       font-weight: 500;
       font-family: inherit;
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
       white-space: nowrap;
       flex-shrink: 0;
-      letter-spacing: -0.1px;
+      transition: all 0.15s;
+      color: rgba(226,232,240,0.6);
     }
     .tab-btn:hover { background: rgba(56,189,248,0.08); color: #e2e8f0; }
     .tab-btn.active { background: rgba(56,189,248,0.12); color: #38bdf8; }
@@ -83,29 +82,36 @@
 </head>
 <body>
   <div class="tab-bar" role="tablist" aria-label="App tabs">
-    <span class="tab-logo">&#x1F916;</span>
+    <span class="tab-logo">🤖</span>
     <button class="tab-btn active" id="tab-briefing" role="tab" aria-selected="true" onclick="switchTab('briefing')">
-      <span class="tab-icon">&#x1F4F0;</span> AI Briefing
+      <span class="tab-icon">📰</span> AI Briefing
     </button>
     <div class="tab-divider"></div>
     <button class="tab-btn" id="tab-smh" role="tab" aria-selected="false" onclick="switchTab('smh')">
-      <span class="tab-icon">&#x1F4C8;</span> SMH After-Hours
+      <span class="tab-icon">📈</span> SMH After-Hours
+    </button>
+    <div class="tab-divider"></div>
+    <button class="tab-btn" id="tab-ewy" role="tab" aria-selected="false" onclick="switchTab('ewy')">
+      <span class="tab-icon">🇰🇷</span> EWY Korea
     </button>
     <div class="tab-divider"></div>
     <button class="tab-btn" id="tab-research" role="tab" aria-selected="false" onclick="switchTab('research')">
-      <span class="tab-icon">&#x1F52C;</span> Research
+      <span class="tab-icon">🔬</span> Research
     </button>
     <div class="tab-divider"></div>
     <button class="tab-btn" id="tab-memory" role="tab" aria-selected="false" onclick="switchTab('memory')">
-      <span class="tab-icon">&#x1F4BE;</span> Memory
+      <span class="tab-icon">💾</span> Memory
     </button>
   </div>
+
   <div class="frame-container">
-    <iframe id="frame-briefing" class="visible" src="briefing.html" title="AI &amp; Chips Daily Briefing"></iframe>
-    <iframe id="frame-smh" class="hidden" src="smh.html" title="SMH After-Hours Tracker"></iframe>
-    <iframe id="frame-research" class="hidden" src="research.html" title="AI Research Papers"></iframe>
-    <iframe id="frame-memory" class="hidden" src="memory.html" title="Memory Semiconductor Intelligence"></iframe>
+    <iframe id="frame-briefing"  class="visible" src="briefing.html"  title="AI & Chips Daily Briefing"></iframe>
+    <iframe id="frame-smh"       class="hidden"  src="smh.html"       title="SMH After-Hours Tracker"></iframe>
+    <iframe id="frame-ewy"       class="hidden"  src="ewy.html"       title="EWY Korea Tracker"></iframe>
+    <iframe id="frame-research"  class="hidden"  src="research.html"  title="AI Research Papers"></iframe>
+    <iframe id="frame-memory"    class="hidden"  src="memory.html"    title="Memory Semiconductor Intelligence"></iframe>
   </div>
+
   <script>
     let current = 'briefing';
     function switchTab(tab) {
@@ -124,6 +130,12 @@
       document.getElementById('frame-' + tab).classList.remove('hidden');
       document.getElementById('frame-' + tab).classList.add('visible');
     }
+    // Listen for postMessage from iframes (e.g. "back to briefing" button)
+    window.addEventListener('message', (e) => {
+      if (typeof e.data === 'string' && e.data.startsWith('switchTab:')) {
+        switchTab(e.data.split(':')[1]);
+      }
+    });
   </script>
 </body>
 </html>

@@ -92,7 +92,12 @@
       animation: scroll-left 30s linear infinite;
       width: max-content;
     }
-    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-track:hover,
+    .ticker-track:focus-within,
+    .ticker-track.paused { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .ticker-track { animation: none; }
+    }
 
     @keyframes scroll-left {
       from { transform: translateX(0); }
@@ -303,24 +308,27 @@
 
     /* ── TREEMAP ── */
     #treemap {
-      display: flex; flex-wrap: wrap; gap: 3px;
+      position: relative;
       margin-bottom: 28px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
     .tm-tile {
-      position: relative;
-      border-radius: 4px;
+      position: absolute;
       overflow: hidden;
       cursor: pointer;
-      transition: filter 0.15s, transform 0.15s;
-      min-width: 80px; min-height: 70px;
+      transition: filter 0.15s;
       display: flex; flex-direction: column;
       justify-content: flex-end;
       padding: 8px 10px;
+      box-sizing: border-box;
+      box-shadow: inset -1px -1px 0 var(--border);
     }
-    .tm-tile:hover { filter: brightness(1.2); transform: scale(1.01); z-index: 2; }
-    .tm-tile.up   { background: rgba(16,185,129,0.20); border: 1px solid rgba(16,185,129,0.30); }
-    .tm-tile.down { background: rgba(239,68,68,0.18);  border: 1px solid rgba(239,68,68,0.28); }
-    .tm-tile.flat { background: var(--bg-3); border: 1px solid var(--border); }
+    .tm-tile:hover { filter: brightness(1.2); z-index: 2; }
+    .tm-tile.up   { background: rgba(16,185,129,0.20); }
+    .tm-tile.down { background: rgba(239,68,68,0.18); }
+    .tm-tile.flat { background: var(--bg-3); }
 
     .tm-ticker { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
     .tm-name   { font-size: 9px;  font-weight: 500; color: rgba(255,255,255,0.55); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -329,15 +337,6 @@
     .tm-chg.up   { color: var(--green); }
     .tm-chg.down { color: var(--red); }
     .tm-chg.flat { color: var(--text-3); }
-
-    .tm-hover-bar {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-      background: var(--amber-dim);
-    }
-    .tm-hover-fill {
-      height: 100%; background: var(--amber);
-      transition: width 0.5s ease;
-    }
 
     /* ── CARD GRID ── */
     #card-grid {
@@ -520,6 +519,13 @@
       .metrics-row { grid-template-columns: repeat(2, 1fr); }
       .metric-cell { padding: 12px 14px; }
     }
+
+    @media (pointer: coarse) {
+      .view-btn, .nav-btn, .nav-link, .chart-close, .btn {
+        min-height: 44px;
+      }
+      .view-btn, .btn { padding-top: 10px; padding-bottom: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -547,7 +553,8 @@
 
 <!-- Rolling Ticker Strip -->
 <div class="ticker-strip">
-  <div class="ticker-track" id="ticker-track">
+  <div class="ticker-track" id="ticker-track" role="marquee" aria-label="Live prices (tap to pause)"
+       onclick="this.classList.toggle('paused')">
     <!-- Populated by JS, duplicated for seamless loop -->
   </div>
 </div>
@@ -570,11 +577,11 @@
       <span id="nav-status-text">Loading…</span>
     </div>
     <span class="nav-time" id="nav-time"></span>
-    <button class="nav-btn" id="refresh-btn" onclick="doRefresh()">
-      <div class="spinner" id="spinner"></div>
+    <button class="nav-btn" id="refresh-btn" aria-label="Refresh data" onclick="doRefresh()">
+      <div class="spinner" id="spinner" aria-hidden="true"></div>
       <span id="refresh-label">↻ Refresh</span>
     </button>
-    <button class="nav-btn" onclick="openSettings()">⚙</button>
+    <button class="nav-btn" aria-label="Open settings" onclick="openSettings()">⚙</button>
   </div>
 </nav>
 
@@ -595,11 +602,11 @@
 </div>
 
 <!-- Status Bar -->
-<div class="status-bar">
+<div class="status-bar" role="status" aria-live="polite">
   <span class="sb-item">
-    <span class="sb-dot" id="sb-dot"></span>
+    <span class="sb-dot" id="sb-dot" role="img" aria-label="Market status"></span>
     <span id="sb-status">—</span>
-    <span class="sb-sep">·</span>
+    <span class="sb-sep" aria-hidden="true">·</span>
     <span id="sb-kst-time" class="sb-val">—</span>
     KST
   </span>
@@ -815,47 +822,104 @@ function updateSummary() {
 }
 
 // ── TREEMAP ───────────────────────────────────────────────────────────────
+function squarifyTreemap(items, width, height) {
+  if (!items.length || width <= 0 || height <= 0) return [];
+  const total = items.reduce((a, i) => a + i.weight, 0);
+  const area = width * height;
+  const scaled = items
+    .map(i => ({ item: i, area: (i.weight / total) * area }))
+    .sort((a, b) => b.area - a.area);
+
+  const out = [];
+  const rect = { x: 0, y: 0, w: width, h: height };
+
+  const worst = (r, side) => {
+    if (!r.length) return Infinity;
+    const sum = r.reduce((a, x) => a + x.area, 0);
+    const mx = Math.max(...r.map(x => x.area));
+    const mn = Math.min(...r.map(x => x.area));
+    const s2 = side * side, sum2 = sum * sum;
+    return Math.max((s2 * mx) / sum2, sum2 / (s2 * mn));
+  };
+
+  const layoutRow = (row) => {
+    const sum = row.reduce((a, x) => a + x.area, 0);
+    if (rect.w <= rect.h) {
+      const rowH = sum / rect.w;
+      let x = rect.x;
+      for (const r of row) {
+        const w = r.area / rowH;
+        out.push({ ...r.item, x, y: rect.y, w, h: rowH });
+        x += w;
+      }
+      rect.y += rowH; rect.h -= rowH;
+    } else {
+      const colW = sum / rect.h;
+      let y = rect.y;
+      for (const r of row) {
+        const h = r.area / colW;
+        out.push({ ...r.item, x: rect.x, y, w: colW, h });
+        y += h;
+      }
+      rect.x += colW; rect.w -= colW;
+    }
+  };
+
+  let row = [];
+  let i = 0;
+  while (i < scaled.length) {
+    const side = Math.min(rect.w, rect.h);
+    const next = scaled[i];
+    if (!row.length || worst([...row, next], side) <= worst(row, side)) {
+      row.push(next); i++;
+    } else {
+      layoutRow(row); row = [];
+    }
+  }
+  if (row.length) layoutRow(row);
+  return out;
+}
+
 function buildTreemap() {
   const container = document.getElementById('treemap');
-  const totalPx   = container.offsetWidth || 800;
+  const cw = container.clientWidth || 800;
+  const ratio = cw < 600 ? 1.3 : 0.78;
+  const ch = Math.max(380, Math.min(720, Math.round(cw * ratio)));
+  container.style.height = ch + 'px';
+
+  const tiles = squarifyTreemap(STOCKS, cw, ch);
 
   let html = '';
-  STOCKS.forEach(s => {
-    const d   = priceCache[s.ticker] || {};
-    const currency = 'KRW';
-    const pct = getPct(s);
+  tiles.forEach(t => {
+    const d   = priceCache[t.ticker] || {};
+    const pct = getPct(t);
     const dir = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-    const chgStr  = pct != null ? (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%' : '—';
-    const price   = fmtPrice(d.postMarketPrice || d.regularMarketPrice, currency);
-
-    // Size: proportional to weight vs total, as % of container width
-    const widthPct = (s.weight / TOTAL_WEIGHT * 100).toFixed(1);
-    const heightPx = Math.max(80, Math.round(s.weight / MAX_WEIGHT * 160));
-
-    // Peak bar: how far from 52-week peak
-    const hi52  = d.fiftyTwoWeekHigh;
-    const curPx = d.postMarketPrice || d.regularMarketPrice;
-    let peakPct = 0;
-    if (hi52 && curPx) {
-      peakPct = Math.max(0, Math.min(100, (curPx / hi52) * 100));
-    }
+    const chgStr = pct != null ? (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%' : '—';
+    const price  = fmtPrice(d.postMarketPrice || d.regularMarketPrice, 'KRW');
 
     html += `<div class="tm-tile ${dir}"
       role="button" tabindex="0"
-      aria-label="Open ${s.display} chart, ${fmt(s.weight, 2)}% weight"
-      style="flex: ${s.weight} 0 ${Math.max(8, widthPct * 0.7)}%; height: ${heightPx}px;"
-      onclick="openChart(event,'${s.ticker}')"
-      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChart(event,'${s.ticker}');}"
-      title="${s.name} · ${price}">
-      <div class="tm-ticker">${s.display}</div>
-      <div class="tm-name">${s.name}</div>
-      <div class="tm-weight">${fmt(s.weight, 2)}% weight</div>
+      aria-label="Open ${t.display} chart, ${fmt(t.weight, 2)}% weight"
+      style="left:${t.x}px; top:${t.y}px; width:${t.w}px; height:${t.h}px;"
+      onclick="openChart(event,'${t.ticker}')"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChart(event,'${t.ticker}');}"
+      title="${t.name} · ${price}">
+      <div class="tm-ticker">${t.display}</div>
+      <div class="tm-name">${t.name}</div>
+      <div class="tm-weight">${fmt(t.weight, 2)}% weight</div>
       <div class="tm-chg ${dir}">${chgStr}</div>
-      <div class="tm-hover-bar"><div class="tm-hover-fill" style="width:${peakPct.toFixed(1)}%"></div></div>
     </div>`;
   });
   container.innerHTML = html;
 }
+
+let _tmResizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_tmResizeTimer);
+  _tmResizeTimer = setTimeout(() => {
+    if (currentView === 'treemap') buildTreemap();
+  }, 150);
+});
 
 // ── CARD BUILDER ──────────────────────────────────────────────────────────
 function buildCard(item, isEtf) {
@@ -1188,9 +1252,8 @@ async function doRefresh() {
   setInterval(updateMarketStatus, 30000);
   setInterval(updateKstClock, 10000);
 
-  // Show skeleton in treemap
-  document.getElementById('treemap').innerHTML =
-    STOCKS.map(s => `<div class="tm-tile flat skeleton" style="flex:${s.weight} 0 ${Math.max(8,(s.weight/TOTAL_WEIGHT*100)*0.7)}%;height:${Math.max(80,Math.round(s.weight/MAX_WEIGHT*160))}px;"></div>`).join('');
+  // Show skeleton in treemap (squarified layout with no data yet)
+  buildTreemap();
 
   await doRefresh();
   startStreamer();

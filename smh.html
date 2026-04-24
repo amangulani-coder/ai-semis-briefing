@@ -575,28 +575,10 @@
 <!-- Key Metrics Row -->
 <div class="metrics-row" id="metrics-row">
   <div class="metric-cell">
-    <div class="metric-label">SMH ETF</div>
+    <div class="metric-label" id="m-smh-session">SMH ETF</div>
     <div class="metric-val" id="m-smh-price">—</div>
     <div class="metric-chg flat" id="m-smh-chg">—</div>
-    <div class="metric-sub">VanEck Semiconductor ETF</div>
-  </div>
-  <div class="metric-cell">
-    <div class="metric-label">NVDA · NVIDIA</div>
-    <div class="metric-val" id="m-nvda-price">—</div>
-    <div class="metric-chg flat" id="m-nvda-chg">—</div>
-    <div class="metric-sub">20.87% of SMH</div>
-  </div>
-  <div class="metric-cell">
-    <div class="metric-label">AVGO · Broadcom</div>
-    <div class="metric-val" id="m-avgo-price">—</div>
-    <div class="metric-chg flat" id="m-avgo-chg">—</div>
-    <div class="metric-sub">8.37% of SMH</div>
-  </div>
-  <div class="metric-cell">
-    <div class="metric-label">TSM · TSMC ADR</div>
-    <div class="metric-val" id="m-tsm-price">—</div>
-    <div class="metric-chg flat" id="m-tsm-chg">—</div>
-    <div class="metric-sub">8.29% of SMH</div>
+    <div class="metric-sub" id="m-smh-sub">VanEck Semiconductor ETF</div>
   </div>
 </div>
 
@@ -681,6 +663,8 @@ function getPct(item) {
 }
 
 // ── MARKET STATUS ─────────────────────────────────────────────────────────
+// Four sessions: regular 09:30–16:00, after-hours 16:00–20:00,
+// overnight 20:00–04:00, pre-market 04:00–09:30 ET.
 function getUsMarketStatus() {
   const now = new Date();
   const et  = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
@@ -688,9 +672,10 @@ function getUsMarketStatus() {
   const h = et.getHours(), m = et.getMinutes();
   const mins = h * 60 + m;
   if (day === 0 || day === 6) return { open: false, mode: 'closed', label: 'CLOSED · WEEKEND' };
-  if (mins >= 9 * 60 + 30 && mins < 16 * 60) return { open: true,  mode: 'open',  label: 'NYSE OPEN' };
-  if (mins >= 16 * 60 && mins < 20 * 60)     return { open: false, mode: 'after', label: 'AFTER-HOURS' };
-  if (mins >= 4 * 60  && mins < 9 * 60 + 30) return { open: false, mode: 'pre',   label: 'PRE-MARKET' };
+  if (mins >= 9 * 60 + 30 && mins < 16 * 60) return { open: true,  mode: 'open',      label: 'NYSE OPEN' };
+  if (mins >= 16 * 60 && mins < 20 * 60)     return { open: false, mode: 'after',     label: 'AFTER-HOURS' };
+  if (mins >= 20 * 60 || mins < 4 * 60)      return { open: false, mode: 'overnight', label: 'OVERNIGHT' };
+  if (mins >= 4 * 60  && mins < 9 * 60 + 30) return { open: false, mode: 'pre',       label: 'PRE-MARKET' };
   return { open: false, mode: 'closed', label: 'MARKET CLOSED' };
 }
 
@@ -749,25 +734,47 @@ function buildTickerStrip() {
 }
 
 // ── METRICS ROW ───────────────────────────────────────────────────────────
-function updateMetrics() {
-  function setMetric(priceId, chgId, ticker) {
-    const currency = ticker.endsWith('.KS') ? 'KRW' : 'USD';
-    const d = priceCache[ticker] || {};
-    const p   = d.postMarketPrice || d.preMarketPrice || d.regularMarketPrice;
-    const pct = d.postMarketPrice ? d.postMarketChangePercent
-              : d.preMarketPrice  ? d.preMarketChangePercent
-              : d.regularMarketChangePercent;
-    document.getElementById(priceId).textContent = fmtPrice(p, currency);
-    const el = document.getElementById(chgId);
-    if (pct != null) {
-      el.textContent = (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%';
-      el.className = 'metric-chg ' + (pct >= 0 ? 'up' : 'down');
-    }
+// Pick the price/change for the current session only. During overnight
+// (20:00–04:00 ET) Yahoo has no live tick, so we show the last
+// after-hours close as the most recent traded price.
+function sessionPrice(d, mode) {
+  switch (mode) {
+    case 'open':
+      return { price: d.regularMarketPrice, pct: d.regularMarketChangePercent, label: 'SMH · REGULAR' };
+    case 'pre':
+      return { price: d.preMarketPrice ?? d.regularMarketPrice,
+               pct:   d.preMarketChangePercent ?? d.regularMarketChangePercent,
+               label: 'SMH · PRE-MARKET' };
+    case 'after':
+      return { price: d.postMarketPrice ?? d.regularMarketPrice,
+               pct:   d.postMarketChangePercent ?? d.regularMarketChangePercent,
+               label: 'SMH · AFTER-HOURS' };
+    case 'overnight':
+      return { price: d.postMarketPrice ?? d.regularMarketPrice,
+               pct:   d.postMarketChangePercent ?? d.regularMarketChangePercent,
+               label: 'SMH · OVERNIGHT' };
+    default:
+      return { price: d.regularMarketPrice, pct: d.regularMarketChangePercent, label: 'SMH · LAST CLOSE' };
   }
-  setMetric('m-smh-price',  'm-smh-chg',  'SMH');
-  setMetric('m-nvda-price', 'm-nvda-chg', 'NVDA');
-  setMetric('m-avgo-price', 'm-avgo-chg', 'AVGO');
-  setMetric('m-tsm-price',  'm-tsm-chg',  'TSM');
+}
+
+function updateMetrics() {
+  const d = priceCache['SMH'] || {};
+  const { mode } = getUsMarketStatus();
+  const { price, pct, label } = sessionPrice(d, mode);
+
+  document.getElementById('m-smh-session').textContent = label;
+  document.getElementById('m-smh-price').textContent   = fmtPrice(price, 'USD');
+
+  const chg = document.getElementById('m-smh-chg');
+  if (pct != null) {
+    chg.textContent = (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%';
+    chg.className = 'metric-chg ' + (pct >= 0 ? 'up' : 'down');
+  } else {
+    chg.textContent = '—';
+    chg.className = 'metric-chg flat';
+  }
+  document.getElementById('m-smh-sub').textContent = 'VanEck Semiconductor ETF';
 }
 
 // ── STATUS BAR SUMMARY ────────────────────────────────────────────────────
@@ -1036,46 +1043,118 @@ function saveToken() {
 }
 
 // ── DATA FETCH ─────────────────────────────────────────────────────────────
-// Pull live SMH holdings from Yahoo's quoteSummary. Updates STOCKS in place
-// so the treemap reflects current weights instead of stale hardcoded values.
+// Pull live SMH holdings directly from VanEck's public feed (full ~25 names).
+// Falls back to Yahoo's topHoldings (limited to ~10) if VanEck is unreachable,
+// then to the hardcoded STOCKS array as a last resort.
 let holdingsFetched = false;
-async function fetchSmhHoldings() {
+
+function applyHoldings(list) {
+  const existing = {};
+  for (const s of STOCKS) existing[s.ticker] = s;
+  const fresh = list
+    .filter(x => x.ticker && x.weight > 0)
+    .map(x => ({
+      ticker:  x.ticker,
+      name:    existing[x.ticker]?.name || x.name || x.ticker,
+      weight:  x.weight,
+      display: existing[x.ticker]?.display || x.ticker,
+    }))
+    .sort((a, b) => b.weight - a.weight);
+  if (!fresh.length) return false;
+  STOCKS.length = 0;
+  STOCKS.push(...fresh);
+  MAX_WEIGHT     = Math.max(...STOCKS.map(s => s.weight));
+  TOTAL_WEIGHT   = STOCKS.reduce((a, s) => a + s.weight, 0);
+  ALL_US_TICKERS = [ETF1.ticker, ETF2.ticker, ...STOCKS.map(s => s.ticker)];
+  ALL_TICKERS    = [...ALL_US_TICKERS, ...ALL_KRX_TICKERS];
+  return true;
+}
+
+// Walk an arbitrary JSON blob looking for an array of holdings-looking objects.
+function extractVanEckHoldings(data) {
+  const pickTicker = (h) => h.ticker || h.symbol || h.securityTicker || h.holdingTicker || h.Ticker || h.Symbol || h.bbTicker || '';
+  const pickName   = (h) => h.name || h.holdingName || h.securityName || h.description || h.Description || h.SecurityName || '';
+  const pickWeight = (h) => {
+    const v = h.percent ?? h.weight ?? h.weightPct ?? h.percentOfFund ?? h.percentOfNet ?? h.Weight ?? h.PercentOfFund ?? h.percentageOfFund;
+    const n = typeof v === 'string' ? parseFloat(v.replace('%','')) : Number(v);
+    return isFinite(n) ? n : 0;
+  };
+  const looksLikeHolding = (o) => o && typeof o === 'object'
+    && pickTicker(o) && (pickWeight(o) > 0 && pickWeight(o) < 100);
+
+  const visit = (node) => {
+    if (Array.isArray(node)) {
+      if (node.length && node.every(looksLikeHolding)) return node;
+      for (const item of node) {
+        const found = visit(item);
+        if (found) return found;
+      }
+    } else if (node && typeof node === 'object') {
+      for (const k of Object.keys(node)) {
+        const found = visit(node[k]);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const arr = visit(data);
+  if (!arr) return [];
+  return arr.map(h => ({
+    ticker: String(pickTicker(h)).trim().toUpperCase(),
+    name:   String(pickName(h) || '').trim(),
+    weight: pickWeight(h),
+  }));
+}
+
+async function fetchVanEckHoldings() {
+  const candidates = [
+    'https://www.vaneck.com/restService/public/en/us/etf/SMH/holdings',
+    'https://www.vaneck.com/us/en/api/etf/SMH/holdings',
+    'https://www.vaneck.com/services/etfs/SMH/holdings',
+    'https://www.vaneck.com/us/en/investments/semiconductor-etf-smh/holdings/?jsonDownload=true',
+  ];
+  for (const url of candidates) {
+    try {
+      const r = await proxyFetch(url);
+      if (!r.ok) continue;
+      const text = await r.text();
+      let data;
+      try { data = JSON.parse(text); } catch { continue; }
+      const list = extractVanEckHoldings(data);
+      if (list.length >= 5) {
+        console.info('[holdings] VanEck source:', url, '→', list.length, 'holdings');
+        return list;
+      }
+    } catch (e) { /* try next */ }
+  }
+  return null;
+}
+
+async function fetchYahooTopHoldings() {
   const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/SMH?modules=topHoldings&_=${Date.now()}`;
   try {
     const r = await proxyFetch(url);
-    if (!r.ok) throw new Error('holdings ' + r.status);
+    if (!r.ok) return null;
     const j = await r.json();
-    const holdings = j?.quoteSummary?.result?.[0]?.topHoldings?.holdings;
-    if (!Array.isArray(holdings) || !holdings.length) return false;
+    const h = j?.quoteSummary?.result?.[0]?.topHoldings?.holdings;
+    if (!Array.isArray(h) || !h.length) return null;
+    return h.map(x => ({
+      ticker: x.symbol,
+      name:   x.holdingName || x.symbol,
+      weight: ((x.holdingPercent?.raw ?? x.holdingPercent) || 0) * 100,
+    }));
+  } catch { return null; }
+}
 
-    const existing = {};
-    for (const s of STOCKS) existing[s.ticker] = s;
-
-    const fresh = holdings
-      .map(h => {
-        const pct = (h.holdingPercent && (h.holdingPercent.raw ?? h.holdingPercent)) || 0;
-        return {
-          ticker:  h.symbol,
-          name:    (existing[h.symbol]?.name) || h.holdingName || h.symbol,
-          weight:  pct * 100,
-          display: (existing[h.symbol]?.display) || h.symbol,
-        };
-      })
-      .filter(x => x.ticker && x.weight > 0)
-      .sort((a, b) => b.weight - a.weight);
-    if (!fresh.length) return false;
-
-    STOCKS.length = 0;
-    STOCKS.push(...fresh);
-    MAX_WEIGHT     = Math.max(...STOCKS.map(s => s.weight));
-    TOTAL_WEIGHT   = STOCKS.reduce((a, s) => a + s.weight, 0);
-    ALL_US_TICKERS = [ETF1.ticker, ETF2.ticker, ...STOCKS.map(s => s.ticker)];
-    ALL_TICKERS    = [...ALL_US_TICKERS, ...ALL_KRX_TICKERS];
-    return true;
-  } catch(e) {
-    console.warn('SMH holdings fetch failed:', e.message);
-    return false;
-  }
+async function fetchSmhHoldings() {
+  const fromVanEck = await fetchVanEckHoldings();
+  if (fromVanEck && applyHoldings(fromVanEck)) return true;
+  console.warn('[holdings] VanEck unavailable, falling back to Yahoo topHoldings');
+  const fromYahoo = await fetchYahooTopHoldings();
+  if (fromYahoo && applyHoldings(fromYahoo)) return true;
+  console.warn('[holdings] Yahoo topHoldings also unavailable; keeping hardcoded weights');
+  return false;
 }
 
 async function fetchChartBatch() {

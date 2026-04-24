@@ -449,6 +449,16 @@
       width: min(820px, 95vw); height: min(520px, 82vh);
       padding: 20px; position: relative;
     }
+    /* Loading spinner shown while the chart is mounting */
+    #tv-chart:empty::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      width: 32px; height: 32px; margin: -16px 0 0 -16px;
+      border: 2px solid var(--border-2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: tvspin 0.8s linear infinite;
+    }
+    @keyframes tvspin { to { transform: rotate(360deg); } }
     .chart-close {
       position: absolute; top: 12px; right: 12px;
       background: var(--bg-4); border: 1px solid var(--border);

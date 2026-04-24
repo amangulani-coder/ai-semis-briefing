@@ -118,6 +118,10 @@
     <button class="tab-btn" id="tab-memory" role="tab" aria-selected="false" onclick="switchTab('memory')">
       <span class="tab-icon">💾</span> Memory
     </button>
+    <div class="tab-divider"></div>
+    <button class="tab-btn" id="tab-archive" role="tab" aria-selected="false" onclick="switchTab('archive')">
+      <span class="tab-icon">🗂️</span> Archive
+    </button>
   </div>
 
   <div class="frame-container">
@@ -126,6 +130,7 @@
     <iframe id="frame-ewy"       class="hidden"  src="ewy.html"       title="EWY Korea Tracker"></iframe>
     <iframe id="frame-research"  class="hidden"  src="research.html"  title="AI Research Papers"></iframe>
     <iframe id="frame-memory"    class="hidden"  src="memory.html"    title="Memory Semiconductor Intelligence"></iframe>
+    <iframe id="frame-archive"   class="hidden"  src="archive.html"   title="Archive of past briefings"></iframe>
   </div>
 
   <script>
@@ -154,7 +159,7 @@
     });
 
     // Arrow-key navigation across the tab bar
-    const TAB_ORDER = ['briefing', 'smh', 'ewy', 'research', 'memory'];
+    const TAB_ORDER = ['briefing', 'smh', 'ewy', 'research', 'memory', 'archive'];
     document.querySelector('.tab-bar').addEventListener('keydown', (e) => {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       const dir = e.key === 'ArrowRight' ? 1 : -1;

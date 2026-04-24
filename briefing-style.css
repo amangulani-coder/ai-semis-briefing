@@ -60,6 +60,31 @@
   border-radius: 4px;
 }
 
+/* Print: switch to a clean light layout, drop decorative chrome */
+@media print {
+  :root {
+    --bg: #ffffff;
+    --bg-2: #ffffff;
+    --glass: transparent;
+    --border: #d0d0d0;
+    --border-b: #a0a0a0;
+    --text: #0a0a0a;
+    --text-2: #333333;
+    --text-3: #555555;
+  }
+  body { background: #fff !important; color: #000 !important; }
+  .ticker-wrap, .ticker-strip, .g-nav, nav, .archive-nav, .footer, footer { display: none !important; }
+  a { color: #000 !important; text-decoration: underline; }
+  .hero, .card, .story, section { page-break-inside: avoid; }
+  .hero-title, h1, h2, h3 { color: #000 !important; }
+  /* Expand link destinations for paper readers */
+  a[href]:not([href^="#"])::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #555;
+  }
+}
+
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg);

@@ -652,11 +652,11 @@ const KRX_STOCKS = [
   { ticker: '000660.KS', name: 'SK Hynix Inc.',        weight: null, display: '000660', krx: true },
 ];
 
-const ALL_US_TICKERS  = [ETF1.ticker, ETF2.ticker, ...STOCKS.map(s => s.ticker)];
+let ALL_US_TICKERS  = [ETF1.ticker, ETF2.ticker, ...STOCKS.map(s => s.ticker)];
 const ALL_KRX_TICKERS = KRX_STOCKS.map(s => s.ticker);
-const ALL_TICKERS     = [...ALL_US_TICKERS, ...ALL_KRX_TICKERS];
-const MAX_WEIGHT      = Math.max(...STOCKS.map(s => s.weight));
-const TOTAL_WEIGHT    = STOCKS.reduce((a, s) => a + s.weight, 0);
+let ALL_TICKERS     = [...ALL_US_TICKERS, ...ALL_KRX_TICKERS];
+let MAX_WEIGHT      = Math.max(...STOCKS.map(s => s.weight));
+let TOTAL_WEIGHT    = STOCKS.reduce((a, s) => a + s.weight, 0);
 const PROXY           = 'https://corsproxy.io/?url=';
 
 let priceCache  = {};
@@ -1036,6 +1036,48 @@ function saveToken() {
 }
 
 // ── DATA FETCH ─────────────────────────────────────────────────────────────
+// Pull live SMH holdings from Yahoo's quoteSummary. Updates STOCKS in place
+// so the treemap reflects current weights instead of stale hardcoded values.
+let holdingsFetched = false;
+async function fetchSmhHoldings() {
+  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/SMH?modules=topHoldings&_=${Date.now()}`;
+  try {
+    const r = await proxyFetch(url);
+    if (!r.ok) throw new Error('holdings ' + r.status);
+    const j = await r.json();
+    const holdings = j?.quoteSummary?.result?.[0]?.topHoldings?.holdings;
+    if (!Array.isArray(holdings) || !holdings.length) return false;
+
+    const existing = {};
+    for (const s of STOCKS) existing[s.ticker] = s;
+
+    const fresh = holdings
+      .map(h => {
+        const pct = (h.holdingPercent && (h.holdingPercent.raw ?? h.holdingPercent)) || 0;
+        return {
+          ticker:  h.symbol,
+          name:    (existing[h.symbol]?.name) || h.holdingName || h.symbol,
+          weight:  pct * 100,
+          display: (existing[h.symbol]?.display) || h.symbol,
+        };
+      })
+      .filter(x => x.ticker && x.weight > 0)
+      .sort((a, b) => b.weight - a.weight);
+    if (!fresh.length) return false;
+
+    STOCKS.length = 0;
+    STOCKS.push(...fresh);
+    MAX_WEIGHT     = Math.max(...STOCKS.map(s => s.weight));
+    TOTAL_WEIGHT   = STOCKS.reduce((a, s) => a + s.weight, 0);
+    ALL_US_TICKERS = [ETF1.ticker, ETF2.ticker, ...STOCKS.map(s => s.ticker)];
+    ALL_TICKERS    = [...ALL_US_TICKERS, ...ALL_KRX_TICKERS];
+    return true;
+  } catch(e) {
+    console.warn('SMH holdings fetch failed:', e.message);
+    return false;
+  }
+}
+
 async function fetchChartBatch() {
   const fields = 'regularMarketPrice,regularMarketChange,regularMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,fiftyTwoWeekHigh,fiftyTwoWeekLow';
   const url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(ALL_TICKERS.join(','))}&fields=${fields}&includePrePost=true&_=${Date.now()}`;
@@ -1172,6 +1214,9 @@ async function doRefresh() {
   document.getElementById('refresh-label').textContent = 'Loading…';
   updateMarketStatus();
   try {
+    if (!holdingsFetched) {
+      holdingsFetched = await fetchSmhHoldings();
+    }
     await Promise.all([fetchChartBatch(), fetchPeakDates()]);
     render();
     const t = new Date().toLocaleTimeString();

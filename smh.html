@@ -92,7 +92,13 @@
       animation: scroll-left 30s linear infinite;
       width: max-content;
     }
-    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-track:hover,
+    .ticker-track:focus-within,
+    .ticker-track.paused { animation-play-state: paused; }
+    /* Respect reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .ticker-track { animation: none; }
+    }
 
     @keyframes scroll-left {
       from { transform: translateX(0); }
@@ -512,6 +518,14 @@
       .metrics-row { grid-template-columns: repeat(2, 1fr); }
       .metric-cell { padding: 12px 14px; }
     }
+
+    /* Touch targets: ensure 44px hit area on coarse pointers */
+    @media (pointer: coarse) {
+      .view-btn, .nav-btn, .nav-link, .chart-close, .btn {
+        min-height: 44px;
+      }
+      .view-btn, .btn { padding-top: 10px; padding-bottom: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -539,7 +553,8 @@
 
 <!-- Rolling Ticker Strip -->
 <div class="ticker-strip">
-  <div class="ticker-track" id="ticker-track">
+  <div class="ticker-track" id="ticker-track" role="marquee" aria-label="Live prices (tap to pause)"
+       onclick="this.classList.toggle('paused')">
     <!-- Populated by JS, duplicated for seamless loop -->
   </div>
 </div>
@@ -562,11 +577,11 @@
       <span id="nav-status-text">Loading…</span>
     </div>
     <span class="nav-time" id="nav-time"></span>
-    <button class="nav-btn" id="refresh-btn" onclick="doRefresh()">
-      <div class="spinner" id="spinner"></div>
+    <button class="nav-btn" id="refresh-btn" aria-label="Refresh data" onclick="doRefresh()">
+      <div class="spinner" id="spinner" aria-hidden="true"></div>
       <span id="refresh-label">↻ Refresh</span>
     </button>
-    <button class="nav-btn" onclick="openSettings()">⚙</button>
+    <button class="nav-btn" aria-label="Open settings" onclick="openSettings()">⚙</button>
   </div>
 </nav>
 
@@ -587,11 +602,11 @@
 </div>
 
 <!-- Status Bar -->
-<div class="status-bar">
+<div class="status-bar" role="status" aria-live="polite">
   <span class="sb-item">
-    <span class="sb-dot" id="sb-dot"></span>
+    <span class="sb-dot" id="sb-dot" role="img" aria-label="Market status"></span>
     <span id="sb-status">—</span>
-    <span class="sb-sep">·</span>
+    <span class="sb-sep" aria-hidden="true">·</span>
     <span id="sb-et-time" class="sb-val">—</span>
     ET
   </span>
@@ -605,7 +620,7 @@
 
 <!-- Key Metrics Row -->
 <div class="metrics-row" id="metrics-row">
-  <div class="metric-cell">
+  <div class="metric-cell" aria-live="polite" aria-atomic="true">
     <div class="metric-label" id="m-smh-session">SMH ETF</div>
     <div class="metric-val" id="m-smh-price">—</div>
     <div class="metric-chg flat" id="m-smh-chg">—</div>
@@ -894,7 +909,9 @@ function squarifyTreemap(items, width, height) {
 function buildTreemap() {
   const container = document.getElementById('treemap');
   const cw = container.clientWidth || 800;
-  const ch = Math.max(380, Math.min(640, Math.round(cw * 0.78)));
+  // Portrait ratio on narrow viewports so tiles have room; landscape on wider.
+  const ratio = cw < 600 ? 1.3 : 0.78;
+  const ch = Math.max(380, Math.min(720, Math.round(cw * ratio)));
   container.style.height = ch + 'px';
 
   const tiles = squarifyTreemap(STOCKS, cw, ch);

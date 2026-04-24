@@ -78,6 +78,19 @@
     }
     iframe.hidden { opacity: 0; pointer-events: none; z-index: 0; }
     iframe.visible { opacity: 1; pointer-events: all; z-index: 1; }
+
+    /* Keyboard focus ring */
+    :focus-visible {
+      outline: 2px solid #38bdf8;
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    /* Tab hit area ≥ 44px for mobile touch */
+    .tab-btn { min-height: 40px; }
+    @media (pointer: coarse) {
+      .tab-btn { min-height: 44px; padding: 8px 14px; }
+    }
   </style>
 </head>
 <body>
@@ -135,6 +148,18 @@
       if (typeof e.data === 'string' && e.data.startsWith('switchTab:')) {
         switchTab(e.data.split(':')[1]);
       }
+    });
+
+    // Arrow-key navigation across the tab bar
+    const TAB_ORDER = ['briefing', 'smh', 'ewy', 'research', 'memory'];
+    document.querySelector('.tab-bar').addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const dir = e.key === 'ArrowRight' ? 1 : -1;
+      const i = TAB_ORDER.indexOf(current);
+      const next = TAB_ORDER[(i + dir + TAB_ORDER.length) % TAB_ORDER.length];
+      switchTab(next);
+      document.getElementById('tab-' + next).focus();
+      e.preventDefault();
     });
   </script>
 </body>

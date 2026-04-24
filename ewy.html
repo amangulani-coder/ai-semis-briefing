@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EWY Korea · After-Hours Tracker</title>
@@ -19,7 +20,7 @@
       --border-2:  rgba(255,255,255,0.12);
       --text:      #F0F2F5;
       --text-2:    #8A8F9B;
-      --text-3:    #55596A;
+      --text-3:    #7A7A92;
       --amber:     #F59E0B;
       --amber-dim: rgba(245,158,11,0.12);
       --amber-glow:rgba(245,158,11,0.25);
@@ -28,6 +29,35 @@
       --red:       #EF4444;
       --red-dim:   rgba(239,68,68,0.10);
       --shadow:    0 1px 3px rgba(0,0,0,0.5);
+
+      --accent:     var(--amber);
+      --accent-dim: var(--amber-dim);
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 20px;
+      --space-5: 32px;
+      --space-6: 48px;
+
+      --fs-small:   12px;
+      --fs-body:    14px;
+      --fs-h2:      clamp(20px, 2.2vw, 28px);
+      --fs-h1:      clamp(28px, 4vw, 46px);
+      --fs-display: clamp(40px, 7vw, 80px);
+
+      --motion-fast: 150ms;
+      --motion-base: 250ms;
+      --motion-slow: 400ms;
+
+      --focus-ring: 2px solid var(--accent);
+      --tap-min:    44px;
+    }
+
+    :focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
 
     body {
@@ -95,6 +125,7 @@
       display: flex; align-items: center; gap: 0;
       height: 44px;
     }
+    html.embedded nav { display: none; }
     .nav-logo {
       display: flex; align-items: center; gap: 8px;
       margin-right: 28px;
@@ -494,9 +525,9 @@
 <body>
 
 <!-- Settings Modal -->
-<div class="modal-overlay" id="settings-modal">
+<div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
   <div class="modal">
-    <h2>Settings</h2>
+    <h2 id="settings-title">Settings</h2>
     <p>Optionally enter a Financial Modeling Prep API key for richer data and higher limits. Leave blank to use the default Yahoo Finance feed.</p>
     <input type="text" id="token-input" placeholder="FMP API key (optional)">
     <div class="modal-btns">
@@ -507,9 +538,9 @@
 </div>
 
 <!-- Chart Overlay -->
-<div class="chart-overlay" id="chart-overlay" onclick="closeChart(event)">
+<div class="chart-overlay" id="chart-overlay" role="dialog" aria-modal="true" aria-label="Stock chart" aria-hidden="true" onclick="closeChart(event)">
   <div class="chart-container">
-    <button class="chart-close" onclick="closeChart()">✕</button>
+    <button class="chart-close" aria-label="Close chart" onclick="closeChart()">✕</button>
     <div id="tv-chart"></div>
   </div>
 </div>
@@ -810,8 +841,11 @@ function buildTreemap() {
     }
 
     html += `<div class="tm-tile ${dir}"
+      role="button" tabindex="0"
+      aria-label="Open ${s.display} chart, ${fmt(s.weight, 2)}% weight"
       style="flex: ${s.weight} 0 ${Math.max(8, widthPct * 0.7)}%; height: ${heightPx}px;"
       onclick="openChart(event,'${s.ticker}')"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChart(event,'${s.ticker}');}"
       title="${s.name} · ${price}">
       <div class="tm-ticker">${s.display}</div>
       <div class="tm-name">${s.name}</div>
@@ -868,7 +902,10 @@ function buildCard(item, isEtf) {
     ? `<span class="c-peak-badge ${peakBadgeCls}">▼ ${fmt(Math.abs(pctFromPeak))}% from peak</span>` : '';
 
   return `
-  <div class="card ${dirCls}" id="card-${ticker}" onclick="openChart(event,'${ticker}')">
+  <div class="card ${dirCls}" id="card-${ticker}" role="button" tabindex="0"
+       aria-label="Open ${display} chart"
+       onclick="openChart(event,'${ticker}')"
+       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChart(event,'${ticker}');}">
     <div class="card-head">
       <span class="c-ticker">${display}</span>
       <span class="c-badge ${badgeCls}">${isEtf ? 'ETF' : '#' + (STOCKS.findIndex(s => s.ticker === ticker) + 1)}</span>
@@ -934,9 +971,13 @@ function render() {
 }
 
 // ── CHART ─────────────────────────────────────────────────────────────────
+let _lastFocusBeforeModal = null;
 function openChart(e, ticker) {
   e.stopPropagation();
-  document.getElementById('chart-overlay').classList.add('open');
+  _lastFocusBeforeModal = document.activeElement;
+  const ov = document.getElementById('chart-overlay');
+  ov.classList.add('open');
+  ov.setAttribute('aria-hidden', 'false');
   document.getElementById('tv-chart').innerHTML = '';
   let tvSymbol = ticker;
   if (ticker.endsWith('.KS')) tvSymbol = 'KRX:' + ticker.replace('.KS', '');
@@ -948,15 +989,41 @@ function openChart(e, ticker) {
     toolbar_bg: '#111318',
     hide_side_toolbar: false,
   });
+  const closeBtn = document.querySelector('#chart-overlay .chart-close');
+  if (closeBtn) closeBtn.focus();
 }
 function closeChart(e) {
   if (e && e.target !== document.getElementById('chart-overlay')) return;
-  document.getElementById('chart-overlay').classList.remove('open');
+  const ov = document.getElementById('chart-overlay');
+  ov.classList.remove('open');
+  ov.setAttribute('aria-hidden', 'true');
+  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
-function openSettings()  { document.getElementById('settings-modal').classList.add('open'); }
-function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
+function openSettings() {
+  _lastFocusBeforeModal = document.activeElement;
+  const m = document.getElementById('settings-modal');
+  m.classList.add('open');
+  m.setAttribute('aria-hidden', 'false');
+  const input = document.getElementById('token-input');
+  if (input) input.focus();
+}
+function closeSettings() {
+  const m = document.getElementById('settings-modal');
+  m.classList.remove('open');
+  m.setAttribute('aria-hidden', 'true');
+  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+}
+
+// Escape key closes any open modal
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const chart = document.getElementById('chart-overlay');
+  const settings = document.getElementById('settings-modal');
+  if (chart && chart.classList.contains('open')) { closeChart(); e.preventDefault(); }
+  else if (settings && settings.classList.contains('open')) { closeSettings(); e.preventDefault(); }
+});
 function saveToken() {
   const v = document.getElementById('token-input').value.trim();
   if (v) localStorage.setItem('fmp_key', v);

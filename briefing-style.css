@@ -9,7 +9,7 @@
   --border-b:  rgba(255,255,255,0.14);
   --text:      #f0f0f5;
   --text-2:    #8b8b9a;
-  --text-3:    #55556a;
+  --text-3:    #7a7a92;
   --blue:      #4f8ef7;
   --blue-dim:  rgba(79,142,247,0.12);
   --green:     #34d980;
@@ -20,8 +20,44 @@
   --purple-dim:rgba(168,85,247,0.12);
   --amber:     #f59e0b;
   --amber-dim: rgba(245,158,11,0.12);
+
+  /* Page accent — content pages default to blue; trackers override to amber */
+  --accent:     var(--blue);
+  --accent-dim: var(--blue-dim);
+
+  /* Spacing scale (4/8/12/20/32/48) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 20px;
+  --space-5: 32px;
+  --space-6: 48px;
+
+  /* Type scale */
+  --fs-small:   12px;
+  --fs-body:    14px;
+  --fs-h2:      clamp(20px, 2.2vw, 28px);
+  --fs-h1:      clamp(28px, 4vw, 46px);
+  --fs-display: clamp(40px, 7vw, 80px);
+
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 400ms;
+
   --radius:    20px;
   --radius-sm: 12px;
+
+  /* Accessibility */
+  --focus-ring: 2px solid var(--accent);
+  --tap-min:    44px;
+}
+
+/* Keyboard focus ring shared across every page */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 html { scroll-behavior: smooth; }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SMH Semiconductors Â· Live Tracker</title>
+  <title>SMH Semiconductors · Live Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
       overflow-x: hidden;
     }
 
-    /* ââ TICKER STRIP ââ */
+    /* ── TICKER STRIP ── */
     .ticker-strip {
       background: var(--bg-2);
       border-bottom: 1px solid var(--border);
@@ -87,7 +87,7 @@
       transition: height 0.3s;
     }
 
-    /* ââ NAV ââ */
+    /* ── NAV ── */
     nav {
       background: var(--bg-2);
       border-bottom: 1px solid var(--border);
@@ -156,7 +156,7 @@
     }
     .nav-btn:hover { background: var(--bg-3); color: var(--text); border-color: var(--border-2); }
 
-    /* ââ HERO ââ */
+    /* ── HERO ── */
     .hero {
       padding: 32px 24px 20px;
       border-bottom: 1px solid var(--border);
@@ -188,7 +188,7 @@
     .hero-meta span { display: flex; align-items: center; gap: 5px; }
     .hero-meta .sep { color: var(--border-2); }
 
-    /* ââ STATUS BAR ââ */
+    /* ── STATUS BAR ── */
     .status-bar {
       background: var(--bg-2);
       border-bottom: 1px solid var(--border);
@@ -206,7 +206,7 @@
     .status-bar .sb-val { color: var(--text); }
     .status-bar .sb-sep { color: var(--border-2); margin: 0 4px; }
 
-    /* ââ KEY METRICS ââ */
+    /* ── KEY METRICS ── */
     .metrics-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -234,10 +234,10 @@
     .metric-chg.down { color: var(--red); }
     .metric-sub { font-size: 9px; color: var(--text-3); font-weight: 500; }
 
-    /* ââ PAGE BODY ââ */
+    /* ── PAGE BODY ── */
     .page-body { padding: 20px 24px 48px; }
 
-    /* ââ SECTION TITLE ââ */
+    /* ── SECTION TITLE ── */
     .section-title {
       font-size: 9px; font-weight: 800; letter-spacing: 0.16em;
       text-transform: uppercase; color: var(--text-3);
@@ -251,7 +251,7 @@
       color: var(--text-2); font-style: normal; font-weight: 500; font-size: 9px; letter-spacing: 0.06em;
     }
 
-    /* ââ VIEW TOGGLE ââ */
+    /* ── VIEW TOGGLE ── */
     .view-toggle {
       display: flex; gap: 0;
       background: var(--bg-3); border-radius: 6px; padding: 2px;
@@ -270,26 +270,29 @@
       margin-bottom: 14px;
     }
 
-    /* ââ TREEMAP ââ */
+    /* ── TREEMAP ── */
     #treemap {
-      display: flex; flex-wrap: wrap; gap: 3px;
+      display: flex; flex-wrap: wrap; gap: 0;
       margin-bottom: 28px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
     .tm-tile {
       position: relative;
-      border-radius: 4px;
       overflow: hidden;
       cursor: pointer;
-      transition: filter 0.15s, transform 0.15s;
+      transition: filter 0.15s;
       min-width: 80px; min-height: 70px;
       display: flex; flex-direction: column;
       justify-content: flex-end;
       padding: 8px 10px;
+      box-shadow: inset -1px -1px 0 var(--border);
     }
-    .tm-tile:hover { filter: brightness(1.2); transform: scale(1.01); z-index: 2; }
-    .tm-tile.up   { background: rgba(16,185,129,0.20); border: 1px solid rgba(16,185,129,0.30); }
-    .tm-tile.down { background: rgba(239,68,68,0.18);  border: 1px solid rgba(239,68,68,0.28); }
-    .tm-tile.flat { background: var(--bg-3); border: 1px solid var(--border); }
+    .tm-tile:hover { filter: brightness(1.2); z-index: 2; }
+    .tm-tile.up   { background: rgba(16,185,129,0.20); }
+    .tm-tile.down { background: rgba(239,68,68,0.18); }
+    .tm-tile.flat { background: var(--bg-3); }
 
     .tm-ticker { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
     .tm-name   { font-size: 9px;  font-weight: 500; color: rgba(255,255,255,0.55); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -308,7 +311,7 @@
       transition: width 0.5s ease;
     }
 
-    /* ââ CARD GRID ââ */
+    /* ── CARD GRID ── */
     #card-grid {
       display: none;
       grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -318,7 +321,7 @@
     #card-grid.show { display: grid; }
     #treemap.hide { display: none; }
 
-    /* ââ DARK CARD ââ */
+    /* ── DARK CARD ── */
     .card {
       background: var(--bg-2);
       border: 1px solid var(--border);
@@ -396,7 +399,7 @@
     .c-range-ends { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-3); }
     .c-range-peak-date { font-size: 9px; color: var(--text-3); text-align: right; margin-top: 2px; }
 
-    /* ââ SKELETON ââ */
+    /* ── SKELETON ── */
     .skeleton {
       background: linear-gradient(90deg, var(--bg-3) 25%, var(--bg-4) 50%, var(--bg-3) 75%);
       background-size: 200% 100%;
@@ -404,7 +407,7 @@
     }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* ââ CHART OVERLAY ââ */
+    /* ── CHART OVERLAY ── */
     .chart-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.75); z-index: 300;
@@ -428,7 +431,7 @@
     .chart-close:hover { background: var(--bg-3); color: var(--text); }
     #tv-chart { width: 100%; height: calc(100% - 36px); }
 
-    /* ââ SETTINGS MODAL ââ */
+    /* ── SETTINGS MODAL ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.6); z-index: 200;
@@ -454,7 +457,7 @@
     .btn-primary   { background: var(--amber); color: #000; }
     .btn-secondary { background: var(--bg-4); color: var(--text-2); border: 1px solid var(--border); }
 
-    /* ââ ERROR BANNER ââ */
+    /* ── ERROR BANNER ── */
     .error-banner {
       display: none; margin: 12px 24px 0;
       background: var(--red-dim); border: 1px solid rgba(239,68,68,0.2);
@@ -462,7 +465,7 @@
       font-size: 11px; color: var(--red);
     }
 
-    /* ââ SPINNER ââ */
+    /* ── SPINNER ── */
     .spinner {
       width: 10px; height: 10px; display: none;
       border: 2px solid var(--border); border-top-color: var(--amber);
@@ -471,7 +474,7 @@
     .spinner.active { display: inline-block; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ââ FOOTER NOTE ââ */
+    /* ── FOOTER NOTE ── */
     .footer-note {
       font-size: 9px; color: var(--text-3); text-align: center;
       padding: 20px 24px 12px;
@@ -507,7 +510,7 @@
 <!-- Chart Overlay -->
 <div class="chart-overlay" id="chart-overlay" onclick="closeChart(event)">
   <div class="chart-container">
-    <button class="chart-close" onclick="closeChart()">â</button>
+    <button class="chart-close" onclick="closeChart()">✕</button>
     <div id="tv-chart"></div>
   </div>
 </div>
@@ -531,33 +534,33 @@
     <button class="nav-link active">SMH Tracker</button>
   </div>
   <div class="nav-right">
-    <span class="ws-pill" id="ws-pill">â LIVE</span>
+    <span class="ws-pill" id="ws-pill">● LIVE</span>
     <div class="nav-status">
       <span class="status-dot" id="nav-dot"></span>
-      <span id="nav-status-text">Loadingâ¦</span>
+      <span id="nav-status-text">Loading…</span>
     </div>
     <span class="nav-time" id="nav-time"></span>
     <button class="nav-btn" id="refresh-btn" onclick="doRefresh()">
       <div class="spinner" id="spinner"></div>
-      <span id="refresh-label">â» Refresh</span>
+      <span id="refresh-label">↻ Refresh</span>
     </button>
-    <button class="nav-btn" onclick="openSettings()">â</button>
+    <button class="nav-btn" onclick="openSettings()">⚙</button>
   </div>
 </nav>
 
 <!-- Hero -->
 <div class="hero">
-  <div class="hero-eyebrow">VanEck Semiconductor ETF Â· Top 10 Holdings</div>
+  <div class="hero-eyebrow">VanEck Semiconductor ETF · Top 10 Holdings</div>
   <h1 class="hero-title">SMH Semiconductors <em>Live</em></h1>
   <div class="hero-meta">
     <span id="hm-status">
       <span class="sb-dot" id="hm-dot"></span>
-      <span id="hm-status-text">â</span>
+      <span id="hm-status-text">—</span>
     </span>
-    <span class="sep">Â·</span>
-    <span id="hm-time">â</span>
-    <span class="sep">Â·</span>
-    <span>NYSE / Nasdaq Â· US Markets</span>
+    <span class="sep">·</span>
+    <span id="hm-time">—</span>
+    <span class="sep">·</span>
+    <span>NYSE / Nasdaq · US Markets</span>
   </div>
 </div>
 
@@ -565,43 +568,43 @@
 <div class="status-bar">
   <span class="sb-item">
     <span class="sb-dot" id="sb-dot"></span>
-    <span id="sb-status">â</span>
-    <span class="sb-sep">Â·</span>
-    <span id="sb-et-time" class="sb-val">â</span>
+    <span id="sb-status">—</span>
+    <span class="sb-sep">·</span>
+    <span id="sb-et-time" class="sb-val">—</span>
     ET
   </span>
-  <span class="sb-item">GAINERS <span class="sb-val" id="sb-gainers" style="color:var(--green)">â</span></span>
-  <span class="sb-item">LOSERS <span class="sb-val" id="sb-losers" style="color:var(--red)">â</span></span>
-  <span class="sb-item">AVG MOVE <span class="sb-val" id="sb-avg">â</span></span>
-  <span class="sb-item">BEST <span class="sb-val" style="color:var(--green)" id="sb-best">â</span></span>
-  <span class="sb-item">WORST <span class="sb-val" style="color:var(--red)" id="sb-worst">â</span></span>
-  <span class="sb-item" style="margin-left:auto; font-size:9px;" id="sb-updated">â</span>
+  <span class="sb-item">GAINERS <span class="sb-val" id="sb-gainers" style="color:var(--green)">—</span></span>
+  <span class="sb-item">LOSERS <span class="sb-val" id="sb-losers" style="color:var(--red)">—</span></span>
+  <span class="sb-item">AVG MOVE <span class="sb-val" id="sb-avg">—</span></span>
+  <span class="sb-item">BEST <span class="sb-val" style="color:var(--green)" id="sb-best">—</span></span>
+  <span class="sb-item">WORST <span class="sb-val" style="color:var(--red)" id="sb-worst">—</span></span>
+  <span class="sb-item" style="margin-left:auto; font-size:9px;" id="sb-updated">—</span>
 </div>
 
 <!-- Key Metrics Row -->
 <div class="metrics-row" id="metrics-row">
   <div class="metric-cell">
     <div class="metric-label">SMH ETF</div>
-    <div class="metric-val" id="m-smh-price">â</div>
-    <div class="metric-chg flat" id="m-smh-chg">â</div>
+    <div class="metric-val" id="m-smh-price">—</div>
+    <div class="metric-chg flat" id="m-smh-chg">—</div>
     <div class="metric-sub">VanEck Semiconductor ETF</div>
   </div>
   <div class="metric-cell">
-    <div class="metric-label">NVDA Â· NVIDIA</div>
-    <div class="metric-val" id="m-nvda-price">â</div>
-    <div class="metric-chg flat" id="m-nvda-chg">â</div>
+    <div class="metric-label">NVDA · NVIDIA</div>
+    <div class="metric-val" id="m-nvda-price">—</div>
+    <div class="metric-chg flat" id="m-nvda-chg">—</div>
     <div class="metric-sub">20.87% of SMH</div>
   </div>
   <div class="metric-cell">
-    <div class="metric-label">AVGO Â· Broadcom</div>
-    <div class="metric-val" id="m-avgo-price">â</div>
-    <div class="metric-chg flat" id="m-avgo-chg">â</div>
+    <div class="metric-label">AVGO · Broadcom</div>
+    <div class="metric-val" id="m-avgo-price">—</div>
+    <div class="metric-chg flat" id="m-avgo-chg">—</div>
     <div class="metric-sub">8.37% of SMH</div>
   </div>
   <div class="metric-cell">
-    <div class="metric-label">TSM Â· TSMC ADR</div>
-    <div class="metric-val" id="m-tsm-price">â</div>
-    <div class="metric-chg flat" id="m-tsm-chg">â</div>
+    <div class="metric-label">TSM · TSMC ADR</div>
+    <div class="metric-val" id="m-tsm-price">—</div>
+    <div class="metric-chg flat" id="m-tsm-chg">—</div>
     <div class="metric-sub">8.29% of SMH</div>
   </div>
 </div>
@@ -613,7 +616,7 @@
 
   <div class="section-controls">
     <div class="section-title" style="margin-bottom:0; flex:1">
-      Holdings Treemap <em>Â· Sized by SMH weight Â· Colored by % change</em>
+      Holdings Treemap <em>· Sized by SMH weight · Colored by % change</em>
     </div>
     <div class="view-toggle" style="margin-left:16px">
       <button class="view-btn active" id="btn-treemap" onclick="setView('treemap')">Treemap</button>
@@ -630,12 +633,12 @@
 </div>
 
 <div class="footer-note" id="last-updated-footer">
-  Data via Yahoo Finance Â· Auto-refreshes every 30s Â· NYSE/Nasdaq: 09:30â16:00 ET
+  Data via Yahoo Finance · Auto-refreshes every 30s · NYSE/Nasdaq: 09:30–16:00 ET
 </div>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-// ââ CONFIG ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── CONFIG ──────────────────────────────────────────────────────────────
 const ETF1 = { ticker: 'SMH',  name: 'VanEck Semiconductor ETF',      etf: true, display: 'SMH' };
 const ETF2 = { ticker: 'QQQ',  name: 'Invesco QQQ (Nasdaq-100)',       etf: true, display: 'QQQ' };
 
@@ -670,13 +673,13 @@ let peakCache   = {};
 let usOpen      = false;
 let currentView = 'treemap';
 
-// ââ HELPERS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── HELPERS ──────────────────────────────────────────────────────────────
 function fmt(n, d = 2) {
-  return n == null ? 'â' : n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+  return n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 function fmtPrice(p, currency) {
-  if (p == null) return 'â';
-  return currency === 'KRW' ? 'â©' + Math.round(p).toLocaleString('en-US') : '$' + fmt(p);
+  if (p == null) return '—';
+  return currency === 'KRW' ? '₩' + Math.round(p).toLocaleString('en-US') : '$' + fmt(p);
 }
 function proxyFetch(url) { return fetch(PROXY + encodeURIComponent(url)); }
 
@@ -686,14 +689,14 @@ function getPct(item) {
   return ext ?? d.regularMarketChangePercent ?? null;
 }
 
-// ââ MARKET STATUS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── MARKET STATUS ─────────────────────────────────────────────────────────
 function getUsMarketStatus() {
   const now = new Date();
   const et  = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
   const day  = et.getDay();
   const h = et.getHours(), m = et.getMinutes();
   const mins = h * 60 + m;
-  if (day === 0 || day === 6) return { open: false, mode: 'closed', label: 'CLOSED Â· WEEKEND' };
+  if (day === 0 || day === 6) return { open: false, mode: 'closed', label: 'CLOSED · WEEKEND' };
   if (mins >= 9 * 60 + 30 && mins < 16 * 60) return { open: true,  mode: 'open',  label: 'NYSE OPEN' };
   if (mins >= 16 * 60 && mins < 20 * 60)     return { open: false, mode: 'after', label: 'AFTER-HOURS' };
   if (mins >= 4 * 60  && mins < 9 * 60 + 30) return { open: false, mode: 'pre',   label: 'PRE-MARKET' };
@@ -725,7 +728,7 @@ function updateMarketStatus() {
   updateEtClock();
 }
 
-// ââ TICKER STRIP ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── TICKER STRIP ──────────────────────────────────────────────────────────
 function buildTickerStrip() {
   const items = [ETF1, ETF2, ...STOCKS, ...KRX_STOCKS];
   let html = '';
@@ -737,7 +740,7 @@ function buildTickerStrip() {
               : d.preMarketPrice  ? d.preMarketChangePercent
               : d.regularMarketChangePercent;
     const dir = pct > 0 ? 'up' : pct < 0 ? 'down' : '';
-    const chgStr = pct != null ? (pct >= 0 ? 'â² +' : 'â¼ ') + fmt(Math.abs(pct)) + '%' : 'â';
+    const chgStr = pct != null ? (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%' : '—';
     const priceStr = fmtPrice(p, currency);
     const sparkBars = [40, 55, 35, 65, 50, 70, 45, 80].map(h =>
       `<span style="height:${h}%;background:${dir==='up'?'var(--green)':dir==='down'?'var(--red)':'var(--text-3)'}"></span>`
@@ -754,7 +757,7 @@ function buildTickerStrip() {
   document.getElementById('ticker-track').innerHTML = html;
 }
 
-// ââ METRICS ROW âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── METRICS ROW ───────────────────────────────────────────────────────────
 function updateMetrics() {
   function setMetric(priceId, chgId, ticker) {
     const currency = ticker.endsWith('.KS') ? 'KRW' : 'USD';
@@ -766,7 +769,7 @@ function updateMetrics() {
     document.getElementById(priceId).textContent = fmtPrice(p, currency);
     const el = document.getElementById(chgId);
     if (pct != null) {
-      el.textContent = (pct >= 0 ? 'â² +' : 'â¼ ') + fmt(Math.abs(pct)) + '%';
+      el.textContent = (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%';
       el.className = 'metric-chg ' + (pct >= 0 ? 'up' : 'down');
     }
   }
@@ -776,7 +779,7 @@ function updateMetrics() {
   setMetric('m-tsm-price',  'm-tsm-chg',  'TSM');
 }
 
-// ââ STATUS BAR SUMMARY ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── STATUS BAR SUMMARY ────────────────────────────────────────────────────
 function updateSummary() {
   let gainers = 0, losers = 0, total = 0, count = 0;
   let bestTk = null, bestPct = -Infinity, worstTk = null, worstPct = Infinity;
@@ -790,14 +793,14 @@ function updateSummary() {
     if (pct > bestPct)  { bestPct  = pct;  bestTk  = disp; }
     if (pct < worstPct) { worstPct = pct;  worstTk = disp; }
   });
-  document.getElementById('sb-gainers').textContent = gainers || 'â';
-  document.getElementById('sb-losers').textContent  = losers  || 'â';
-  document.getElementById('sb-avg').textContent     = count ? (total/count >= 0 ? '+' : '') + fmt(total/count) + '%' : 'â';
-  document.getElementById('sb-best').textContent    = bestTk  ? `${bestTk} +${fmt(bestPct)}%`  : 'â';
-  document.getElementById('sb-worst').textContent   = worstTk ? `${worstTk} ${fmt(worstPct)}%` : 'â';
+  document.getElementById('sb-gainers').textContent = gainers || '—';
+  document.getElementById('sb-losers').textContent  = losers  || '—';
+  document.getElementById('sb-avg').textContent     = count ? (total/count >= 0 ? '+' : '') + fmt(total/count) + '%' : '—';
+  document.getElementById('sb-best').textContent    = bestTk  ? `${bestTk} +${fmt(bestPct)}%`  : '—';
+  document.getElementById('sb-worst').textContent   = worstTk ? `${worstTk} ${fmt(worstPct)}%` : '—';
 }
 
-// ââ TREEMAP âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── TREEMAP ───────────────────────────────────────────────────────────────
 function buildTreemap() {
   const container = document.getElementById('treemap');
   let html = '';
@@ -805,7 +808,7 @@ function buildTreemap() {
     const d   = priceCache[s.ticker] || {};
     const pct = getPct(s);
     const dir = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-    const chgStr  = pct != null ? (pct >= 0 ? 'â² +' : 'â¼ ') + fmt(Math.abs(pct)) + '%' : 'â';
+    const chgStr  = pct != null ? (pct >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(pct)) + '%' : '—';
     const price   = fmtPrice(d.postMarketPrice || d.preMarketPrice || d.regularMarketPrice, 'USD');
 
     const widthPct = (s.weight / TOTAL_WEIGHT * 100).toFixed(1);
@@ -819,7 +822,7 @@ function buildTreemap() {
     html += `<div class="tm-tile ${dir}"
       style="flex: ${s.weight} 0 ${Math.max(8, widthPct * 0.7)}%; height: ${heightPx}px;"
       onclick="openChart(event,'${s.ticker}')"
-      title="${s.name} Â· ${price}">
+      title="${s.name} · ${price}">
       <div class="tm-ticker">${s.display}</div>
       <div class="tm-name">${s.name}</div>
       <div class="tm-weight">${fmt(s.weight, 2)}% weight</div>
@@ -830,7 +833,7 @@ function buildTreemap() {
   container.innerHTML = html;
 }
 
-// ââ CARD BUILDER ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── CARD BUILDER ──────────────────────────────────────────────────────────
 function buildCard(item, isEtf, rank) {
   const ticker   = item.ticker;
   const display  = item.display || ticker;
@@ -861,8 +864,8 @@ function buildCard(item, isEtf, rank) {
 
   const peakDate  = pk.peakDate || '';
   const peakPx    = pk.peak || hi52;
-  const regBadge  = reg != null ? `<span class="c-chg-badge ${regPct >= 0 ? 'up' : 'down'}">${regPct >= 0 ? 'â² +' : 'â¼ '}${fmt(Math.abs(regPct))}%</span>` : '<span class="c-chg-badge flat">â</span>';
-  const extBadge  = ext != null ? `<span class="c-chg-badge ${extPct >= 0 ? 'up' : 'down'}">${extPct >= 0 ? 'â² +' : 'â¼ '}${fmt(Math.abs(extPct))}%</span>` : '';
+  const regBadge  = reg != null ? `<span class="c-chg-badge ${regPct >= 0 ? 'up' : 'down'}">${regPct >= 0 ? '▲ +' : '▼ '}${fmt(Math.abs(regPct))}%</span>` : '<span class="c-chg-badge flat">—</span>';
+  const extBadge  = ext != null ? `<span class="c-chg-badge ${extPct >= 0 ? 'up' : 'down'}">${extPct >= 0 ? '▲ +' : '▼ '}${fmt(Math.abs(extPct))}%</span>` : '';
   const badgeCls  = isEtf ? 'etf' : isKrx ? 'krx' : '';
   const badgeLbl  = isEtf ? 'ETF' : isKrx ? 'KRX' : `#${rank}`;
 
@@ -874,7 +877,7 @@ function buildCard(item, isEtf, rank) {
 
   const peakBadgeCls = pctFromPeak != null && pctFromPeak > -2 ? 'near' : '';
   const peakBadge    = pctFromPeak != null
-    ? `<span class="c-peak-badge ${peakBadgeCls}">â¼ ${fmt(Math.abs(pctFromPeak))}% from peak</span>` : '';
+    ? `<span class="c-peak-badge ${peakBadgeCls}">▼ ${fmt(Math.abs(pctFromPeak))}% from peak</span>` : '';
 
   return `
   <div class="card ${dirCls}" id="card-${ticker.replace('.','_')}" onclick="openChart(event,'${ticker}')">
@@ -926,7 +929,7 @@ function buildCards() {
   grid.innerHTML = html;
 }
 
-// ââ VIEW TOGGLE âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── VIEW TOGGLE ───────────────────────────────────────────────────────────
 function setView(v) {
   currentView = v;
   document.getElementById('btn-treemap').classList.toggle('active', v === 'treemap');
@@ -935,7 +938,7 @@ function setView(v) {
   document.getElementById('card-grid').classList.toggle('show', v === 'cards');
 }
 
-// ââ RENDER ALL ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── RENDER ALL ────────────────────────────────────────────────────────────
 function render() {
   updateMetrics();
   updateSummary();
@@ -944,7 +947,7 @@ function render() {
   buildCards();
 }
 
-// ââ CHART âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── CHART ─────────────────────────────────────────────────────────────────
 function openChart(e, ticker) {
   e.stopPropagation();
   document.getElementById('chart-overlay').classList.add('open');
@@ -965,7 +968,7 @@ function closeChart(e) {
   document.getElementById('chart-overlay').classList.remove('open');
 }
 
-// ââ SETTINGS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── SETTINGS ──────────────────────────────────────────────────────────────
 function openSettings()  { document.getElementById('settings-modal').classList.add('open'); }
 function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
 function saveToken() {
@@ -975,7 +978,7 @@ function saveToken() {
   closeSettings();
 }
 
-// ââ DATA FETCH âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── DATA FETCH ─────────────────────────────────────────────────────────────
 async function fetchChartBatch() {
   const fields = 'regularMarketPrice,regularMarketChange,regularMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent,preMarketPrice,preMarketChange,preMarketChangePercent,fiftyTwoWeekHigh,fiftyTwoWeekLow';
   const url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(ALL_TICKERS.join(','))}&fields=${fields}&includePrePost=true&_=${Date.now()}`;
@@ -1039,7 +1042,7 @@ async function fetchPeakDates() {
   }));
 }
 
-// ââ WEBSOCKET STREAMER âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── WEBSOCKET STREAMER ─────────────────────────────────────────────────────
 let ws = null;
 function setWsStatus(connected) {
   document.getElementById('ws-pill').classList.toggle('show', connected);
@@ -1103,13 +1106,13 @@ function startStreamer() {
   ws.onclose = () => { setWsStatus(false); setTimeout(startStreamer, 5000); };
 }
 
-// ââ REFRESH ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── REFRESH ────────────────────────────────────────────────────────────────
 let refreshing = false;
 async function doRefresh() {
   if (refreshing) return;
   refreshing = true;
   document.getElementById('spinner').classList.add('active');
-  document.getElementById('refresh-label').textContent = 'Loadingâ¦';
+  document.getElementById('refresh-label').textContent = 'Loading…';
   updateMarketStatus();
   try {
     await Promise.all([fetchChartBatch(), fetchPeakDates()]);
@@ -1117,19 +1120,19 @@ async function doRefresh() {
     const t = new Date().toLocaleTimeString();
     document.getElementById('sb-updated').textContent = 'Updated ' + t;
     document.getElementById('last-updated-footer').textContent =
-      `Data via Yahoo Finance Â· Last updated ${t} Â· NYSE/Nasdaq: 09:30â16:00 ET`;
+      `Data via Yahoo Finance · Last updated ${t} · NYSE/Nasdaq: 09:30–16:00 ET`;
   } catch(e) {
     const eb = document.getElementById('error-banner');
     eb.style.display = 'block';
     eb.textContent = 'Data fetch error: ' + e.message;
   } finally {
     document.getElementById('spinner').classList.remove('active');
-    document.getElementById('refresh-label').textContent = 'â» Refresh';
+    document.getElementById('refresh-label').textContent = '↻ Refresh';
     refreshing = false;
   }
 }
 
-// ââ INIT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── INIT ───────────────────────────────────────────────────────────────────
 (async function init() {
   updateMarketStatus();
   setInterval(updateMarketStatus, 30000);

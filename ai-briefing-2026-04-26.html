@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI &amp; Chips Daily — Sunday, April 26, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060608;
+      --bg2: #0d0d11;
+      --card: rgba(255,255,255,0.035);
+      --card-hover: rgba(255,255,255,0.055);
+      --border: rgba(255,255,255,0.07);
+      --border-bright: rgba(255,255,255,0.12);
+      --text: #e8e8f0;
+      --text-muted: #7b7b96;
+      --text-dim: #4a4a62;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-cyan: #06b6d4;
+      --accent-pink: #ec4899;
+      --accent-orange: #f97316;
+      --ticker-h: 38px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6,6,8,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 52px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff;
+    }
+    .logo-text {
+      font-size: 15px; font-weight: 700;
+      background: linear-gradient(90deg, #e8e8f0, #8b8ba8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-meta {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .header-badge {
+      font-size: 11px; font-weight: 600;
+      color: var(--accent-cyan);
+      background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.25);
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+    }
+
+    .archive-nav {
+      display: flex;
+      gap: 4px;
+      padding: 0 24px 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .archive-nav::-webkit-scrollbar { display: none; }
+    .archive-link {
+      display: inline-flex; align-items: center;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .archive-link:hover { color: var(--text); border-color: var(--border-bright); background: var(--card); }
+    .archive-link.active {
+      color: var(--accent-blue);
+      background: rgba(59,130,246,0.12);
+      border-color: rgba(59,130,246,0.3);
+    }
+
+    .ticker-wrapper {
+      background: rgba(0,0,0,0.4);
+      border-bottom: 1px solid var(--border);
+      height: var(--ticker-h);
+      overflow: hidden;
+      position: relative;
+    }
+    .ticker-track {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      gap: 0;
+      animation: ticker-scroll 60s linear infinite;
+      white-space: nowrap;
+      width: max-content;
+    }
+    .ticker-wrapper:hover .ticker-track,
+    .ticker-track.paused { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0 20px;
+      font-size: 12px; font-weight: 500;
+      border-right: 1px solid var(--border);
+    }
+    .ticker-symbol { font-weight: 700; color: var(--text); }
+    .ticker-price { color: var(--text-muted); }
+    .ticker-change.up   { color: var(--accent-green); }
+    .ticker-change.down { color: var(--accent-red); }
+    .ticker-change.flat { color: var(--text-muted); }
+    .ticker-loading {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; gap: 8px; font-size: 12px; color: var(--text-muted);
+    }
+    .ticker-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-blue);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    .hero {
+      padding: 56px 24px 40px;
+      background: radial-gradient(ellipse 70% 60% at 50% -10%, rgba(59,130,246,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 50% at 85% 50%, rgba(139,92,246,0.07) 0%, transparent 60%),
+                  var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-inner { max-width: 1240px; margin: 0 auto; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600;
+      color: var(--accent-blue);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .hero-date-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: var(--accent-blue);
+      font-size: 12px; font-weight: 600;
+      padding: 5px 14px; border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #a5a5c0 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .hero-subtitle {
+      font-size: 15px; font-weight: 400;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    @media(max-width:900px) { .hero-stats { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:500px) { .hero-stats { grid-template-columns: 1fr 1fr; } }
+
+    .hero-stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .hero-stat::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: 14px 14px 0 0;
+    }
+    .hero-stat.blue::before   { background: var(--accent-blue); }
+    .hero-stat.purple::before { background: var(--accent-purple); }
+    .hero-stat.green::before  { background: var(--accent-green); }
+    .hero-stat.amber::before  { background: var(--accent-amber); }
+
+    .hero-stat:hover { transform: translateY(-2px); border-color: var(--border-bright); }
+
+    .stat-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 28px; font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-value.blue   { color: var(--accent-blue); }
+    .stat-value.purple { color: var(--accent-purple); }
+    .stat-value.green  { color: var(--accent-green); }
+    .stat-value.amber  { color: var(--accent-amber); }
+    .stat-desc {
+      font-size: 12px; color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .main-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 20px; margin-top: 40px;
+    }
+    .section-header:first-child { margin-top: 0; }
+    .section-accent {
+      width: 4px; height: 20px; border-radius: 2px;
+    }
+    .section-title {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .section-count {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-dim);
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 10px;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+    .bento-2  { grid-column: span 2; }
+    .bento-3  { grid-column: span 3; }
+    .bento-4  { grid-column: span 4; }
+    .bento-5  { grid-column: span 5; }
+    .bento-6  { grid-column: span 6; }
+    .bento-7  { grid-column: span 7; }
+    .bento-8  { grid-column: span 8; }
+    .bento-12 { grid-column: span 12; }
+
+    @media(max-width: 1024px) {
+      .bento-3, .bento-4, .bento-5 { grid-column: span 6; }
+      .bento-7, .bento-8 { grid-column: span 12; }
+    }
+    @media(max-width: 700px) {
+      .bento-2, .bento-3, .bento-4, .bento-5,
+      .bento-6, .bento-7, .bento-8 { grid-column: span 12; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-1px);
+    }
+    .card-accent-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; border-radius: 14px 14px 0 0;
+    }
+
+    .card-eyebrow {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-eyebrow .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+    }
+
+    .card-headline {
+      font-size: 16px; font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .card-headline.large {
+      font-size: 20px;
+    }
+
+    .card-body {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 12px;
+    }
+    .tag {
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 3px 9px; border-radius: 10px;
+      border: 1px solid;
+    }
+    .tag.blue   { color: var(--accent-blue);   border-color: rgba(59,130,246,0.3);  background: rgba(59,130,246,0.08); }
+    .tag.purple { color: var(--accent-purple);  border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.08); }
+    .tag.green  { color: var(--accent-green);   border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08); }
+    .tag.amber  { color: var(--accent-amber);   border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+    .tag.cyan   { color: var(--accent-cyan);    border-color: rgba(6,182,212,0.3);  background: rgba(6,182,212,0.08); }
+    .tag.red    { color: var(--accent-red);     border-color: rgba(239,68,68,0.3);  background: rgba(239,68,68,0.08); }
+    .tag.orange { color: var(--accent-orange);  border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.08); }
+
+    .card-meta {
+      font-size: 11px; color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    .why-matters {
+      background: rgba(255,255,255,0.03);
+      border-left: 2px solid var(--accent-blue);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #7b8faa;
+      line-height: 1.55;
+    }
+    .why-matters strong {
+      color: var(--accent-blue);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .highlight-number {
+      font-size: 32px; font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .x-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media(max-width: 1024px) { .x-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width: 640px)  { .x-grid { grid-template-columns: 1fr; } }
+
+    .x-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .x-card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+    }
+
+    .x-card-header {
+      display: flex; align-items: flex-start;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .x-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .x-author-info { flex: 1; }
+    .x-name {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      line-height: 1.2;
+    }
+    .x-handle {
+      font-size: 12px; color: var(--text-muted);
+    }
+    .x-timestamp {
+      font-size: 11px; color: var(--text-dim);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .x-icon {
+      color: var(--text-dim);
+      font-size: 16px; line-height: 1;
+    }
+
+    .x-body {
+      font-size: 13px; color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .x-body a { color: var(--accent-blue); text-decoration: none; }
+
+    .x-why {
+      background: rgba(59,130,246,0.06);
+      border-left: 2px solid rgba(59,130,246,0.4);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      font-size: 11.5px; color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .x-why strong {
+      color: var(--accent-blue);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block; margin-bottom: 2px;
+    }
+    .x-summary-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 600;
+      color: var(--accent-amber);
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      padding: 2px 8px; border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    footer p {
+      font-size: 12px; color: var(--text-dim);
+      line-height: 1.8;
+    }
+    footer strong { color: var(--text-muted); }
+
+    .counter { display: inline-block; }
+    .visible-anim { animation: fadeUp 0.5s ease forwards; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  
+.wafer-bg{position:fixed;top:50%;right:-8%;transform:translateY(-50%);width:min(90vw,720px);height:min(90vw,720px);z-index:0;pointer-events:none;opacity:0.38}.circuit-traces{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.14}.content-layer{position:relative;z-index:1}@keyframes trace-flow{0%{stroke-dashoffset:1000}100%{stroke-dashoffset:0}}.circuit-line{stroke:#38bdf8;stroke-width:0.8;fill:none;stroke-dasharray:200 800;animation:trace-flow 6s linear infinite}.circuit-pad{fill:rgba(56,189,248,0.5)}@media(max-width:768px){.wafer-bg{opacity:0.18;right:-30%}.circuit-traces{opacity:0.07}}
+.card{background:rgba(8,10,20,0.72)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.card:hover{background:rgba(12,14,28,0.82)!important}.site-header{background:rgba(6,6,12,0.85)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.ticker-wrap{background:rgba(6,6,12,0.9)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    </style>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;display=swap" rel="stylesheet">
+<style>
+.g-nav { background: #111318; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0 24px; display: flex; align-items: center; gap: 0; height: 44px; position: relative; z-index: 100; }
+html.embedded .g-nav { display: none; }
+.g-nav-logo { display: flex; align-items: center; gap: 8px; margin-right: 28px; text-decoration: none; cursor: pointer; }
+.g-nav-icon { width: 22px; height: 22px; background: #F59E0B; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #000; }
+.g-nav-brand { font-size: 12px; font-weight: 700; color: #F0F2F5; letter-spacing: 0.02em; font-family: 'Inter', sans-serif; }
+.g-nav-brand em { font-style: italic; color: #F59E0B; font-family: 'Playfair Display', Georgia, serif; }
+.g-nav-links { display: flex; align-items: center; gap: 0; flex: 1; }
+.g-nav-link { font-size: 11px; font-weight: 600; color: #55596A; padding: 0 14px; height: 44px; display: flex; align-items: center; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.15s, border-color 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Inter', sans-serif; }
+.g-nav-link:hover { color: #F0F2F5; }
+.g-nav-link.active { color: #F59E0B; border-bottom-color: #F59E0B; }
+</style>
+</head>
+<body>
+<nav class="g-nav">
+  <div class="g-nav-logo" onclick="window.parent.postMessage('switchTab:briefing','*')">
+    <div class="g-nav-icon">AI</div>
+    <span class="g-nav-brand">AI &amp; Semis <em>Briefing</em></span>
+  </div>
+  <div class="g-nav-links">
+    <button class="g-nav-link active" onclick="window.parent.postMessage('switchTab:briefing','*')">AI Briefing</button>
+    <button class="g-nav-link" onclick="window.parent.postMessage('switchTab:ewy','*')">EWY Korea</button>
+    <button class="g-nav-link" onclick="window.parent.postMessage('switchTab:smh','*')">SMH Tracker</button>
+  </div>
+</nav>
+
+<div class="wafer-bg" aria-hidden="true"><svg id="wafer-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="wafer-iridescent" cx="38%" cy="38%" r="65%"><stop offset="0%" stop-color="#7dd3fc"></stop><stop offset="14%" stop-color="#818cf8"></stop><stop offset="28%" stop-color="#c084fc"></stop><stop offset="42%" stop-color="#38bdf8"></stop><stop offset="56%" stop-color="#34d399"></stop><stop offset="70%" stop-color="#fbbf24"></stop><stop offset="84%" stop-color="#60a5fa"></stop><stop offset="100%" stop-color="#818cf8"></stop></radialGradient><filter id="edge-glow" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="5" result="blur"></feGaussianBlur><feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter><linearGradient id="scan-line" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="transparent"></stop><stop offset="43%" stop-color="transparent"></stop><stop offset="47%" stop-color="rgba(120,210,255,0.07)"></stop><stop offset="50%" stop-color="rgba(160,230,255,0.22)"></stop><stop offset="53%" stop-color="rgba(120,210,255,0.07)"></stop><stop offset="57%" stop-color="transparent"></stop><stop offset="100%" stop-color="transparent"></stop><animateTransform attributeName="gradientTransform" type="rotate" values="0 300 300;360 300 300" dur="8s" repeatCount="indefinite"></animateTransform></linearGradient><radialGradient id="wafer-shimmer" cx="28%" cy="28%" r="55%"><stop offset="0%" stop-color="rgba(255,255,255,0.14)"></stop><stop offset="50%" stop-color="rgba(255,255,255,0.03)"></stop><stop offset="100%" stop-color="rgba(0,0,0,0)"></stop></radialGradient><clipPath id="wafer-clip"><path d="M300,22 A278,278 0 1,1 216,562 L230,556 A264,264 0 0,0 300,568 A264,264 0 1,0 300,36 Z"></path></clipPath></defs><circle cx="300" cy="300" r="280" fill="#07090f" stroke="#1a2a4a" stroke-width="1.5"></circle><circle cx="300" cy="300" r="278" fill="url(#wafer-iridescent)" clip-path="url(#wafer-clip)" opacity="0.42"></circle><g id="die-group" clip-path="url(#wafer-clip)"></g><circle cx="300" cy="300" r="278" fill="url(#wafer-shimmer)" clip-path="url(#wafer-clip)"></circle><circle cx="300" cy="300" r="278" fill="url(#scan-line)" clip-path="url(#wafer-clip)"></circle><circle cx="300" cy="300" r="278" fill="none" stroke="rgba(56,189,248,0.22)" stroke-width="2"></circle><rect x="218" y="558" width="164" height="10" rx="3" fill="#060608"></rect><rect x="218" y="558" width="164" height="1.5" rx="1" fill="rgba(56,189,248,0.3)"></rect><circle cx="300" cy="300" r="282" fill="none" stroke="rgba(56,189,248,0.45)" stroke-width="2" filter="url(#edge-glow)"></circle><circle cx="300" cy="300" r="289" fill="none" stroke="rgba(139,92,246,0.18)" stroke-width="7"></circle></svg></div>
+<svg class="circuit-traces" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="circuit-line" d="M0,180 L120,180 L120,300 L240,300" style="animation-delay:0s;animation-duration:7s"></path><circle class="circuit-pad" cx="120" cy="180" r="2.5"></circle><circle class="circuit-pad" cx="120" cy="300" r="2.5"></circle><path class="circuit-line" d="M0,420 L80,420 L80,520 L180,520" style="animation-delay:1.5s;animation-duration:9s"></path><circle class="circuit-pad" cx="80" cy="420" r="2.5"></circle><circle class="circuit-pad" cx="80" cy="520" r="2.5"></circle><path class="circuit-line" d="M0,660 L200,660 L200,760" style="animation-delay:3s;animation-duration:8s"></path><circle class="circuit-pad" cx="200" cy="660" r="2.5"></circle><path class="circuit-line" d="M1440,220 L1300,220 L1300,360 L1180,360" style="animation-delay:0.8s;animation-duration:10s"></path><circle class="circuit-pad" cx="1300" cy="220" r="2.5"></circle><circle class="circuit-pad" cx="1300" cy="360" r="2.5"></circle><path class="circuit-line" d="M1440,500 L1350,500 L1350,620 L1250,620" style="animation-delay:2.2s;animation-duration:7.5s"></path><circle class="circuit-pad" cx="1350" cy="500" r="2.5"></circle><circle class="circuit-pad" cx="1350" cy="620" r="2.5"></circle><path class="circuit-line" d="M200,0 L200,80 L340,80" style="animation-delay:0.5s;animation-duration:6s"></path><circle class="circuit-pad" cx="200" cy="80" r="2.5"></circle><path class="circuit-line" d="M580,0 L580,120 L460,120 L460,210" style="animation-delay:2s;animation-duration:8.5s"></path><circle class="circuit-pad" cx="580" cy="120" r="2.5"></circle><circle class="circuit-pad" cx="460" cy="120" r="2.5"></circle><path class="circuit-line" d="M920,900 L920,820 L1060,820 L1060,740" style="animation-delay:1s;animation-duration:9.5s"></path><circle class="circuit-pad" cx="920" cy="820" r="2.5"></circle><circle class="circuit-pad" cx="1060" cy="820" r="2.5"></circle><path class="circuit-line" d="M400,900 L400,800 L270,800 L270,710" style="animation-delay:3.5s;animation-duration:7s"></path><circle class="circuit-pad" cx="400" cy="800" r="2.5"></circle><circle class="circuit-pad" cx="270" cy="800" r="2.5"></circle></svg>
+<div class="content-layer">
+
+
+<header class="site-header">
+  <div class="header-top">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">Aâ</div>
+      <span class="logo-text">AI &amp; Chips Daily</span>
+    </a>
+    <div class="header-meta">
+      <span class="header-badge">24-Hour Briefing</span>
+    </div>
+  </div>
+  <nav class="archive-nav" aria-label="Archive navigation">
+    <a href="briefing-apr6.html" class="archive-link">Apr 6</a>
+    <a href="briefing-apr7.html" class="archive-link">Apr 7</a>
+    <a href="ai-briefing-2026-04-09.html" class="archive-link">Apr 9</a>
+    <a href="ai-briefing-2026-04-10.html" class="archive-link">Apr 10</a>
+    <a href="ai-briefing-2026-04-11.html" class="archive-link">Apr 11</a>
+    <a href="ai-briefing-2026-04-12.html" class="archive-link">Apr 12</a>
+    <a href="ai-briefing-2026-04-13.html" class="archive-link">Apr 14</a>
+    <a href="ai-briefing-2026-04-21.html" class="archive-link">Apr 15</a>
+    <a href="briefing.html" class="archive-link active">Apr 26</a>
+  </nav>
+</header>
+
+<div class="ticker-wrapper" id="tickerWrapper">
+  <div class="ticker-loading" id="tickerLoading">
+    <div class="ticker-dot"></div>
+    <span>Loading market pricesâ¦</span>
+  </div>
+  <div class="ticker-track" id="tickerTrack" style="display:none" role="marquee" aria-label="Live prices (tap to pause)" onclick="this.classList.toggle('paused')"><div class="ticker-item">NVDA +4.30% Crosses $5T market cap milestone</div><div class="ticker-item">INTC +24.0% Best single day since 1987 on Q1 beat</div><div class="ticker-item">AMD +14.0% Joins chip rally to $349.54</div><div class="ticker-item">TSM ~ A13/N2U manufacturing node debuts</div><div class="ticker-item">SOXX +40.4% MTD return through April 24</div><div class="ticker-item">GOOGL ~ Earnings Tue Apr 28 · capex in focus</div><div class="ticker-item">MSFT ~ Earnings Tue Apr 28 · Azure AI run-rate</div><div class="ticker-item">META ~ Earnings Wed Apr 29 · Muse stack monetisation</div><div class="ticker-item">AMZN ~ Earnings Wed Apr 29 · $200B 2026 capex envelope</div><div class="ticker-item">AAPL ~ Earnings Thu Apr 30 · Apple Intelligence read</div><div class="ticker-item">ANTH +$65B Amazon $25B + Google $40B fresh commitments</div><div class="ticker-item">ASML ~ AI chip equipment demand reaffirmed</div><div class="ticker-item">AVGO ~ Hyperscaler ASIC pipeline filling for 2027</div><div class="ticker-item">ARM ~ AI server share gains continue</div><div class="ticker-item">MU ~ HBM4 sampling cadence lifts memory tape</div></div></div>
+</div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span> Sunday, April 26, 2026</div>
+    <div class="hero-date-badge">Sunday, April 26, 2026</div>
+    <h1 class="hero-title">AI &amp; Semiconductor Daily Briefing<br>NVIDIA hits $5T · Intel’s best day since 1987 · Anthropic’s $65B war chest</h1>
+    <p class="hero-subtitle">24-Hour Briefing · Sunday, April 26, 2026</p>
+
+    <div class="hero-stats">
+  <div class="hero-stat purple">
+    <div class="stat-label">TSMC Q1 Profit Growth</div>
+    <div class="stat-value purple counter-anim" data-target="58" data-prefix="" data-suffix="%">$30B</div>
+    <div class="stat-desc">Up from $9B end-2025</div>
+  </div>
+  <div class="hero-stat blue">
+    <div class="stat-label">Q1 Global VC</div>
+    <div class="stat-value blue counter-anim" data-target="300" data-prefix="$" data-suffix="B" data-decimal="1">$300B</div>
+    <div class="stat-desc">80% into AI startups</div>
+  </div>
+  <div class="hero-stat green">
+    <div class="stat-label">ASML 2026 Upper Guide</div>
+    <div class="stat-value green counter-anim" data-target="40" data-prefix="â¬" data-suffix="B" data-decimal="0">$1T</div>
+    <div class="stat-desc">Blackwell + Vera Rubin 2026â27</div>
+  </div>
+  <div class="hero-stat amber">
+    <div class="stat-label">NVIDIA Q4 Revenue</div>
+    <div class="stat-value amber counter-anim" data-target="68" data-prefix="$" data-suffix="B">$164B</div>
+    <div class="stat-desc">7th wealthiest globally</div>
+  </div>
+</div>
+  </div>
+</section>
+
+<main class="main-content">
+
+    <div class="section-header">
+      <div class="section-accent" style="background:var(--accent-blue)"></div>
+      <span class="section-title">Lead Stories</span>
+      <span class="section-count">03</span>
+    </div>
+    <div class="bento"><div class="card bento-7"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> MARKETS · NVIDIA</div><div class="card-tags"><span class="tag purple">Jensen Huang</span><span class="tag blue">$5T Market Cap</span><span class="tag red">Vera Rubin</span></div><h2 class="card-headline large">NVIDIA closes Friday at a record $208.27 (+4.3%), pushing market cap past $5 trillion for the first time</h2><p class="card-body">NVDA capped a four-week melt-up on April 24 with the iShares Semiconductor ETF (SOXX) up 40.4% month-to-date. The cross of the $5T line — a level no public company had ever closed above — was driven by 75%+ Data Center growth, the OpenAI/Oracle/Microsoft infra deals signed earlier this quarter, and renewed confidence that the Vera Rubin platform ramps on schedule. Friday's tape sets up a high-stakes earnings week for Microsoft, Alphabet, Meta, Amazon and Apple.</p></div><div class="card bento-5"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> INTEL · Q1 EARNINGS</div><div class="card-tags"><span class="tag purple">Lip-Bu Tan</span><span class="tag red">+24% in a day</span></div><h2 class="card-headline">Intel posts best single-day stock move since 1987 — Q1 revenue $13.58B beats; Data Center &amp; AI +22% YoY to $5.05B</h2><p class="card-body">Intel's Friday print silenced the bears: $13.58B revenue (+7.18% YoY) topped Street, and the Data Center &amp; AI segment hit $5.05B with strong Xeon 6 and Gaudi traction. The 24% one-day pop is the largest INTC daily gain since the Black Monday era, and it dragged Philadelphia Semiconductor Index to a new all-time high.</p></div><div class="card bento-6"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> ANTHROPIC · MEGADEAL</div><div class="card-tags"><span class="tag blue">$65B</span><span class="tag red">Amazon + Google</span></div><h2 class="card-headline">Anthropic stacks $65B in fresh commitments — Amazon adds $25B, Google pledges up to $40B on Friday</h2><p class="card-body">A staggered week: Amazon committed up to $25B as part of an expanded AWS partnership, then Google followed Friday with a multi-year compute and equity package worth up to $40B. The two pledges effectively bankroll Anthropic's Mythos and Claude roadmaps through the next two model cycles, even as both hyperscalers continue to back rivals.</p></div></div>
+
+    <div class="section-header">
+      <div class="section-accent" style="background:var(--accent-green)"></div>
+      <span class="section-title">Semiconductors</span>
+      <span class="section-count">03</span>
+    </div>
+    <div class="bento"><div class="card bento-7"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> TSMC · A13 / N2U</div><div class="card-tags"><span class="tag blue">TSMC</span><span class="tag red">AI nodes</span></div><h2 class="card-headline">TSMC unveils A13 and N2U process nodes — next-gen geometry pitched squarely at 2027 AI accelerators</h2><p class="card-body">On April 22, TSMC introduced its A13 family alongside an N2U variant aimed at AI compute. The roadmap update lands as analysts now expect AI chips to drive about a third of TSMC sales by 2027, with revenue projected to climb from ~$164B in 2026 to ~$204B in 2027 and ~$311B by 2030. Notably absent: any commitment yet on ASML high-NA EUV adoption, which TSMC continues to defer on cost grounds.</p></div><div class="card bento-5"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> AMD · CHIP RALLY</div><div class="card-tags"><span class="tag purple">Lisa Su</span><span class="tag red">+14% in a day</span></div><h2 class="card-headline">AMD jumps 14% to $349.54 — MI400 momentum and the Intel halo lift the stock to a fresh high</h2><p class="card-body">Advanced Micro Devices closed Friday up 14% as AI-data-center read-throughs from Intel's print rippled across the sector. AMD is now +42.6% YTD, with Street models still treating MI400 as upside. The setup leaves Lisa Su with a clean runway into the May earnings update.</p></div><div class="card bento-6"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> EDA · CADENCE</div><div class="card-tags"><span class="tag blue">Cadence</span><span class="tag red">TSMC + NVIDIA + Google</span></div><h2 class="card-headline">Cadence deepens AI-EDA pact with TSMC, NVIDIA and Google — agentic flows certified for N3, N2, A16 and A14</h2><p class="card-body">Cadence Design Systems expanded its joint design framework this week, bringing agentic-AI-assisted IP and certified flows to TSMC's leading-edge nodes. The partnership is meaningful for hyperscaler ASIC pipelines: Google's next TPU generations and a wave of NVIDIA custom designs all sit on these process technologies.</p></div></div>
+
+    <div class="section-header">
+      <div class="section-accent" style="background:var(--accent-purple)"></div>
+      <span class="section-title">AI &amp; Policy</span>
+      <span class="section-count">03</span>
+    </div>
+    <div class="bento"><div class="card bento-7"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> OPENAI · NVIDIA</div><div class="card-tags"><span class="tag purple">Sam Altman</span><span class="tag blue">Codex</span><span class="tag red">10,000 employees</span></div><h2 class="card-headline">NVIDIA rolls out OpenAI Codex to all 10,000 employees — Huang frames AI agents as "teammates," not just dev tools</h2><p class="card-body">NVIDIA confirmed this week it has deployed OpenAI's Codex coding agent across its entire global workforce — engineering, design, ops and supporting roles. Jensen Huang called it a milestone in "the age of AI"; Sam Altman replied that early company-wide testing "was awesome." The move is the largest single-company Codex deployment to date and a public flex on agentic productivity ahead of Q2 earnings season.</p></div><div class="card bento-5"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> ANTHROPIC · MYTHOS</div><div class="card-tags"><span class="tag red">Security</span><span class="tag purple">Mythos 5</span></div><h2 class="card-headline">Cybersecurity researchers raise alarm over unauthorized access to Anthropic's Mythos model — exfiltration risk being assessed</h2><p class="card-body">Reports late this week describe parties with unauthorized access to Mythos, Anthropic's 10-trillion-parameter cybersecurity-and-coding model. Defenders worry attackers may operationalize the model before the broader patch and detection ecosystem catches up. Anthropic has not detailed scope; this is the first known incident of that scale on a frontier model.</p></div><div class="card bento-6"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> EU · DIGITAL RULES</div><div class="card-tags"><span class="tag blue">European Commission</span><span class="tag red">OpenAI</span></div><h2 class="card-headline">EU set to classify ChatGPT as a Very Large Online Platform — strictest tier of obligations would apply to OpenAI</h2><p class="card-body">Per Handelsblatt sources inside the European Commission, ChatGPT is days away from being designated under the DSA's VLOP regime. The classification carries audit, transparency and risk-mitigation duties, and would put OpenAI under the same supervisory umbrella as Google Search and Meta's feeds — a meaningful escalation in EU oversight of generative AI.</p></div></div>
+
+    <div class="section-header">
+      <div class="section-accent" style="background:var(--accent-amber)"></div>
+      <span class="section-title">Numbers to Know</span>
+      <span class="section-count">06</span>
+    </div>
+    <div class="bento"><div class="card bento-4"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> NVIDIA · MARKET CAP</div><div class="number-value counter-anim" data-target="5">$5T</div><div class="card-body">NVDA closed Friday at $208.27, vaulting market cap above the $5 trillion line for the first time in history.</div></div><div class="card bento-4"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> INTEL · ONE-DAY MOVE</div><div class="number-value counter-anim" data-target="24">+24%</div><div class="card-body">Intel's Friday surge on the Q1 beat — its largest single-session percentage gain since the 1987 era.</div></div><div class="card bento-4"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> ANTHROPIC · NEW COMMITMENTS</div><div class="number-value counter-anim" data-target="65">$65B</div><div class="card-body">Combined fresh capital commitments to Anthropic this week: ~$25B from Amazon plus up to $40B from Google.</div></div><div class="card bento-4"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> SOXX · MTD RETURN</div><div class="number-value counter-anim" data-target="40">+40.4%</div><div class="card-body">iShares Semiconductor ETF return month-to-date through April 24 — extraordinary breadth across the AI silicon stack.</div></div><div class="card bento-4"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> BIG TECH · Q1 AI CAPEX</div><div class="number-value counter-anim" data-target="78">$78B</div><div class="card-body">Estimated combined Magnificent 7 AI-related capex in Q1 alone — up roughly 45% year-over-year.</div></div><div class="card bento-4"><div class="card-accent-top"></div><div class="card-eyebrow"><span class="dot"></span> TSMC · 2026 REVENUE</div><div class="number-value counter-anim" data-target="164">$164B</div><div class="card-body">Consensus 2026 revenue trajectory for TSMC, scaling toward ~$311B by 2030 as AI workloads dominate the foundry mix.</div></div></div>
+
+    <div class="section-header">
+      <div class="section-accent" style="background:var(--accent-red)"></div>
+      <span class="section-title">Voices</span>
+      <span class="section-count">02</span>
+    </div>
+    <div class="x-grid"><div class="x-card"><div class="x-card-header"><div class="x-avatar">JH</div><div class="x-meta"><div class="x-name">Jensen Huang</div><div class="x-handle">NVIDIA · Fortune interview · Apr 22</div></div></div><div class="x-summary-badge">On AI and the workforce</div><div class="x-body">"You won't lose your job to AI — you'll lose it to your coworker who uses it." Huang reframed the displacement debate this week, arguing the divide is no longer human-vs-machine but AI-fluent vs AI-illiterate, and previewing NVIDIA's own decision to roll Codex out to all 10,000 employees.</div></div><div class="x-card"><div class="x-card-header"><div class="x-avatar">SA</div><div class="x-meta"><div class="x-name">Sam Altman</div><div class="x-handle">OpenAI · on the NVIDIA Codex deployment · Apr 24</div></div></div><div class="x-summary-badge">On the largest Codex rollout to date</div><div class="x-body">"It was awesome." Altman's short reaction to NVIDIA's company-wide adoption belies its strategic weight: Codex is now battle-tested at one of the most demanding engineering organizations in tech, just as OpenAI hardens it for broader enterprise sale.</div></div></div>
+  </main>
+
+  <footer>
+  <p>
+    <strong>AI &amp; Chips Daily</strong> Â· Sunday, April 26, 2026<br>
+    Market data provided by Yahoo Finance Â· Prices reflect approximately 15-minute delayed quotes.<br>
+    All analysis is for informational purposes only and does not constitute investment advice.<br>
+    <a href="index.html" style="color:var(--accent-blue);text-decoration:none">â Back to index</a>
+  </p>
+</footer>
+[{s:"NVDA",p:"$185.20",c:"-2.9%",d:"down"},{s:"AMD",p:"$245.10",c:"-1.3%",d:"down"},{s:"TSM",p:"$209.40",c:"+2.6%",d:"up"},{s:"INTC",p:"$32.50",c:"+11.5%",d:"up"},{s:"AVGO",p:"$221.60",c:"-1.5%",d:"down"},{s:"MSFT",p:"$452.30",c:"-0.7%",d:"down"},{s:"GOOG",p:"$182.10",c:"+1.0%",d:"up"},{s:"META",p:"$622.80",c:"+0.7%",d:"up"},{s:"SMCI",p:"$51.20",c:"+2.8%",d:"up"},{s:"QCOM",p:"$178.90",c:"+1.2%",d:"up"}];
+
+function formatChange(pct) {
+  const sign = pct &gt;= 0 ? '+' : '';
+  return sign + pct.toFixed(2) + '%';
+}
+
+function buildTickerHTML(quotes) {
+  const items = quotes.map(q =&gt; {
+    const pct  = q.regularMarketChangePercent || 0;
+    const cls  = pct &gt; 0.05 ? 'up' : pct &lt; -0.05 ? 'down' : 'flat';
+    const arrow = pct &gt; 0.05 ? 'â²' : pct &lt; -0.05 ? 'â¼' : 'â';
+    const price = q.regularMarketPrice ? '$' + q.regularMarketPrice.toFixed(2) : 'â';
+    return '<span class="ticker-item">CDNS ~ Expanded TSMC/NVIDIA/Google AI EDA pact</span>';
+  }).join('');
+  return items + items;
+}
+
+async function loadTicker() {
+  const symbols = TICKERS.join(',');
+  const endpoints = [
+    'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&amp;fields=symbol,regularMarketPrice,regularMarketChangePercent',
+    'https://query2.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&amp;fields=symbol,regularMarketPrice,regularMarketChangePercent'
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      const quotes = data &amp;&amp; data.quoteResponse &amp;&amp; data.quoteResponse.result;
+      if (quotes &amp;&amp; quotes.length &gt; 0) {
+        const track   = document.getElementById('tickerTrack');
+        const loading = document.getElementById('tickerLoading');
+        track.innerHTML = buildTickerHTML(quotes);
+        track.style.display = 'flex';
+        loading.style.display = 'none';
+        return;
+      }
+    } catch (_) {}
+  }
+
+  const loading = document.getElementById('tickerLoading');
+  loading.innerHTML = '<span style="font-size:12px;color:var(--text-dim)">Market data unavailable Â· visit finance.yahoo.com for live quotes</span>';
+}
+
+loadTicker();
+
+const fadeObserver = new IntersectionObserver((entries) =&gt; {
+  entries.forEach(e =&gt; {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+      fadeObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.card, .x-card').forEach((el, i) =&gt; {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity 0.45s ease ' + (i * 0.04) + 's, transform 0.45s ease ' + (i * 0.04) + 's';
+  fadeObserver.observe(el);
+});
+
+<script>(function(){var svg=document.getElementById("wafer-svg");if(!svg)return;var g=svg.querySelector("#die-group");var cx=300,cy=300,r=268,dW=22,dH=18,gap=2;var cols=Math.ceil(600/(dW+gap)),rows=Math.ceil(600/(dH+gap));var sx=300-cols*(dW+gap)/2,sy=300-rows*(dH+gap)/2;var hues=[218,224,230,236,242];for(var row=0;row<rows;row++){for(var col=0;col<cols;col++){var x=sx+col*(dW+gap),y=sy+row*(dH+gap);var dx=x+dW/2-cx,dy=y+dH/2-cy;if(dx*dx+dy*dy<(r-6)*(r-6)){var rect=document.createElementNS("http://www.w3.org/2000/svg","rect");rect.setAttribute("x",x);rect.setAttribute("y",y);rect.setAttribute("width",dW);rect.setAttribute("height",dH);rect.setAttribute("rx","2");var h=hues[Math.floor(Math.random()*hues.length)],l=7+Math.random()*6;rect.setAttribute("fill","hsl("+h+",28%,"+l+"%)");rect.setAttribute("stroke","rgba(56,189,248,0.13)");rect.setAttribute("stroke-width","0.5");g.appendChild(rect);}}}})();</script>
+
+
+
+</body></html>

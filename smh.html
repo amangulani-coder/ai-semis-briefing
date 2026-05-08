@@ -98,12 +98,24 @@
     /* Respect reduced-motion */
     @media (prefers-reduced-motion: reduce) {
       .ticker-track { animation: none; }
+      .flash-up, .flash-down { animation: none !important; }
     }
 
     @keyframes scroll-left {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
+
+    @keyframes flash-up {
+      0%   { background: rgba(52,217,128,0.35); }
+      100% { background: transparent; }
+    }
+    @keyframes flash-down {
+      0%   { background: rgba(247,82,82,0.35); }
+      100% { background: transparent; }
+    }
+    .flash-up   { animation: flash-up 0.6s ease-out; border-radius: 4px; }
+    .flash-down { animation: flash-down 0.6s ease-out; border-radius: 4px; }
 
     .tick-item {
       display: flex; align-items: center; gap: 7px;
@@ -814,13 +826,27 @@ function sessionPrice(d, mode) {
   }
 }
 
+let prevSmhPrice = null;
+function flashCell(el, dir) {
+  const cls = dir > 0 ? 'flash-up' : 'flash-down';
+  el.classList.remove('flash-up', 'flash-down');
+  void el.offsetWidth; // force reflow so the class re-applies cleanly
+  el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), 600);
+}
+
 function updateMetrics() {
   const d = priceCache['SMH'] || {};
   const { mode } = getUsMarketStatus();
   const { price, pct, label } = sessionPrice(d, mode);
 
   document.getElementById('m-smh-session').textContent = label;
-  document.getElementById('m-smh-price').textContent   = fmtPrice(price, 'USD');
+  const priceEl = document.getElementById('m-smh-price');
+  priceEl.textContent = fmtPrice(price, 'USD');
+  if (prevSmhPrice != null && price != null && price !== prevSmhPrice) {
+    flashCell(priceEl, price - prevSmhPrice);
+  }
+  if (price != null) prevSmhPrice = price;
 
   const chg = document.getElementById('m-smh-chg');
   if (pct != null) {

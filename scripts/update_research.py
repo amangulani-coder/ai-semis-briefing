@@ -267,7 +267,7 @@ def paper_card(paper, idx):
     </div>
     <div class="impact-meter">
       <div class="impact-label">Impact</div>
-      <div class="impact-bar-wrap"><div class="impact-bar" style="width:{score_pct}%"></div></div>
+      <div class="impact-bar-wrap"><div class="impact-bar" data-target="{score_pct}"></div></div>
       <div class="impact-score">{score}/10</div>
     </div>
   </div>
@@ -364,7 +364,12 @@ def generate_html(papers, date_str, display_date):
   width: 80px; height: 4px; background: rgba(255,255,255,0.08);
   border-radius: 2px; overflow: hidden;
 }}
-.impact-bar {{ height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 2px; }}
+.impact-bar {{
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  border-radius: 2px;
+  transition: width 0.9s cubic-bezier(0.22,1,0.36,1);
+}}
 .impact-score {{ font-size: 11px; font-weight: 700; color: var(--text-2); min-width: 28px; text-align: right; }}
 
 .research-title {{
@@ -470,7 +475,7 @@ def generate_html(papers, date_str, display_date):
     <p class="hero-sub">The most impactful AI papers and white papers from the last 24 hours — translated into plain English with stock market implications.</p>
     <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-val">{count}</div>
+        <div class="hero-stat-val" data-counter data-target="{count}">{count}</div>
         <div class="hero-stat-label">Papers Today</div>
       </div>
       <div class="hero-divider"></div>
@@ -512,10 +517,46 @@ def generate_html(papers, date_str, display_date):
 </footer>
 
 <script>
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const revealObs = new IntersectionObserver((entries) => {{
   entries.forEach(e => {{ if (e.isIntersecting) {{ e.target.classList.add('in'); revealObs.unobserve(e.target); }} }});
 }}, {{ threshold: 0.04, rootMargin: '0px 0px -30px 0px' }});
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// Count-up on hero stats (only purely-numeric data-target values).
+function animateCounter(el) {{
+  const target = parseFloat(el.dataset.target);
+  if (!isFinite(target)) return;
+  if (reduceMotion) {{ el.textContent = target; return; }}
+  const duration = 900;
+  const start = performance.now();
+  function step(now) {{
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  }}
+  requestAnimationFrame(step);
+}}
+
+const counterObs = new IntersectionObserver((entries) => {{
+  entries.forEach(e => {{ if (e.isIntersecting) {{ animateCounter(e.target); counterObs.unobserve(e.target); }} }});
+}}, {{ threshold: 0.5 }});
+document.querySelectorAll('[data-counter]').forEach(el => {{ el.textContent = '0'; counterObs.observe(el); }});
+
+// Fill impact bars from 0 → target%.
+const barObs = new IntersectionObserver((entries) => {{
+  entries.forEach(e => {{
+    if (!e.isIntersecting) return;
+    const target = e.target.dataset.target;
+    if (reduceMotion) {{ e.target.style.transition = 'none'; }}
+    requestAnimationFrame(() => {{ e.target.style.width = target + '%'; }});
+    barObs.unobserve(e.target);
+  }});
+}}, {{ threshold: 0.5 }});
+document.querySelectorAll('.impact-bar[data-target]').forEach(el => barObs.observe(el));
 </script>
 </body>
 </html>

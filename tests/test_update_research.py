@@ -143,6 +143,23 @@ def test_paper_card_handles_missing_optional_fields():
     assert "paper-authors" not in out
 
 
+def test_paper_card_emits_animatable_impact_bar():
+    paper = {"title": "T", "source": "S", "link": "https://x",
+             "published": "d", "eli5": "", "technical": "",
+             "market_narrative": "", "stock_implications": [],
+             "impact_score": 8}
+    out = ur.paper_card(paper, 0)
+    assert 'data-target="80"' in out
+    # No inline width — the JS observer fills it on scroll-in.
+    assert 'style="width:80%"' not in out
+
+
+def test_generate_html_marks_count_as_counter():
+    out = ur.generate_html([], "2026-05-08", "Friday, May 8, 2026")
+    assert 'data-counter' in out
+    assert 'data-target="0"' in out
+
+
 def test_paper_card_splits_eli5_paragraphs():
     paper = {"title": "T", "source": "S", "link": "https://x",
              "published": "d", "eli5": "para one\n\npara two\n\npara three",

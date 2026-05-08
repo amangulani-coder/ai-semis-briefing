@@ -640,18 +640,19 @@ html.embedded .g-nav { display: none; }
     <a href="index.html" style="color:var(--accent-blue);text-decoration:none">â Back to index</a>
   </p>
 </footer>
-[{s:"NVDA",p:"$185.20",c:"-2.9%",d:"down"},{s:"AMD",p:"$245.10",c:"-1.3%",d:"down"},{s:"TSM",p:"$209.40",c:"+2.6%",d:"up"},{s:"INTC",p:"$32.50",c:"+11.5%",d:"up"},{s:"AVGO",p:"$221.60",c:"-1.5%",d:"down"},{s:"MSFT",p:"$452.30",c:"-0.7%",d:"down"},{s:"GOOG",p:"$182.10",c:"+1.0%",d:"up"},{s:"META",p:"$622.80",c:"+0.7%",d:"up"},{s:"SMCI",p:"$51.20",c:"+2.8%",d:"up"},{s:"QCOM",p:"$178.90",c:"+1.2%",d:"up"}];
+
+<script>[{s:"NVDA",p:"$185.20",c:"-2.9%",d:"down"},{s:"AMD",p:"$245.10",c:"-1.3%",d:"down"},{s:"TSM",p:"$209.40",c:"+2.6%",d:"up"},{s:"INTC",p:"$32.50",c:"+11.5%",d:"up"},{s:"AVGO",p:"$221.60",c:"-1.5%",d:"down"},{s:"MSFT",p:"$452.30",c:"-0.7%",d:"down"},{s:"GOOG",p:"$182.10",c:"+1.0%",d:"up"},{s:"META",p:"$622.80",c:"+0.7%",d:"up"},{s:"SMCI",p:"$51.20",c:"+2.8%",d:"up"},{s:"QCOM",p:"$178.90",c:"+1.2%",d:"up"}];
 
 function formatChange(pct) {
-  const sign = pct &gt;= 0 ? '+' : '';
+  const sign = pct >= 0 ? '+' : '';
   return sign + pct.toFixed(2) + '%';
 }
 
 function buildTickerHTML(quotes) {
-  const items = quotes.map(q =&gt; {
+  const items = quotes.map(q => {
     const pct  = q.regularMarketChangePercent || 0;
-    const cls  = pct &gt; 0.05 ? 'up' : pct &lt; -0.05 ? 'down' : 'flat';
-    const arrow = pct &gt; 0.05 ? 'â²' : pct &lt; -0.05 ? 'â¼' : 'â';
+    const cls  = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : 'flat';
+    const arrow = pct > 0.05 ? 'â²' : pct < -0.05 ? 'â¼' : 'â';
     const price = q.regularMarketPrice ? '$' + q.regularMarketPrice.toFixed(2) : 'â';
     return '<span class="ticker-item">NVDA $198 · GB200 NVL72 powers OpenAI GPT-5.5</span>';
   }).join('');
@@ -661,8 +662,8 @@ function buildTickerHTML(quotes) {
 async function loadTicker() {
   const symbols = TICKERS.join(',');
   const endpoints = [
-    'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&amp;fields=symbol,regularMarketPrice,regularMarketChangePercent',
-    'https://query2.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&amp;fields=symbol,regularMarketPrice,regularMarketChangePercent'
+    'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&fields=symbol,regularMarketPrice,regularMarketChangePercent',
+    'https://query2.finance.yahoo.com/v7/finance/quote?symbols=' + symbols + '&fields=symbol,regularMarketPrice,regularMarketChangePercent'
   ];
 
   for (const url of endpoints) {
@@ -670,8 +671,8 @@ async function loadTicker() {
       const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
       if (!resp.ok) continue;
       const data = await resp.json();
-      const quotes = data &amp;&amp; data.quoteResponse &amp;&amp; data.quoteResponse.result;
-      if (quotes &amp;&amp; quotes.length &gt; 0) {
+      const quotes = data && data.quoteResponse && data.quoteResponse.result;
+      if (quotes && quotes.length > 0) {
         const track   = document.getElementById('tickerTrack');
         const loading = document.getElementById('tickerLoading');
         track.innerHTML = buildTickerHTML(quotes);
@@ -688,8 +689,8 @@ async function loadTicker() {
 
 loadTicker();
 
-const fadeObserver = new IntersectionObserver((entries) =&gt; {
-  entries.forEach(e =&gt; {
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
     if (e.isIntersecting) {
       e.target.style.opacity = '1';
       e.target.style.transform = 'translateY(0)';
@@ -698,12 +699,48 @@ const fadeObserver = new IntersectionObserver((entries) =&gt; {
   });
 }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.card, .x-card').forEach((el, i) =&gt; {
+document.querySelectorAll('.card, .x-card').forEach((el, i) => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(16px)';
   el.style.transition = 'opacity 0.45s ease ' + (i * 0.04) + 's, transform 0.45s ease ' + (i * 0.04) + 's';
   fadeObserver.observe(el);
 });
+
+// Count-up on .counter-anim elements when they enter view.
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function formatCounter(value, prefix, suffix, decimals) {
+  return prefix + value.toFixed(decimals) + suffix;
+}
+
+function animateCounter(el) {
+  const target   = parseFloat(el.dataset.target);
+  const prefix   = el.dataset.prefix || '';
+  const suffix   = el.dataset.suffix || '';
+  const decimals = parseInt(el.dataset.decimals || '0', 10);
+  if (!isFinite(target)) return;
+  if (reduceMotion) { el.textContent = formatCounter(target, prefix, suffix, decimals); return; }
+  const duration = 1100;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = formatCounter(target * eased, prefix, suffix, decimals);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = formatCounter(target, prefix, suffix, decimals);
+  }
+  requestAnimationFrame(step);
+}
+
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); counterObs.unobserve(e.target); } });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter-anim').forEach(el => {
+  const decimals = parseInt(el.dataset.decimals || '0', 10);
+  el.textContent = (el.dataset.prefix || '') + (0).toFixed(decimals) + (el.dataset.suffix || '');
+  counterObs.observe(el);
+});
+</script>
 
 <script>(function(){var svg=document.getElementById("wafer-svg");if(!svg)return;var g=svg.querySelector("#die-group");var cx=300,cy=300,r=268,dW=22,dH=18,gap=2;var cols=Math.ceil(600/(dW+gap)),rows=Math.ceil(600/(dH+gap));var sx=300-cols*(dW+gap)/2,sy=300-rows*(dH+gap)/2;var hues=[218,224,230,236,242];for(var row=0;row<rows;row++){for(var col=0;col<cols;col++){var x=sx+col*(dW+gap),y=sy+row*(dH+gap);var dx=x+dW/2-cx,dy=y+dH/2-cy;if(dx*dx+dy*dy<(r-6)*(r-6)){var rect=document.createElementNS("http://www.w3.org/2000/svg","rect");rect.setAttribute("x",x);rect.setAttribute("y",y);rect.setAttribute("width",dW);rect.setAttribute("height",dH);rect.setAttribute("rx","2");var h=hues[Math.floor(Math.random()*hues.length)],l=7+Math.random()*6;rect.setAttribute("fill","hsl("+h+",28%,"+l+"%)");rect.setAttribute("stroke","rgba(56,189,248,0.13)");rect.setAttribute("stroke-width","0.5");g.appendChild(rect);}}}})();</script>
 
